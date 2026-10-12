@@ -1,0 +1,14 @@
+---
+import Base from "../../layouts/Base.astro";
+import Home from "../../components/Home.astro";
+import { LANGS, ui } from "../../content/site.js";
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === "en" ? undefined : l }, props: { lang: l } }));
+}
+const { lang } = Astro.props;
+const h = ui[lang].hero;
+---
+<Base lang={lang} route="/" title={`Moutaz Mohammad · ${h.title}`} description={`${h.title} ${h.line} ${h.keys.join(" · ")}`}>
+  <Home lang={lang} />
+</Base>

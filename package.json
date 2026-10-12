@@ -1,0 +1,19 @@
+{
+  "name": "moutazm.com",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "cv": "node scripts/build-cv-pdf.mjs",
+    "build": "node scripts/build-cv-pdf.mjs && astro build",
+    "dev": "astro dev --host 0.0.0.0",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@fontsource/chakra-petch": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "@fontsource/ibm-plex-sans-arabic": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "astro": "^5.18.2",
+    "pdfkit": "^0.20.2"
+  }
+}

@@ -1,0 +1,16 @@
+---
+import Base from "../layouts/Base.astro";
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+<Base lang="en" title="404 · Moutaz Mohammad" description="Page not found">
+  <section class="wrap nf">
+    <p class="label">error frame</p>
+    <h1 class="mono">404</h1>
+    <p>This frame was not acknowledged. The page does not exist.</p>
+    <a class="btn primary" href={base + "/"}>Home</a>
+  </section>
+</Base>
+<style>
+  .nf { padding-block: 100px; display: grid; gap: 18px; justify-items: start; }
+  h1 { font-size: clamp(80px, 16vw, 160px); color: var(--accent); }
+</style>

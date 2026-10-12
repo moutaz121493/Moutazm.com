@@ -1,0 +1,109 @@
+---
+import Base from "../../layouts/Base.astro";
+import { LANGS, ui, path, experience, education, skills, languages, certifications, LINKS } from "../../content/site.js";
+import { projects } from "../../content/projects.js";
+import { todo } from "../../lib/text.js";
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === "en" ? undefined : l }, props: { lang: l } }));
+}
+const { lang } = Astro.props;
+const t = ui[lang];
+const c = t.cv;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const pdfs = lang === "de" ? [["de", "Deutsch"], ["en", "English"]] : [["en", "English"], ["de", "Deutsch"]];
+---
+<Base lang={lang} route="/cv" title={`${c.h} · Moutaz Mohammad`} description={`${c.h}: Moutaz Mohammad, ${t.hero.title}`}>
+  <article class="wrap cv">
+    <header class="top">
+      <div>
+        <p class="label">{c.h}</p>
+        <h1>Moutaz Mohammad</h1>
+        <p class="role">{t.hero.title}</p>
+        <p class="contact mono">{t.hero.kicker} · <a href={`mailto:${LINKS.email}`}>{LINKS.email}</a> · <a href={LINKS.linkedin} rel="noopener" target="_blank">LinkedIn</a> · <a href={LINKS.github} rel="noopener" target="_blank">GitHub</a></p>
+      </div>
+      <div class="dl no-print">
+        {pdfs.map(([l, name], i) => (
+          <a class:list={["btn", { primary: i === 0 }]} href={`${base}/cv/moutaz-mohammad-cv-${l}.pdf`} download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+            {c.download} · {name}</a>
+        ))}
+      </div>
+    </header>
+
+    <section>
+      <h2 class="label">{c.exp}</h2>
+      {experience.map((e) => (
+        <div class="row">
+          <div class="when mono">{e.from} – {e.to ?? t.work.present}</div>
+          <div>
+            <h3><span set:html={todo(e.role[lang])} /> · {e.org}</h3>
+            <p class="muted" set:html={todo(e.place[lang])} />
+            <ul>{e.points[lang].map((x) => <li>{x}</li>)}</ul>
+          </div>
+        </div>
+      ))}
+    </section>
+
+    <section>
+      <h2 class="label">{c.projects}</h2>
+      {projects.filter((p) => p.status !== "planned").map((p) => (
+        <div class="row">
+          <div class="when mono">{t.projects.status[p.status]}</div>
+          <div><h3><a href={base + path(lang, `/projects/${p.slug}`)}>{p[lang].title}</a></h3><p class="muted">{p[lang].tagline}</p></div>
+        </div>
+      ))}
+    </section>
+
+    <section>
+      <h2 class="label">{c.edu}</h2>
+      {education.map((e) => (
+        <div class="row">
+          <div class="when mono" set:html={todo(e.when[lang])} />
+          <div><h3>{e.degree[lang]}</h3><p class="muted" set:html={todo(e.school)} />{e.note && <p>{e.note[lang]}</p>}</div>
+        </div>
+      ))}
+    </section>
+
+    <div class="cols">
+      <section>
+        <h2 class="label">{c.skills}</h2>
+        {skills[lang].map((g) => <p class="sk"><b>{g.h}:</b> {g.items.join(", ")}</p>)}
+      </section>
+      <div>
+        <section>
+          <h2 class="label">{c.langs}</h2>
+          {languages.map((l) => <p class="sk"><b>{l.name[lang]}</b> — <span set:html={todo(l.level[lang])} /></p>)}
+        </section>
+        <section>
+          <h2 class="label">{c.certs}</h2>
+          {certifications.map((x) => <p class="sk">{x.name} <span class="muted">({x.target ? c.planned : c.inProgress})</span></p>)}
+        </section>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .cv { padding-block: 40px 90px; display: grid; gap: 40px; max-width: 980px; }
+  .top { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; align-items: flex-end; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+  h1 { font-size: clamp(36px, 6vw, 56px); margin-block: 8px; }
+  .role { font-size: 20px; color: var(--muted); }
+  .contact { margin-top: 12px; font-size: 13px; color: var(--muted); }
+  .contact a { color: var(--accent); text-decoration: none; }
+  .dl { display: grid; gap: 10px; }
+  section { display: grid; gap: 18px; }
+  section > .label { margin: 0; color: var(--accent); }
+  .row { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 24px; }
+  .when { color: var(--muted); font-size: 13px; padding-top: 3px; }
+  h3 { font-size: 18px; }
+  h3 a { text-decoration: none; } h3 a:hover { color: var(--accent); }
+  .muted { color: var(--muted); }
+  ul { margin: 8px 0 0; padding-inline-start: 18px; display: grid; gap: 6px; }
+  ul li::marker { color: var(--accent); }
+  .cols { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 40px; }
+  .cols > div { display: grid; gap: 32px; align-content: start; }
+  .sk { margin-bottom: 4px; }
+  @media (max-width: 760px) { .row, .cols { grid-template-columns: 1fr; gap: 6px 24px; } .cols { gap: 32px; } }
+  @media print { .cv { padding: 0; gap: 18px; } .top { padding-bottom: 10px; } a { color: inherit !important; } }
+</style>

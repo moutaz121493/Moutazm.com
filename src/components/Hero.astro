@@ -1,0 +1,219 @@
+---
+import { ui, path } from "../content/site.js";
+const { lang } = Astro.props;
+const t = ui[lang].hero;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+<section class="hero">
+  <div class="wrap grid">
+    <div class="copy">
+      <p class="label kicker"><span class="dot" aria-hidden="true"></span>{t.kicker}</p>
+      <h1>
+        <span class="name">Moutaz Mohammad</span>
+        <span class="title">{t.title}</span>
+        <span class="line">{t.line}</span>
+      </h1>
+      <ul class="keys" aria-label="Focus">
+        {t.keys.map((k, i) => <li><span class="mono">0{i + 1}</span>{k}</li>)}
+      </ul>
+      <div class="ctas">
+        <a class="btn primary" href={base + path(lang, "/cv")}>{t.cta.cv}
+          <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn" href="#projects">{t.cta.projects}</a>
+        <a class="btn" href="#contact">{t.cta.contact}</a>
+      </div>
+    </div>
+    <div class="viz" aria-hidden="true">
+      <canvas id="signal"></canvas>
+      <div class="legend mono">
+        <span><i class="h"></i>CAN_H</span><span><i class="l"></i>CAN_L</span><span class="brs">BRS ▸ FD</span><span><i class="n"></i>model</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // CAN bus waveform (arbitration bits, then the narrower FD data bits after BRS)
+  // flowing into a small neural network. Purely decorative, paused off-screen.
+  const cv = document.getElementById("signal") as HTMLCanvasElement | null;
+  if (cv) {
+    const ctx = cv.getContext("2d")!;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let W = 0, H = 0, dpr = 1, colors = { a: "#f2b33d", ai: "#58b7ff", line: "#22303a", muted: "#8b9aa5" };
+    const readColors = () => {
+      const s = getComputedStyle(document.documentElement);
+      colors = { a: s.getPropertyValue("--accent").trim(), ai: s.getPropertyValue("--ai").trim(),
+                 line: s.getPropertyValue("--line").trim(), muted: s.getPropertyValue("--muted").trim() };
+    };
+    new MutationObserver(readColors).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+    // bit stream: [value, widthFactor]. Frames: SOF + 11-bit ID + control, BRS, fast data, slow CRC/ACK/EOF.
+    let seed = 7;
+    const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+    type Bit = { v: number; w: number; brs?: boolean };
+    const bits: Bit[] = [];
+    const bit = () => (rnd() < 0.5 ? 0 : 1);
+    const frame = () => {
+      bits.push({ v: 0, w: 1 });                                        // SOF
+      for (let i = 0; i < 14; i++) bits.push({ v: bit(), w: 1 });       // ID + control (nominal rate)
+      bits.push({ v: 1, w: 1, brs: true });                             // BRS: switch to the data rate
+      for (let i = 0; i < 40; i++) bits.push({ v: bit(), w: 0.25 });    // data phase, 4x faster
+      for (let i = 0; i < 6; i++) bits.push({ v: bit(), w: 1 });        // CRC delimiter / ACK
+      for (let i = 0; i < 10; i++) bits.push({ v: 1, w: 1 });           // EOF + intermission
+    };
+    for (let i = 0; i < 6; i++) frame();
+    const unit = () => Math.max(10, Math.min(18, W / 46));
+    const totalLen = () => bits.reduce((s, b) => s + b.w, 0) * unit();
+
+    // network
+    type Node = { x: number; y: number; glow: number };
+    let layers: Node[][] = [];
+    type Pulse = { from: Node; to: Node; k: number; layer: number };
+    const pulses: Pulse[] = [];
+    const layout = () => {
+      const x0 = W * 0.64, x1 = W * 0.96, sizes = [4, 6, 5, 2];
+      layers = sizes.map((n, li) => Array.from({ length: n }, (_, i) => ({
+        x: x0 + (x1 - x0) * (li / (sizes.length - 1)),
+        y: H * 0.5 + (i - (n - 1) / 2) * Math.min(42, (H * 0.78) / n),
+        glow: 0,
+      })));
+    };
+    const resize = () => {
+      const r = cv.getBoundingClientRect();
+      dpr = Math.min(2, devicePixelRatio || 1);
+      W = r.width; H = r.height;
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      layout();
+    };
+
+    let offset = 0, lastBitAt = 0, prev = 0, running = false, raf = 0;
+    const draw = (now: number) => {
+      const dt = prev ? Math.min(0.05, (now - prev) / 1000) : 0;
+      prev = now;
+      offset += dt * 70;
+      ctx.clearRect(0, 0, W, H);
+      const u = unit(), xEnd = W * 0.6, mid = H * 0.5, amp = Math.min(34, H * 0.16);
+      const len = totalLen();
+
+      // grid
+      ctx.strokeStyle = colors.line; ctx.lineWidth = 1; ctx.globalAlpha = 0.55;
+      for (let x = (-offset % (u * 4)) ; x < xEnd; x += u * 4) { ctx.beginPath(); ctx.moveTo(x, mid - amp * 2.2); ctx.lineTo(x, mid + amp * 2.2); ctx.stroke(); }
+      ctx.globalAlpha = 1;
+
+      // waveform: stream moves right, toward the network
+      const wave = (sign: number, color: string, alpha: number) => {
+        ctx.beginPath(); ctx.strokeStyle = color; ctx.globalAlpha = alpha; ctx.lineWidth = 2;
+        let x = xEnd + (offset % len) - len, first = true, i = 0;
+        const brsX: number[] = [];
+        while (x < xEnd) {
+          const { v, w, brs } = bits[i % bits.length];
+          if (brs) brsX.push(x);
+          const y = v === 0 ? mid + sign * amp : mid + sign * amp * 0.12;
+          const nx = Math.min(xEnd, x + w * u);
+          if (nx > 0) {
+            const sx = Math.max(0, x);
+            if (first) { ctx.moveTo(sx, y); first = false; } else ctx.lineTo(sx, y);
+            ctx.lineTo(nx, y);
+          }
+          x = nx; i++;
+          if (x <= 0 && i > bits.length * 4) break;
+        }
+        ctx.stroke(); ctx.globalAlpha = 1;
+        return brsX;
+      };
+      wave(-1, colors.a, 1);
+      const brs = wave(1, colors.a, 0.45);
+      ctx.font = "10px JetBrains Mono, monospace"; ctx.fillStyle = colors.muted;
+      for (const bx of brs) if (bx > 8 && bx < xEnd - 40) { ctx.fillRect(bx, mid - amp * 1.9, 1, amp * 3.8); ctx.fillText("BRS", bx + 4, mid - amp * 1.65); }
+
+      // fade into the network
+      const g = ctx.createLinearGradient(xEnd - 40, 0, xEnd + 10, 0);
+      g.addColorStop(0, colors.a); g.addColorStop(1, colors.ai);
+      ctx.strokeStyle = g; ctx.globalAlpha = 0.7; ctx.lineWidth = 1.5;
+      for (const n of layers[0]) { ctx.beginPath(); ctx.moveTo(xEnd - 30, mid); ctx.bezierCurveTo(xEnd, mid, xEnd, n.y, n.x, n.y); ctx.stroke(); }
+      ctx.globalAlpha = 1;
+
+      // edges
+      ctx.strokeStyle = colors.line; ctx.lineWidth = 1;
+      for (let li = 0; li < layers.length - 1; li++)
+        for (const a of layers[li]) for (const b of layers[li + 1]) { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+
+      // spawn pulses as bits arrive
+      if (now - lastBitAt > 260) {
+        lastBitAt = now;
+        const a = layers[0][Math.floor(Math.random() * layers[0].length)];
+        a.glow = 1;
+        const b = layers[1][Math.floor(Math.random() * layers[1].length)];
+        pulses.push({ from: a, to: b, k: 0, layer: 1 });
+      }
+      for (let i = pulses.length - 1; i >= 0; i--) {
+        const p = pulses[i];
+        p.k += dt * 2.2;
+        if (p.k >= 1) {
+          p.to.glow = 1;
+          pulses.splice(i, 1);
+          if (p.layer < layers.length - 1) {
+            const next = layers[p.layer + 1];
+            const n = Math.random() < 0.35 ? 2 : 1;
+            for (let j = 0; j < n; j++) pulses.push({ from: p.to, to: next[Math.floor(Math.random() * next.length)], k: 0, layer: p.layer + 1 });
+          }
+          continue;
+        }
+        const x = p.from.x + (p.to.x - p.from.x) * p.k, y = p.from.y + (p.to.y - p.from.y) * p.k;
+        ctx.strokeStyle = colors.ai; ctx.globalAlpha = 0.85; ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.moveTo(p.from.x + (p.to.x - p.from.x) * Math.max(0, p.k - 0.18), p.from.y + (p.to.y - p.from.y) * Math.max(0, p.k - 0.18)); ctx.lineTo(x, y); ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+      // nodes
+      for (const L of layers) for (const n of L) {
+        n.glow = Math.max(0, n.glow - dt * 1.6);
+        ctx.beginPath(); ctx.arc(n.x, n.y, 5 + n.glow * 3, 0, Math.PI * 2);
+        ctx.fillStyle = colors.ai; ctx.globalAlpha = 0.18 + n.glow * 0.5; ctx.fill();
+        ctx.globalAlpha = 1; ctx.lineWidth = 1.5; ctx.strokeStyle = colors.ai; ctx.stroke();
+      }
+      if (running) raf = requestAnimationFrame(draw);
+    };
+
+    const start = () => { if (running || reduce) return; running = true; prev = 0; raf = requestAnimationFrame(draw); };
+    const stop = () => { running = false; cancelAnimationFrame(raf); };
+    readColors(); resize();
+    new ResizeObserver(() => { resize(); if (!running) draw(performance.now()); }).observe(cv);
+    if (reduce) { offset = 300; draw(performance.now()); }
+    else {
+      new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop())).observe(cv);
+      document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
+    }
+  }
+</script>
+
+<style>
+  .hero { padding-block: clamp(48px, 9vw, 110px) clamp(56px, 8vw, 96px); position: relative; overflow: hidden; }
+  .hero::before {
+    content: ""; position: absolute; inset: -20% -10% auto auto; width: 70%; height: 120%;
+    background: radial-gradient(closest-side, var(--glow), transparent 70%); pointer-events: none;
+  }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 40px; align-items: center; position: relative; }
+  .kicker { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); box-shadow: 0 0 12px var(--live); }
+  h1 { display: grid; gap: 14px; }
+  .name { font-size: clamp(16px, 2vw, 19px); font-family: var(--f-mono); font-weight: 500; color: var(--accent); letter-spacing: .06em; text-transform: uppercase; }
+  :root[lang="ar"] .name { font-family: var(--f-mono); }
+  .title { font-size: clamp(38px, 6.2vw, 72px); font-weight: 700; letter-spacing: -.01em; line-height: 1.02; }
+  :root[lang="ar"] .title { line-height: 1.25; letter-spacing: 0; }
+  .line { font-size: clamp(20px, 2.6vw, 28px); font-weight: 600; color: var(--muted); }
+  .keys { list-style: none; padding: 0; margin: 30px 0 34px; display: flex; flex-wrap: wrap; gap: 10px 22px; }
+  .keys li { display: flex; gap: 8px; align-items: baseline; font-weight: 600; }
+  .keys .mono { color: var(--accent); font-size: 12px; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+  .viz { position: relative; height: clamp(240px, 32vw, 380px); border: 1px solid var(--line); border-radius: 14px; background:
+    linear-gradient(var(--bg-2), var(--bg-2)) padding-box; overflow: hidden; }
+  .viz canvas { width: 100%; height: 100%; }
+  :root[dir="rtl"] .viz canvas { transform: scaleX(-1); }
+  .legend { position: absolute; inset-inline-start: 14px; bottom: 10px; display: flex; gap: 14px; font-size: 11px; color: var(--muted); flex-wrap: wrap; direction: ltr; }
+  :root[dir="rtl"] .legend { inset-inline-start: auto; right: 14px; left: auto; }
+  .legend i { display: inline-block; width: 14px; height: 2px; vertical-align: middle; margin-inline-end: 6px; background: var(--accent); }
+  .legend i.l { opacity: .45; } .legend i.n { background: var(--ai); }
+  .legend .brs { color: var(--accent); }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } .viz { height: 220px; } }
+</style>
