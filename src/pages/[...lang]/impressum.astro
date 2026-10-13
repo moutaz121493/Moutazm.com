@@ -1,0 +1,36 @@
+---
+import Base from "../../layouts/Base.astro";
+import { LANGS, LINKS, LEGAL } from "../../content/site.js";
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === "en" ? undefined : l }, props: { lang: l } }));
+}
+const { lang } = Astro.props;
+// The legal text stays German on every language; only the heading and the note change.
+const T = {
+  en: { h: "Imprint", note: "Legal notice as required by German law (§ 5 DDG)." },
+  de: { h: "Impressum", note: "" },
+  ar: { h: "البيانات القانونية", note: "بيانات الناشر كما يطلبها القانون الألماني (§ 5 DDG)." },
+}[lang];
+---
+<Base lang={lang} route="/impressum" title={`${T.h} · Moutaz Mohammad`} description={T.note || "Impressum"} noindex>
+  <article class="wrap legal">
+    <h1>{T.h}</h1>
+    {T.note && <p>{T.note}</p>}
+    <section lang="de" dir="ltr">
+      <h2>Angaben gemäß § 5 DDG</h2>
+      <p class="addr">{LEGAL.name}<br />{LEGAL.street}<br />{LEGAL.city}<br />{LEGAL.country}</p>
+      <h2>Kontakt</h2>
+      <p>Telefon: <a href={`tel:${LEGAL.phone.replace(/\s/g, "")}`}>{LEGAL.phone}</a><br />E-Mail: <a href={`mailto:${LINKS.email}`}>{LINKS.email}</a></p>
+      <h2>Verantwortlich für den Inhalt</h2>
+      <p>{LEGAL.name}, Anschrift wie oben.</p>
+    </section>
+  </article>
+</Base>
+<style>
+  .legal { padding-block: 48px 90px; max-width: 760px; display: grid; gap: 18px; }
+  h1 { font-size: clamp(32px, 5vw, 48px); margin-bottom: 10px; }
+  h2 { font-size: 18px; margin: 14px 0 6px; }
+  p { color: var(--muted); }
+  .addr { color: inherit; }
+</style>

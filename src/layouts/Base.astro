@@ -10,8 +10,8 @@ import "@fontsource/jetbrains-mono/500.css";
 import "../styles/global.css";
 import { LANGS, DIR, LANG_NAME, ui, path, LINKS } from "../content/site.js";
 
-interface Props { lang: string; route?: string; title: string; description: string; }
-const { lang, route = "/", title, description } = Astro.props;
+interface Props { lang: string; route?: string; title: string; description: string; noindex?: boolean; }
+const { lang, route = "/", title, description, noindex = false } = Astro.props;
 const t = ui[lang];
 const site = Astro.site?.toString().replace(/\/$/, "") ?? "";
 const canonical = site + path(lang, route);
@@ -27,6 +27,7 @@ const home = href(path(lang, "/"));
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  {noindex && <meta name="robots" content="noindex" />}
   <link rel="canonical" href={canonical} />
   {LANGS.map((l) => <link rel="alternate" hreflang={l} href={site + path(l, route)} />)}
   <link rel="alternate" hreflang="x-default" href={site + path("en", route)} />
@@ -79,6 +80,7 @@ const home = href(path(lang, "/"));
       <span class="label">{t.footer.built}</span>
       <span class="flinks">
         <a href={`mailto:${LINKS.email}`}>{LINKS.email}</a>
+        <a href={href(path(lang, "/impressum"))}>{t.footer.imprint}</a>
         <a href={href(path(lang, "/privacy"))}>{t.footer.privacy}</a>
       </span>
     </div>

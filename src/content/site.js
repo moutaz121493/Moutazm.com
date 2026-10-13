@@ -12,6 +12,15 @@ export const LINKS = {
   github: "https://github.com/moutaz121493",
 };
 
+// Impressum (§ 5 DDG). Shown in German on every language, as the law expects.
+export const LEGAL = {
+  name: "Moutaz Mohammad",
+  street: "Feldstr. 26",
+  city: "38302 Wolfenbüttel",
+  country: "Deutschland",
+  phone: "+49 176 57957461",
+};
+
 /** Path for a page in a language, always with a trailing slash: path("de", "/cv") -> "/de/cv/" */
 export const path = (lang, p = "/") => {
   const q = p.endsWith("/") ? p : p + "/";
@@ -71,7 +80,7 @@ export const ui = {
       planned: "next goal",
       projects: "Selected projects",
     },
-    footer: { privacy: "Privacy", built: "Static site · no cookies · no tracking" },
+    footer: { privacy: "Privacy", imprint: "Imprint", built: "Static site · no cookies · no tracking" },
     theme: "Toggle light / dark theme",
     langSwitch: "Language",
     skip: "Skip to content",
@@ -128,7 +137,7 @@ export const ui = {
       planned: "nächstes Ziel",
       projects: "Ausgewählte Projekte",
     },
-    footer: { privacy: "Datenschutz", built: "Statische Seite · keine Cookies · kein Tracking" },
+    footer: { privacy: "Datenschutz", imprint: "Impressum", built: "Statische Seite · keine Cookies · kein Tracking" },
     theme: "Helles / dunkles Design umschalten",
     langSwitch: "Sprache",
     skip: "Zum Inhalt springen",
@@ -185,7 +194,7 @@ export const ui = {
       planned: "الهدف التالي",
       projects: "مشاريع مختارة",
     },
-    footer: { privacy: "الخصوصية", built: "موقع ثابت · بلا كوكيز · بلا تتبّع" },
+    footer: { privacy: "الخصوصية", imprint: "البيانات القانونية", built: "موقع ثابت · بلا كوكيز · بلا تتبّع" },
     theme: "تبديل الوضع الفاتح / الداكن",
     langSwitch: "اللغة",
     skip: "انتقل إلى المحتوى",
