@@ -13,7 +13,8 @@ Trilingual (English, German, Arabic with full right-to-left layout), static, and
 ## Structure
 
 ```
-src/content/site.js       all page text and CV data (en / de / ar)
+src/content/cv.js         CV and page text (en / de / ar), edited from a private admin page
+src/content/site.js       labels, legal details and helpers; turns cv.js into the shapes the pages use
 src/content/projects.js   project write-ups
 src/components/           Hero (CAN-bus → neural-network canvas), Home, Flow diagram
 src/pages/[...lang]/      one route file per page type, generated for every language

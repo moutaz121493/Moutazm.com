@@ -1,6 +1,6 @@
 # Open items
 
-- [ ] Certificates: add the finished Coursera / IBM certificates (name, date, link) in `src/content/site.js` → `certifications`.
+- [ ] Certificates: add the finished Coursera / IBM certificates (name, date, link) in `src/content/cv.js` → `certifications` (or the CV editor).
 - [ ] Photos: profile photo + gym / swimming / travel photos for "Beyond work" (replace the icon tiles).
 - [ ] Review the German and Arabic text.
 - [ ] Open Graph image (1200×630) for link previews, then re-add `og:image` in `src/layouts/Base.astro`.
