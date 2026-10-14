@@ -10,7 +10,7 @@ export default {
     "kicker": {
       "en": "Wolfenbüttel, Germany",
       "de": "Wolfenbüttel, Deutschland",
-      "ar": "هامبورغ، ألمانيا"
+      "ar": "فولفنبوتل، ألمانيا"
     },
     "title": {
       "en": "Embedded engineer building intelligent systems",
