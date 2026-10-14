@@ -8,8 +8,8 @@ export default {
   },
   "hero": {
     "kicker": {
-      "en": "Hamburg, Germany",
-      "de": "Hamburg, Deutschland",
+      "en": "Wolfenbüttel, Germany",
+      "de": "Wolfenbüttel, Deutschland",
       "ar": "هامبورغ، ألمانيا"
     },
     "title": {
