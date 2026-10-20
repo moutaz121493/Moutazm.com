@@ -5,7 +5,8 @@ Trilingual (English, German, Arabic with full right-to-left layout), static, and
 
 ## Stack
 
-- [Astro](https://astro.build) static site, minimal JavaScript (hero animation, theme toggle, scroll reveals)
+- [Astro](https://astro.build) static site, small dependency-free JavaScript (`src/scripts/fx.js`: card glow + tilt, magnetic buttons, circuit background, theme reveal; hero canvas)
+- Two themes: HUD (dark) and Retro-Tech (light); hand-drawn SVG "photos" in `src/components/Illo.astro` until real photos exist
 - Self-hosted fonts via Fontsource (no requests to Google)
 - CV PDFs (EN/DE) generated at build time with [PDFKit](https://pdfkit.org) from the same data as the CV page
 - Hosted on Cloudflare Pages · no cookies, no analytics, no trackers

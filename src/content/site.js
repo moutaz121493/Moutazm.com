@@ -30,6 +30,7 @@ export const ui = {
     nav: { about: "About", work: "Experience", projects: "Projects", now: "Now", skills: "Skills", contact: "Contact", cv: "CV" },
     hero: {
       cta: { cv: "View CV", projects: "Projects", contact: "Contact" },
+      lab: "the workbench", local: "Local time",
     },
     about: { h: "About" },
     work: { h: "Experience", present: "today" },
@@ -74,6 +75,7 @@ export const ui = {
     nav: { about: "Über mich", work: "Erfahrung", projects: "Projekte", now: "Aktuell", skills: "Skills", contact: "Kontakt", cv: "Lebenslauf" },
     hero: {
       cta: { cv: "Lebenslauf", projects: "Projekte", contact: "Kontakt" },
+      lab: "die Werkbank", local: "Ortszeit",
     },
     about: { h: "Über mich" },
     work: { h: "Berufserfahrung", present: "heute" },
@@ -118,6 +120,7 @@ export const ui = {
     nav: { about: "عنّي", work: "الخبرة", projects: "المشاريع", now: "الآن", skills: "المهارات", contact: "تواصل", cv: "السيرة الذاتية" },
     hero: {
       cta: { cv: "السيرة الذاتية", projects: "المشاريع", contact: "تواصل" },
+      lab: "طاولة العمل", local: "التوقيت المحلي",
     },
     about: { h: "عنّي" },
     work: { h: "الخبرة المهنية", present: "حتى الآن" },

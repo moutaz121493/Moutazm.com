@@ -1,47 +1,68 @@
 /* Signal: dark, technical, one gold accent (the "dominant bit"), cyan for the AI side. */
 :root {
-  --bg: #0a0e12;
-  --bg-2: #0e141a;
-  --panel: #11171d;
-  --panel-2: #161e25;
-  --line: #22303a;
-  --fg: #e6edf1;
-  --muted: #8b9aa5;
-  --accent: #f2b33d;
+  /* HUD (dark, default): deep blue-black glass, gold "dominant bit", cyan for the AI side */
+  --bg: #060a0f;
+  --bg-2: #0b1118;
+  --panel: #0f161d;
+  --panel-2: #141d26;
+  --line: #1f2c37;
+  --line-2: #2b3c4a;
+  --fg: #e8eff3;
+  --muted: #8d9ca8;
+  --accent: #f5b83f;
   --accent-ink: #0a0e12;
-  --ai: #58b7ff;
-  --live: #4fcf86;
-  --progress: #f2b33d;
-  --planned: #8b9aa5;
+  --ai: #4fd1ff;
+  --live: #45e08f;
+  --progress: #f5b83f;
+  --planned: #8d9ca8;
   --glow: color-mix(in srgb, var(--accent) 22%, transparent);
+  --ink: var(--line-2);
+  --card: color-mix(in srgb, var(--panel) 76%, transparent);
+  --edge: color-mix(in srgb, var(--line-2) 75%, transparent);
+  --shadow: 0 1px 0 rgba(255, 255, 255, .045) inset, 0 22px 50px -30px rgba(0, 0, 0, .9);
+  --shadow-hi: 0 1px 0 rgba(255, 255, 255, .06) inset, 0 30px 60px -28px rgba(0, 0, 0, .95), 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
+  --trace: #1d6f8f; --trace-hi: #f5b83f; --pulse: #4fd1ff;
+  --spring: cubic-bezier(.34, 1.56, .64, 1);
   --f-display: "Chakra Petch", system-ui, sans-serif;
   --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --r: 10px;
-  --wrap: 1120px;
+  --r: 16px;
+  --wrap: 1180px;
   color-scheme: dark;
 }
+@supports (transition-timing-function: linear(0, 1)) {
+  :root { --spring: linear(0, .009, .035 2.1%, .141, .281 6.7%, .723 12.9%, .938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, .991, .977 51%, .974 53.8%, .975 57.1%, .997 69.8%, 1.003 76.9%, 1.004 83.8%, 1); }
+}
+/* Retro-Tech (light): warm paper, ink outlines, hard shadows like plastic keys */
 :root[data-theme="light"] {
-  --bg: #f5f6f3;
-  --bg-2: #eceee9;
-  --panel: #ffffff;
-  --panel-2: #f1f3ef;
-  --line: #d9ddd5;
-  --fg: #11161b;
-  --muted: #59636c;
-  --accent: #a86b00;
-  --accent-ink: #ffffff;
-  --ai: #0a6bc2;
-  --live: #1d8a4c;
-  --progress: #a86b00;
-  --planned: #6b747c;
-  --glow: color-mix(in srgb, var(--accent) 14%, transparent);
+  --bg: #ebe2cc;
+  --bg-2: #e2d6ba;
+  --panel: #f8f1e1;
+  --panel-2: #f0e6cf;
+  --line: #cdbd98;
+  --line-2: #b4a07a;
+  --fg: #231a11;
+  --muted: #6a5842;
+  --accent: #d24f1b;
+  --accent-ink: #fff8ea;
+  --ai: #16766f;
+  --live: #3d7a1f;
+  --progress: #b55a10;
+  --planned: #7d6a50;
+  --glow: color-mix(in srgb, var(--accent) 18%, transparent);
+  --ink: #2a2017;
+  --card: var(--panel);
+  --edge: var(--ink);
+  --shadow: 4px 4px 0 var(--ink);
+  --shadow-hi: 7px 7px 0 var(--ink);
+  --trace: #b8a37a; --trace-hi: #d24f1b; --pulse: #16766f;
   color-scheme: light;
 }
 :root[lang="ar"] { --f-body: "IBM Plex Sans Arabic", "IBM Plex Sans", system-ui, sans-serif; --f-display: "IBM Plex Sans Arabic", "Chakra Petch", system-ui, sans-serif; }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html { background: var(--bg); }
 body {
   margin: 0;
   background: var(--bg);
@@ -87,12 +108,15 @@ section.block { padding-block: clamp(64px, 10vw, 120px); border-top: 1px solid v
   border-radius: 8px; border: 1px solid var(--line);
   background: var(--panel); color: var(--fg);
   font: 600 15px var(--f-body); text-decoration: none;
-  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+  transition: translate .5s var(--spring), transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
 }
 .btn:hover { border-color: color-mix(in srgb, var(--fg) 40%, var(--line)); transform: translateY(-2px); }
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
 .btn.primary:hover { box-shadow: 0 8px 30px var(--glow); }
 .btn svg { width: 18px; height: 18px; }
+:root[data-theme="light"] .btn { border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+:root[data-theme="light"] .btn:hover { transform: none; box-shadow: 4px 4px 0 var(--ink); }
+:root[data-theme="light"] .btn:active { translate: 3px 3px; box-shadow: 0 0 0 var(--ink); }
 :root[dir="rtl"] .btn .arrow { transform: scaleX(-1); }
 
 /* chips & status */
@@ -106,15 +130,67 @@ section.block { padding-block: clamp(64px, 10vw, 120px); border-top: 1px solid v
 .status.planned { color: var(--planned); }
 .status.planned i { box-shadow: none; }
 
-/* cards */
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 24px; min-width: 0; }
+/* cards: glass + an edge that lights up where the cursor is (fx.js sets --mx/--my, tilts with a spring) */
+@property --hot { syntax: "<color>"; inherits: true; initial-value: transparent; }
+.card, .tile {
+  --hot: transparent;
+  background:
+    linear-gradient(var(--card), var(--card)) padding-box,
+    radial-gradient(280px circle at var(--mx, 50%) var(--my, 0%), var(--hot), var(--edge) 72%) border-box;
+  border: 1px solid transparent; border-radius: var(--r); padding: 24px; min-width: 0;
+  box-shadow: var(--shadow);
+  transition: --hot .35s ease, box-shadow .35s ease;
+}
+.card:hover, .tile:hover { --hot: color-mix(in srgb, var(--accent) 85%, transparent); box-shadow: var(--shadow-hi); }
+:root[data-theme="light"] .card, :root[data-theme="light"] .tile { border-width: 2px; }
+.fx-tilting { will-change: transform; }
+
+/* bento grid */
+.bento { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 860px) { .bento { grid-template-columns: minmax(0, 1fr); } .bento > * { grid-column: auto !important; grid-row: auto !important; } }
+
+/* status LED */
+.led { --c: var(--live); width: 9px; height: 9px; border-radius: 50%; flex: none; background: var(--c); display: inline-block;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 22%, transparent), 0 0 12px var(--c); animation: led 2.6s ease-in-out infinite; animation-delay: var(--ph, 0s); }
+.led.ai { --c: var(--ai); } .led.gold { --c: var(--accent); }
+:root[data-theme="light"] .led { box-shadow: 0 0 0 2px var(--ink); }
+@keyframes led { 50% { opacity: .45; } }
+
+/* Polaroid frames (Illo drawings for now): paper card, slight tilt, the picture "develops" when it scrolls in */
+.polaroid { margin: 0; padding: 10px 10px 0; border-radius: 6px; background: #f6f1e6; color: #2a2017; min-width: 0;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset, 0 24px 40px -22px rgba(0, 0, 0, .85); transition: box-shadow .35s ease, rotate .6s var(--spring); }
+.polaroid .shot { aspect-ratio: 4 / 3; overflow: hidden; border-radius: 2px; background: var(--panel-2); }
+.polaroid figcaption { padding: 10px 4px 12px; font-size: 12.5px; text-align: center; letter-spacing: .04em; color: #2a2017; }
+:root[lang="ar"] .polaroid figcaption { font-family: var(--f-body); letter-spacing: 0; font-size: 14px; }
+.polaroid:hover { rotate: 0deg !important; box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset, 0 30px 50px -20px rgba(0, 0, 0, .9), 0 0 0 2px var(--accent); }
+:root[data-theme="light"] .polaroid { border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); background: #fffaf0; }
+:root[data-theme="light"] .polaroid:hover { box-shadow: 7px 7px 0 var(--ink); }
+.js .polaroid.reveal .shot { filter: sepia(1) brightness(1.5) contrast(.55) blur(3px); transition: filter 1.6s ease .2s; }
+.js .polaroid.reveal.in .shot { filter: none; }
+@media (prefers-reduced-motion: reduce) { .js .polaroid.reveal .shot { filter: none; transition: none; } }
+
+/* background circuit canvas (fx.js) */
+#fx-bg { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; opacity: .6; }
+:root[data-theme="light"] #fx-bg { opacity: .55; mix-blend-mode: multiply; }
+:root.fx-bg body { background: transparent; }
+:root[data-theme="light"] body { background-image: linear-gradient(color-mix(in srgb, var(--ink) 7%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--ink) 7%, transparent) 1px, transparent 1px); background-size: 24px 24px; }
+
+/* theme change: circular reveal (fx.js animates the clip-path) */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-new(root) { z-index: 2; }
+
+/* overclock easter egg */
+:root.fx-oc { --accent: #ff4fd8; --ai: #4fffd0; --trace-hi: #ff4fd8; --pulse: #4fffd0; --glow: color-mix(in srgb, #ff4fd8 30%, transparent); }
+:root.fx-oc .card, :root.fx-oc .tile, :root.fx-oc .proj { animation: hue 3s linear infinite; }
+@keyframes hue { to { filter: hue-rotate(360deg); } }
 
 /* reveal on scroll (only when JS + motion are available) */
-.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+.js .reveal { opacity: 0; transform: translateY(18px) scale(.985); transition: opacity .6s ease, transform .9s var(--spring); transition-delay: calc(min(var(--d, 0), 8) * 60ms); }
 .js .reveal.in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .js .reveal { opacity: 1; transform: none; transition: none; }
+  #fx-bg { display: none; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }
 
@@ -123,6 +199,7 @@ section.block { padding-block: clamp(64px, 10vw, 120px); border-top: 1px solid v
 
 @media print {
   :root, :root[data-theme="light"] { --bg: #fff; --panel: #fff; --panel-2: #fff; --fg: #000; --muted: #333; --line: #ccc; --accent: #000; }
-  .no-print, header.site, footer.site { display: none !important; }
+  .no-print, header.site, footer.site, #fx-bg { display: none !important; }
+  .card, .tile { box-shadow: none !important; background: #fff !important; border: 1px solid #ccc !important; }
   body { font-size: 11pt; }
 }
