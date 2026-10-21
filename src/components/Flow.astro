@@ -21,15 +21,19 @@ const { steps, compact = false } = Astro.props;
   .n { display: block; font-size: 11px; color: var(--accent); margin-bottom: 6px; }
   .s { font-size: 14px; font-weight: 600; line-height: 1.35; display: block; overflow-wrap: anywhere; }
   .link { position: absolute; top: 50%; inset-inline-start: 100%; width: 28px; height: 2px; background: var(--line); overflow: hidden; }
-  .link b { position: absolute; top: 0; width: 10px; height: 2px; background: var(--accent); box-shadow: 0 0 8px var(--accent);
-    animation: pkt 1.6s linear infinite; animation-delay: calc(var(--i) * .32s); inset-inline-start: -10px; }
-  @keyframes pkt { to { inset-inline-start: 100%; } }
+  /* the packet moves with transform only (compositor, no layout per frame): b spans the link, b::before is the dot */
+  .link b { position: absolute; inset: 0; animation: pkt 1.6s linear infinite; animation-delay: calc(var(--i) * .32s); will-change: transform; }
+  .link b::before { content: ""; position: absolute; top: 0; inset-inline-start: 0; width: 10px; height: 2px; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  @keyframes pkt { from { transform: translateX(-10px); } to { transform: translateX(100%); } }
+  @keyframes pktr { from { transform: translateX(10px); } to { transform: translateX(-100%); } }
+  :global(:root[dir="rtl"]) .link b { animation-name: pktr; }
   .compact li { padding: 10px 12px; }
   .compact .s { font-size: 13px; }
   @media (max-width: 760px) {
     .flow { grid-auto-flow: row; gap: 18px; }
     .link { top: 100%; inset-inline-start: 22px; width: 2px; height: 18px; }
-    .link b { width: 2px; height: 8px; inset-inline-start: 0; top: -8px; animation-name: pktv; }
-    @keyframes pktv { to { top: 100%; } }
+    .link b, :global(:root[dir="rtl"]) .link b { animation-name: pktv; }
+    .link b::before { width: 2px; height: 8px; }
+    @keyframes pktv { from { transform: translateY(-8px); } to { transform: translateY(100%); } }
   }
 </style>
