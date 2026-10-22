@@ -23,8 +23,10 @@
   --shadow-hi: 0 1px 0 rgba(255, 255, 255, .06) inset, 0 30px 60px -28px rgba(0, 0, 0, .95), 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
   --trace: #1d6f8f; --trace-hi: #f5b83f; --pulse: #4fd1ff; --fx-bg-a: .6;
   --spring: cubic-bezier(.34, 1.56, .64, 1);
-  --f-display: "Chakra Petch", system-ui, sans-serif;
-  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Arial/Helvetica first among the fallbacks: same widths as Chakra Petch 700 and Plex Sans (measured 100%), so text
+     doesn't re-wrap (layout shift) when the web fonts swap in */
+  --f-display: "Chakra Petch", Arial, "Helvetica Neue", Helvetica, system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", Arial, "Helvetica Neue", Helvetica, system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --r: 16px;
   --wrap: 1180px;

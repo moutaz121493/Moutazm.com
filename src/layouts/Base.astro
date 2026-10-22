@@ -8,6 +8,10 @@ import "@fontsource/ibm-plex-sans-arabic/600.css";
 import "@fontsource/jetbrains-mono/400.css";
 import "@fontsource/jetbrains-mono/500.css";
 import "../styles/global.css";
+// preloaded: the hero title + body fonts, so they are ready before first paint (no swap jump)
+import fDisplay from "@fontsource/chakra-petch/files/chakra-petch-latin-700-normal.woff2?url";
+import fBody from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url";
+import fArabic from "@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-600-normal.woff2?url";
 import { LANGS, DIR, LANG_NAME, ui, path, LINKS } from "../content/site.js";
 
 interface Props { lang: string; route?: string; title: string; description: string; noindex?: boolean; }
@@ -26,6 +30,7 @@ const home = href(path(lang, "/"));
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>{title}</title>
+  {(lang === "ar" ? [fArabic, fBody] : [fDisplay, fBody]).map((f) => <link rel="preload" href={f} as="font" type="font/woff2" crossorigin />)}
   <meta name="description" content={description} />
   {noindex && <meta name="robots" content="noindex" />}
   <link rel="canonical" href={canonical} />
