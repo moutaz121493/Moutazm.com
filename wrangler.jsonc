@@ -1,10 +1,18 @@
-// Static site on Cloudflare Workers (assets only, no Worker code, no cost).
+// Static site on Cloudflare Workers + one tiny API route (/api/ask, the "Ask about me" chat, worker/index.js).
+// The Gemini key is a Worker secret (GEMINI_API_KEY), never in this repo.
 {
   "name": "moutazm-com",
+  "main": "worker/index.js",
   "compatibility_date": "2026-10-01",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "html_handling": "auto-trailing-slash",
-    "not_found_handling": "404-page"
-  }
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  },
+  "vars": { "GEMINI_MODEL": "gemini-flash-lite-latest" },
+  "ratelimits": [
+    { "name": "ASK_LIMIT", "namespace_id": "1001", "simple": { "limit": 10, "period": 60 } }
+  ]
 }

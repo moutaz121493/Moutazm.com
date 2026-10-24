@@ -1,0 +1,243 @@
+---
+// "Ask about me": a helper bubble (bottom corner) for visitors. Topic chips answer instantly from the CV text built
+// here at build time (cv.js / projects.js). Typed questions go to POST /api/ask (worker/index.js: Gemini Flash-Lite,
+// knows only /profile.txt, rate-limited); if that fails, the keyword match (en / de / ar) picks a topic instead.
+import { ui, path, experience, education, languages, skills, now, hobbies, LINKS } from "../content/site.js";
+import { projects } from "../content/projects.js";
+import { esc } from "../lib/text.js";
+
+const { lang } = Astro.props;
+const t = ui[lang];
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const href = (p) => base + path(lang, p);
+const ok = (s) => s && !String(s).includes("TODO(user)");
+const li = (xs) => "<ul>" + xs.filter(ok).map((x) => `<li>${x}</li>`).join("") + "</ul>";
+const link = (url, label, ext = true) => `<a href="${esc(url)}"${ext ? ' target="_blank" rel="noopener"' : ""}>${esc(label)}</a>`;
+
+const S = {
+  en: { title: "Ask about me", sub: "AI answers from my public CV", hi: "Hi, I'm Moutaz 👋", intro: "Ask me anything about my work, skills and projects, or pick a topic.",
+        ph: "Ask about my work, skills, projects…", send: "Send", close: "Close", open: "Ask about me", clear: "Start over",
+        miss: "I don't have an answer for that here. Try one of these:", note: "AI (Google Gemini) · answers only from my public CV · don't type personal data",
+        more: "More on the CV page", cvl: "Full CV", mail: "Email me" },
+  de: { title: "Frag mich", sub: "KI-Antworten aus meinem öffentlichen Lebenslauf", hi: "Hallo, ich bin Moutaz 👋", intro: "Frag mich alles über meine Arbeit, Skills und Projekte, oder wähle ein Thema.",
+        ph: "Frag nach Arbeit, Skills, Projekten…", send: "Senden", close: "Schließen", open: "Frag mich", clear: "Neu starten",
+        miss: "Darauf habe ich hier keine Antwort. Versuch eins davon:", note: "KI (Google Gemini) · antwortet nur aus meinem öffentlichen Lebenslauf · bitte keine persönlichen Daten eingeben",
+        more: "Mehr im Lebenslauf", cvl: "Ganzer Lebenslauf", mail: "E-Mail schreiben" },
+  ar: { title: "اسألني", sub: "إجابات بالذكاء الاصطناعي من سيرتي الذاتية العامة", hi: "أهلاً، أنا معتز 👋", intro: "اسألني أي شيء عن عملي ومهاراتي ومشاريعي، أو اختر موضوعاً.",
+        ph: "اسأل عن عملي، مهاراتي، مشاريعي…", send: "إرسال", close: "إغلاق", open: "اسألني", clear: "من جديد",
+        miss: "ما عندي إجابة على هذا هنا. جرّب واحداً من هذه:", note: "ذكاء اصطناعي (Google Gemini) · يجيب فقط من سيرتي العامة · لا تكتب بيانات شخصية",
+        more: "المزيد في السيرة الذاتية", cvl: "السيرة الكاملة", mail: "راسلني" },
+}[lang];
+
+const L = (o) => (o && typeof o === "object" ? o[lang] : o);
+const exp = experience.map((e) => `<p><b>${esc(L(e.role))}</b> · ${link(e.url || "#", e.org)} · ${esc(e.from)}–${esc(e.to || { en: "today", de: "heute", ar: "اليوم" }[lang])}${e.place ? " · " + esc(L(e.place)) : ""}</p>${li(e.points[lang].map(esc))}`).join("");
+const edu = li(education.map((e) => `<b>${esc(e.degree[lang])}</b> · ${esc(e.school)}${e.when ? " · " + esc(L(e.when)) : ""}${e.note ? `<br><span class="mut">${esc(e.note[lang])}</span>` : ""}`));
+const prj = li(projects.map((p) => `${link(href(`/projects/${p.slug}`), p[lang].title, false)} — ${esc(p[lang].tagline)}`));
+
+/* topic: chip label (from the site's own nav words where possible), keywords, answer html */
+const TOPICS = [
+  { k: "about", label: { en: "What do you do?", de: "Was machst du?", ar: "ماذا تعمل؟" }[lang],
+    kw: "who,what do you do,about,yourself,introduce,bio,summary,profile,engineer,wer,über dich,was machst,beruf,vorstellen,من أنت,عنك,ماذا تعمل,عرفني,نبذة",
+    a: `<p><b>${esc(t.hero.title)}</b> — ${esc(t.hero.line)}</p><p>${esc(t.about.lead)}</p>${t.about.body.slice(0, 2).map((p) => `<p>${esc(p)}</p>`).join("")}` },
+  { k: "experience", label: t.nav.work,
+    kw: "experience,work,job,company,career,employer,c&s,test engineer,erfahrung,arbeit,firma,stelle,job,خبرة,عمل,شركة,وظيفة",
+    a: exp },
+  { k: "skills", label: t.nav.skills,
+    kw: "skill,stack,tech,technolog,know,tools,python,can,linux,docker,embedded,network,fähigkeit,kenntnis,kann,technik,مهار,تقني,أدوات",
+    a: skills[lang].map((g) => `<p><b>${esc(g.h)}</b></p>${li(g.items.map(esc))}`).join("") },
+  { k: "projects", label: t.nav.projects,
+    kw: "project,built,build,homelab,raspberry,github,code,rag,portfolio,side,projekt,gebaut,مشروع,مشاريع,بنيت",
+    a: prj },
+  { k: "education", label: { en: "Education", de: "Ausbildung", ar: "الدراسة" }[lang],
+    kw: "study,studies,education,degree,university,master,bachelor,thesis,school,studium,uni,abschluss,masterarbeit,ausbildung,دراسة,جامعة,ماجستير,بكالوريوس,شهادة,رسالة",
+    a: edu },
+  { k: "languages", label: { en: "Languages", de: "Sprachen", ar: "اللغات" }[lang],
+    kw: "language,speak,german,english,arabic,deutsch,englisch,arabisch,sprache,sprichst,لغة,لغات,تتكلم,ألماني,إنجليزي",
+    a: li(languages.map((x) => `<b>${esc(L(x.name))}</b> — ${esc(L(x.level))}`)) },
+  { k: "now", label: t.nav.now,
+    kw: "now,current,currently,learning,working on,these days,aktuell,gerade,momentan,lernst,الآن,حاليا,هلق,تتعلم",
+    a: li(now[lang].map((n) => `<b>${esc(n.k)}</b> — ${esc(n.v)}`)) },
+  { k: "hobbies", label: { en: "Hobbies", de: "Hobbys", ar: "الهوايات" }[lang],
+    kw: "hobby,hobbies,free time,fun,sport,gym,travel,game,freizeit,hobbys,reisen,هواية,هوايات,فراغ,رياضة,سفر",
+    a: li(hobbies[lang].map((h) => `<b>${esc(h.h)}</b> — ${esc(h.v)}`)) },
+  { k: "contact", label: t.nav.contact,
+    kw: "contact,email,mail,hire,reach,linkedin,github,cv,resume,interview,available,kontakt,lebenslauf,erreichen,bewerbung,تواصل,بريد,ايميل,سيرة,توظيف",
+    a: `<p>${esc(t.contact.body)}</p><div class="gl">${link(`mailto:${LINKS.email}`, "✉ " + LINKS.email, false)}${link(LINKS.linkedin, "LinkedIn")}${link(LINKS.github, "GitHub")}${link(href("/cv"), "📄 " + S.cvl, false)}</div>` },
+].filter((x) => x.a && x.a !== "<ul></ul>");
+const data = JSON.stringify({ lang, s: S, topics: TOPICS.map(({ k, label, kw, a }) => ({ k, label, kw: kw.split(","), a })) });
+---
+<button class="gd-btn no-print" id="gd-btn" type="button" aria-expanded="false" aria-controls="gd" title={S.open} aria-label={S.open}>
+  <svg class="gd-logo" viewBox="0 0 48 48" aria-hidden="true"><g class="pins"><path d="M17 5v4M24 4v5M31 5v4M17 39v4M24 39v5M31 39v4M5 17h4M4 24h5M5 31h4M39 17h4M39 24h5M39 31h4"/></g><rect x="9" y="9" width="30" height="30" rx="9"/><path class="spark" d="M24 14.5c.9 4.6 3.1 6.9 7.7 7.8-4.6.9-6.8 3.1-7.7 7.7-.9-4.6-3.1-6.8-7.7-7.7 4.6-.9 6.8-3.2 7.7-7.8z"/><circle class="dot" cx="31.5" cy="30.5" r="2"/></svg>
+  <span class="lbl">{S.open}</span>
+</button>
+<section class="gd no-print" id="gd" hidden role="dialog" aria-label={S.title}>
+  <div class="gd-h">
+    <svg class="gd-logo" viewBox="0 0 48 48" aria-hidden="true"><g class="pins"><path d="M17 5v4M24 4v5M31 5v4M17 39v4M24 39v5M31 39v4M5 17h4M4 24h5M5 31h4M39 17h4M39 24h5M39 31h4"/></g><rect x="9" y="9" width="30" height="30" rx="9"/><path class="spark" d="M24 14.5c.9 4.6 3.1 6.9 7.7 7.8-4.6.9-6.8 3.1-7.7 7.7-.9-4.6-3.1-6.8-7.7-7.7 4.6-.9 6.8-3.2 7.7-7.8z"/><circle class="dot" cx="31.5" cy="30.5" r="2"/></svg>
+    <div class="t"><b>{S.title}</b><small>{S.sub}</small></div>
+    <button type="button" class="gd-ib" id="gd-new" title={S.clear} aria-label={S.clear}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+    <button type="button" class="gd-ib" id="gd-x" title={S.close} aria-label={S.close}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="gd-log" id="gd-log" aria-live="polite"></div>
+  <div class="gd-chips" id="gd-chips"></div>
+  <form class="gd-f" id="gd-f" autocomplete="off">
+    <input id="gd-q" maxlength="200" placeholder={S.ph} aria-label={S.ph} />
+    <button type="submit" title={S.send} aria-label={S.send}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+  </form>
+  <p class="gd-note">{S.note}</p>
+</section>
+<script type="application/json" id="gd-data" set:html={data.replace(/</g, "\\u003c")}></script>
+
+<script>
+  const D = JSON.parse(document.getElementById("gd-data").textContent);
+  const $ = (id) => document.getElementById(id);
+  const btn = $("gd-btn"), box = $("gd"), log = $("gd-log"), chips = $("gd-chips"), q = $("gd-q");
+  const escT = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  let started = false;
+
+  function add(who, html) {
+    const r = document.createElement("div");
+    r.className = "gd-row " + who;
+    r.innerHTML = `<div class="m">${html}</div>`;
+    log.append(r);
+    log.scrollTop = log.scrollHeight;
+  }
+  function drawChips(skip) {
+    chips.innerHTML = D.topics.filter((x) => x.k !== skip).map((x) => `<button type="button" data-k="${x.k}">${escT(x.label)}</button>`).join("");
+  }
+  function hello() {
+    log.innerHTML = "";
+    add("a", `<p><b>${escT(D.s.hi)}</b></p><p>${escT(D.s.intro)}</p>`);
+    drawChips();
+  }
+  function answer(k, asked) {
+    const tp = D.topics.find((x) => x.k === k);
+    add("u", escT(asked || tp.label));
+    if (tp) { add("a", tp.a); drawChips(k); } else { add("a", `<p>${escT(D.s.miss)}</p>`); drawChips(); }
+  }
+  function match(text) {
+    const s = " " + text.toLowerCase() + " ";
+    let best = null, top = 0;
+    for (const tp of D.topics) {
+      const n = tp.kw.reduce((a, w) => a + (s.includes(w.trim().toLowerCase()) ? w.length : 0), 0);
+      if (n > top) { top = n; best = tp.k; }
+    }
+    return best;
+  }
+  function open(on) {
+    box.hidden = !on;
+    btn.setAttribute("aria-expanded", String(on));
+    if (on) {
+      if (!started) { hello(); started = true; }
+      if (matchMedia("(max-width: 620px)").matches) document.documentElement.style.overflow = "hidden";
+      setTimeout(() => (matchMedia("(pointer: fine)").matches ? q : chips.querySelector("button") || q).focus(), 40);
+    } else { document.documentElement.style.overflow = ""; btn.focus(); }
+  }
+  btn.addEventListener("click", () => open(true));
+  $("gd-x").addEventListener("click", () => open(false));
+  $("gd-new").addEventListener("click", hello);
+  chips.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) answer(b.dataset.k); });
+  /* tiny markdown for AI answers: **bold**, [t](url), "- " lists, paragraphs */
+  const inl = (s) => escT(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  const md = (t) => { const o = []; let ul = []; for (const l of String(t).split("\n")) { if (/^\s*[-*] /.test(l)) { ul.push(`<li>${inl(l.replace(/^\s*[-*] /, ""))}</li>`); continue; } if (ul.length) { o.push(`<ul>${ul.join("")}</ul>`); ul = []; } if (l.trim()) o.push(`<p>${inl(l)}</p>`); } if (ul.length) o.push(`<ul>${ul.join("")}</ul>`); return o.join(""); };
+  const hist = [];
+  let busy = false;
+  $("gd-f").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const text = q.value.trim();
+    if (!text || busy) return;
+    q.value = ""; busy = true;
+    add("u", escT(text));
+    add("a", '<span class="gd-typing"><i></i><i></i><i></i></span>');
+    const wait = log.lastElementChild.querySelector(".m");
+    try {
+      const res = await fetch("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: text, lang: D.lang, history: hist.slice(-3) }) });
+      const r = await res.json().catch(() => ({}));
+      if (!res.ok || !r.answer) throw new Error(r.error || "x");
+      wait.innerHTML = md(r.answer);
+      hist.push({ q: text, a: r.answer });
+      drawChips();
+    } catch (_) {   // AI unavailable / rate-limited: fall back to the topic answers
+      const k = match(text), tp = D.topics.find((x) => x.k === k);
+      wait.innerHTML = tp ? tp.a : `<p>${escT(D.s.miss)}</p>`;
+      drawChips(k || undefined);
+    }
+    busy = false; log.scrollTop = log.scrollHeight; q.focus();
+  });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !box.hidden) open(false); });
+</script>
+
+<style is:global>
+  .gd-logo { display: block; overflow: visible; }
+  .gd-logo .pins path { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; }
+  .gd-logo rect { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+  .gd-logo .spark { fill: var(--accent); transform-origin: 24px 22.3px; animation: gd-pulse 2.8s ease-in-out infinite; }
+  .gd-logo .dot { fill: var(--ai); animation: gd-blink 2.8s ease-in-out infinite; }
+  @keyframes gd-pulse { 50% { transform: scale(1.12); } }
+  @keyframes gd-blink { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+
+  .gd-btn { position: fixed; inset-inline-end: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 40;
+    display: flex; align-items: center; gap: 10px; height: 54px; padding-inline: 7px 18px; border-radius: 999px; cursor: pointer;
+    font: 600 15px var(--f-body); color: var(--fg); background: var(--panel); border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+    box-shadow: 0 14px 34px -12px rgba(0, 0, 0, .7), 0 0 26px -6px var(--glow); transition: transform .35s var(--spring), opacity .2s; }
+  .gd-btn:hover { transform: translateY(-3px); }
+  .gd-btn .gd-logo { width: 40px; height: 40px; }
+  .gd-btn[aria-expanded="true"] { opacity: 0; pointer-events: none; transform: scale(.85); }
+
+  .gd { position: fixed; inset-inline-end: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 41;
+    width: 400px; height: min(600px, calc(100vh - 36px)); display: flex; flex-direction: column; overflow: hidden;
+    border-radius: 20px; background: var(--bg); color: var(--fg); border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+    box-shadow: 0 30px 80px -24px rgba(0, 0, 0, .8), 0 0 60px -34px var(--accent); animation: gd-in .3s cubic-bezier(.2, .8, .2, 1); }
+  .gd[hidden] { display: none; }
+  @keyframes gd-in { from { opacity: 0; transform: translateY(14px) scale(.97); } }
+  .gd-h { display: flex; align-items: center; gap: 11px; padding: 14px 12px 12px 16px; border-bottom: 1px solid var(--line);
+    background: radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%); }
+  .gd-h .gd-logo { width: 38px; height: 38px; flex: none; }
+  .gd-h .t { flex: 1; min-width: 0; }
+  .gd-h b { display: block; font: 700 16.5px/1.2 var(--f-display); }
+  .gd-h small { display: block; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .gd-ib { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 9px; border: 1px solid transparent; background: none; color: var(--muted); cursor: pointer; }
+  .gd-ib:hover { color: var(--accent); border-color: var(--line); }
+  .gd-ib svg { width: 17px; height: 17px; }
+  .gd-log { flex: 1; overflow: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; overscroll-behavior: contain; }
+  .gd-row { display: flex; animation: gd-msg .28s ease-out; }
+  @keyframes gd-msg { from { opacity: 0; transform: translateY(6px); } }
+  .gd-row.u { justify-content: flex-end; }
+  .gd-row .m { max-width: 88%; padding: 10px 14px; border-radius: 16px; font-size: 14.5px; line-height: 1.55; overflow-wrap: anywhere; }
+  .gd-row.u .m { background: var(--accent); color: var(--accent-ink); font-weight: 600; border-end-end-radius: 5px; }
+  .gd-row.a .m { background: var(--panel); border: 1px solid var(--line); border-start-start-radius: 5px; }
+  .gd-row .m p { margin: 0 0 7px; } .gd-row .m p:last-child { margin: 0; }
+  .gd-row .m ul { margin: 2px 0 6px; padding-inline-start: 18px; } .gd-row .m li { margin: 3px 0; }
+  .gd-row .m a { color: var(--accent); }
+  .gd-row .m .mut { color: var(--muted); font-size: 13px; }
+  .gd-row .m .gl { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .gd-row .m .gl a { text-decoration: none; font-size: 13px; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; color: var(--fg); }
+  .gd-row .m .gl a:hover { border-color: var(--accent); color: var(--accent); }
+  .gd-typing { display: inline-flex; gap: 4px; padding: 4px 0; }
+  .gd-typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: gd-bob 1.1s ease-in-out infinite; }
+  .gd-typing i:nth-child(2) { animation-delay: .15s; } .gd-typing i:nth-child(3) { animation-delay: .3s; }
+  @keyframes gd-bob { 0%, 80%, 100% { transform: translateY(0); opacity: .4; } 40% { transform: translateY(-5px); opacity: 1; } }
+  .gd-chips { display: flex; gap: 6px; padding: 0 12px 10px; overflow-x: auto; scrollbar-width: none; }
+  .gd-chips::-webkit-scrollbar { display: none; }
+  .gd-chips button { flex: none; font: 500 13px var(--f-body); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; white-space: nowrap; }
+  .gd-chips button:hover { border-color: var(--accent); color: var(--accent); }
+  .gd-f { display: flex; gap: 8px; margin: 0 12px; padding: 5px 5px 5px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+  .gd-f:focus-within { border-color: color-mix(in srgb, var(--accent) 70%, transparent); box-shadow: 0 0 0 4px var(--glow); }
+  .gd-f input { flex: 1; min-width: 0; border: 0; outline: none; background: none; color: inherit; font: 15px var(--f-body); }
+  .gd-f button { width: 38px; height: 38px; flex: none; border: 0; border-radius: 10px; background: var(--accent); color: var(--accent-ink); cursor: pointer; display: grid; place-items: center; }
+  .gd-f button svg { width: 18px; height: 18px; }
+  .gd-note { margin: 7px 12px calc(10px + env(safe-area-inset-bottom, 0px)); text-align: center; font-size: 11.5px; color: var(--muted); }
+
+  @media (max-width: 620px) {
+    .gd-btn { width: 56px; height: 56px; padding: 0; justify-content: center; inset-inline-end: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+    .gd-btn .lbl { display: none; }
+    .gd { inset: 0; width: auto; height: 100dvh; border-radius: 0; border: 0; }
+    .gd-h { padding-top: calc(12px + env(safe-area-inset-top, 0px)); }
+    .gd-f input { font-size: 16px; }
+  }
+  @media (min-width: 621px) and (max-height: 560px) { .gd { height: calc(100vh - 24px); bottom: 12px; } }
+  @media (prefers-reduced-motion: reduce) { .gd-logo *, .gd, .gd-row { animation: none !important; } }
+  :root[data-theme="light"] .gd-btn, :root[data-theme="light"] .gd { border: 2px solid var(--ink); box-shadow: 5px 5px 0 var(--ink); }
+  :root[data-theme="light"] .gd-row.a .m, :root[data-theme="light"] .gd-f, :root[data-theme="light"] .gd-chips button { border: 1.5px solid var(--ink); }
+  @media print { .gd-btn, .gd { display: none !important; } }
+</style>
