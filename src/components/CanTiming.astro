@@ -1,0 +1,265 @@
+---
+// CAN FD bit-timing calculator. Runs fully in the browser (no server). Limits = Bosch M_CAN, the same values the
+// Linux m_can driver uses. Dynamic rows are built by the script, so the styles are global with a ct- prefix.
+const { lang = "en" } = Astro.props;
+const T = {
+  en: {
+    h: "Try it: bit-timing calculator",
+    sub: "Enter the CAN clock and bit rates. Everything is calculated in your browser.",
+    clk: "CAN clock (MHz)", nb: "Nominal bit rate (kbit/s)", nsp: "Nominal sample point (%)",
+    db: "Data bit rate (kbit/s)", dsp: "Data sample point (%)",
+    same: "Same prescaler in both phases (CiA 601-3 recommendation)",
+    nom: "Nominal phase (arbitration)", data: "Data phase", best: "Best result",
+    brp: "Prescaler", tq: "Time quanta per bit", tqlen: "Time quantum", bit: "Bit time", tseg1: "TSEG1 (Prop + Phase 1)",
+    tseg2: "TSEG2 (Phase 2)", sjw: "SJW", sp: "Sample point", target: "target",
+    tdc: "Transmitter delay compensation", tdco: "SSP offset (TDCO)", cycles: "clock cycles",
+    tdcOk: "Possible: data prescaler is 1 or 2.", tdcBad: "Not possible: ISO 11898-1 allows TDC only with data prescaler 1 or 2. Use a higher clock or another bit rate.",
+    tdcNo: "Usually not needed at 1 Mbit/s or less.", tdcMax: "TDCO is larger than the M_CAN field allows (127).",
+    regs: "Bosch M_CAN registers", linux: "Linux (iproute2)", alts: "Other valid settings", pick: "Use",
+    none: "No exact setting: the clock cannot be divided into these bit rates with whole time quanta. Try 20, 40 or 80 MHz.",
+    copy: "Copy", copied: "Copied", share: "Copy link to these values",
+    limits: "Limits (M_CAN): nominal prescaler 1–512, TSEG1 2–256, TSEG2 2–128; data prescaler 1–32, TSEG1 1–32, TSEG2 1–16. SJW = TSEG2. Sync segment = 1 tq.",
+    sync: "Sync",
+  },
+  de: {
+    h: "Ausprobieren: Bit-Timing-Rechner",
+    sub: "CAN-Takt und Bitraten eingeben. Alles wird in deinem Browser berechnet.",
+    clk: "CAN-Takt (MHz)", nb: "Nominale Bitrate (kbit/s)", nsp: "Nominaler Sample Point (%)",
+    db: "Daten-Bitrate (kbit/s)", dsp: "Daten-Sample-Point (%)",
+    same: "Gleicher Prescaler in beiden Phasen (Empfehlung CiA 601-3)",
+    nom: "Nominale Phase (Arbitrierung)", data: "Datenphase", best: "Bestes Ergebnis",
+    brp: "Prescaler", tq: "Zeitquanten pro Bit", tqlen: "Zeitquantum", bit: "Bitzeit", tseg1: "TSEG1 (Prop + Phase 1)",
+    tseg2: "TSEG2 (Phase 2)", sjw: "SJW", sp: "Sample Point", target: "Ziel",
+    tdc: "Transmitter Delay Compensation", tdco: "SSP-Offset (TDCO)", cycles: "Taktzyklen",
+    tdcOk: "Möglich: Daten-Prescaler ist 1 oder 2.", tdcBad: "Nicht möglich: ISO 11898-1 erlaubt TDC nur mit Daten-Prescaler 1 oder 2. Höheren Takt oder andere Bitrate wählen.",
+    tdcNo: "Bis 1 Mbit/s meist nicht nötig.", tdcMax: "TDCO ist größer als das M_CAN-Feld erlaubt (127).",
+    regs: "Bosch-M_CAN-Register", linux: "Linux (iproute2)", alts: "Weitere gültige Einstellungen", pick: "Nehmen",
+    none: "Keine exakte Einstellung: Der Takt lässt sich nicht in ganze Zeitquanten für diese Bitraten teilen. 20, 40 oder 80 MHz probieren.",
+    copy: "Kopieren", copied: "Kopiert", share: "Link zu diesen Werten kopieren",
+    limits: "Grenzen (M_CAN): nominaler Prescaler 1–512, TSEG1 2–256, TSEG2 2–128; Daten-Prescaler 1–32, TSEG1 1–32, TSEG2 1–16. SJW = TSEG2. Sync-Segment = 1 tq.",
+    sync: "Sync",
+  },
+  ar: {
+    h: "جرّبها: حاسبة توقيت البِتّات",
+    sub: "أدخل تردد ساعة CAN وسرعات النقل. كل الحسابات تتم داخل متصفحك.",
+    clk: "ساعة CAN (MHz)", nb: "السرعة الاسمية (kbit/s)", nsp: "نقطة العيّنة الاسمية (%)",
+    db: "سرعة البيانات (kbit/s)", dsp: "نقطة عيّنة البيانات (%)",
+    same: "نفس المقسّم في المرحلتين (توصية CiA 601-3)",
+    nom: "المرحلة الاسمية (التحكيم)", data: "مرحلة البيانات", best: "أفضل نتيجة",
+    brp: "المقسّم", tq: "عدد الكوانتا لكل بِت", tqlen: "الكوانتم الزمني", bit: "زمن البِت", tseg1: "TSEG1 (Prop + Phase 1)",
+    tseg2: "TSEG2 (Phase 2)", sjw: "SJW", sp: "نقطة العيّنة", target: "الهدف",
+    tdc: "تعويض تأخير المرسِل (TDC)", tdco: "إزاحة SSP (TDCO)", cycles: "دورة ساعة",
+    tdcOk: "ممكن: مقسّم البيانات 1 أو 2.", tdcBad: "غير ممكن: معيار ISO 11898-1 يسمح بـ TDC فقط مع مقسّم بيانات 1 أو 2. استخدم ساعة أعلى أو سرعة أخرى.",
+    tdcNo: "غالباً غير لازم حتى 1 Mbit/s.", tdcMax: "قيمة TDCO أكبر مما يسمح به حقل M_CAN (127).",
+    regs: "سجلات Bosch M_CAN", linux: "لينكس (iproute2)", alts: "إعدادات صالحة أخرى", pick: "استخدم",
+    none: "لا يوجد إعداد دقيق: لا يمكن تقسيم الساعة إلى كوانتا كاملة لهذه السرعات. جرّب 20 أو 40 أو 80 MHz.",
+    copy: "نسخ", copied: "تم النسخ", share: "انسخ رابطاً بهذه القيم",
+    limits: "الحدود (M_CAN): المقسّم الاسمي 1–512، TSEG1 2–256، TSEG2 2–128؛ مقسّم البيانات 1–32، TSEG1 1–32، TSEG2 1–16. SJW = TSEG2. مقطع التزامن = 1 tq.",
+    sync: "Sync",
+  },
+}[lang];
+---
+<section class="part ct" id="calculator" data-t={JSON.stringify(T)}>
+  <h2 class="label">{T.h}</h2>
+  <p class="ct-sub">{T.sub}</p>
+  <form class="ct-form" onsubmit="return false">
+    <label><span>{T.clk}</span><input class="mono" name="clk" type="number" inputmode="decimal" min="1" max="500" step="any" value="40" list="ct-clk" /></label>
+    <label><span>{T.nb}</span><input class="mono" name="nb" type="number" inputmode="decimal" min="10" max="1000" step="any" value="500" list="ct-nb" /></label>
+    <label><span>{T.nsp}</span><input class="mono" name="nsp" type="number" inputmode="decimal" min="50" max="95" step="0.1" value="80" /></label>
+    <label><span>{T.db}</span><input class="mono" name="db" type="number" inputmode="decimal" min="125" max="15000" step="any" value="2000" list="ct-db" /></label>
+    <label><span>{T.dsp}</span><input class="mono" name="dsp" type="number" inputmode="decimal" min="50" max="95" step="0.1" value="75" /></label>
+    <label class="ct-check"><input name="same" type="checkbox" checked /><span>{T.same}</span></label>
+    <datalist id="ct-clk"><option value="20"></option><option value="40"></option><option value="60"></option><option value="80"></option></datalist>
+    <datalist id="ct-nb"><option value="125"></option><option value="250"></option><option value="500"></option><option value="1000"></option></datalist>
+    <datalist id="ct-db"><option value="1000"></option><option value="2000"></option><option value="4000"></option><option value="5000"></option><option value="8000"></option></datalist>
+  </form>
+  <div class="ct-out" aria-live="polite"></div>
+  <p class="ct-limits">{T.limits}</p>
+</section>
+
+<script>
+  type Lim = { b0: number; b1: number; t1a: number; t1b: number; t2a: number; t2b: number; sjw: number };
+  type Ph = { brp: number; n: number; t1: number; t2: number; sjw: number; sp: number; err: number };
+  // Bosch M_CAN = Linux m_can_bittiming_const (nominal) / m_can_data_bittiming_const (data)
+  const NOM: Lim = { b0: 1, b1: 512, t1a: 2, t1b: 256, t2a: 2, t2b: 128, sjw: 128 };
+  const DAT: Lim = { b0: 1, b1: 32, t1a: 1, t1b: 32, t2a: 1, t2b: 16, sjw: 16 };
+
+  // best TSEG1/TSEG2 split for one prescaler, or null if the bit time is not a whole number of time quanta
+  function phase(clk: number, rate: number, target: number, L: Lim, brp: number): Ph | null {
+    const q = clk / (brp * rate), n = Math.round(q);
+    if (Math.abs(q - n) > 1e-9 * q || n < 1 + L.t1a + L.t2a || n > 1 + L.t1b + L.t2b) return null;
+    let best: Ph | null = null;
+    for (let t2 = L.t2a; t2 <= L.t2b; t2++) {
+      const t1 = n - 1 - t2;
+      if (t1 < L.t1a || t1 > L.t1b) continue;
+      const sp = (1 + t1) / n, err = Math.abs(sp - target);
+      if (!best || err < best.err - 1e-12) best = { brp, n, t1, t2, sjw: Math.min(t2, L.sjw), sp, err };
+    }
+    return best;
+  }
+  const list = (clk: number, rate: number, target: number, L: Lim) => {
+    const out: Ph[] = [];
+    for (let b = L.b0; b <= L.b1; b++) { const p = phase(clk, rate, target, L, b); if (p) out.push(p); }
+    return out;
+  };
+  // rank: sample-point error in 0.1 % steps, then the lowest data prescaler, then the lowest nominal prescaler
+  const key = (n: Ph, d: Ph) => [Math.round((n.err + d.err) * 1000), d.brp, n.brp];
+  const cmp = (a: number[], b: number[]) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
+
+  function solve(clk: number, nb: number, nsp: number, db: number, dsp: number, same: boolean) {
+    const pairs: [Ph, Ph][] = [];
+    if (same) {
+      for (let b = 1; b <= DAT.b1; b++) {
+        const n = phase(clk, nb, nsp, NOM, b), d = phase(clk, db, dsp, DAT, b);
+        if (n && d) pairs.push([n, d]);
+      }
+    } else {
+      const N = list(clk, nb, nsp, NOM), D = list(clk, db, dsp, DAT);
+      for (const n of N) for (const d of D) pairs.push([n, d]);
+    }
+    return pairs.sort((a, b) => cmp(key(...a), key(...b)));
+  }
+
+  const hex = (v: number) => "0x" + (v >>> 0).toString(16).toUpperCase().padStart(8, "0");
+  const fmt = (v: number, d = 1) => (Math.round(v * 10 ** d) / 10 ** d).toString();
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+
+  for (const root of document.querySelectorAll<HTMLElement>(".ct")) {
+    const T = JSON.parse(root.dataset.t || "{}");
+    const form = root.querySelector("form")!, out = root.querySelector<HTMLElement>(".ct-out")!;
+    const f = (n: string) => form.elements.namedItem(n) as HTMLInputElement;
+    let chosen = 0;
+
+    // values can come from the link (#clk=40&nb=500&...)
+    const hp = new URLSearchParams(location.hash.slice(1));
+    for (const k of ["clk", "nb", "nsp", "db", "dsp"]) if (hp.has(k) && isFinite(+hp.get(k)!)) f(k).value = hp.get(k)!;
+    if (hp.get("same") === "0") f("same").checked = false;
+
+    const bar = (p: Ph) => {
+      const w = (x: number) => `${(100 * x) / p.n}%`;
+      return `<div class="ct-bar" dir="ltr" style="--n:${p.n}">
+        <span class="ct-s0" style="width:${w(1)}" title="${T.sync}: 1 tq"></span><span class="ct-s1" style="width:${w(p.t1)}" title="TSEG1: ${p.t1} tq">${p.t1}</span><span class="ct-s2" style="width:${w(p.t2)}" title="TSEG2: ${p.t2} tq">${p.t2}</span>
+        <i class="ct-spm" style="left:${100 * p.sp}%"></i></div>`;
+    };
+    const card = (title: string, p: Ph, clkHz: number, rate: number, target: number, extra = "") => {
+      const tq = (p.brp / clkHz) * 1e9, bt = tq * p.n;
+      const rows: [string, string][] = [
+        [T.brp, `${p.brp}`],
+        [T.tqlen, `${fmt(tq, 2)} ns`],
+        [T.tq, `${p.n} <small>= 1 + ${p.t1} + ${p.t2}</small>`],
+        [T.bit, `${fmt(bt, 1)} ns`],
+        [T.tseg1, `${p.t1}`],
+        [T.tseg2, `${p.t2}`],
+        [T.sjw, `${p.sjw}`],
+        [T.sp, `${fmt(p.sp * 100, 2)} % <small>${T.target} ${fmt(target * 100, 1)} % · ${fmt(tq * (1 + p.t1), 1)} ns</small>`],
+      ];
+      return `<div class="ct-card"><h3>${esc(title)} <small class="mono">${fmt(rate / 1000, 0)} kbit/s</small></h3>${bar(p)}
+        <dl class="mono">${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${v}</dd>`).join("")}</dl>${extra}</div>`;
+    };
+
+    function render(keepChoice = false) {
+      const clk = +f("clk").value * 1e6, nb = +f("nb").value * 1e3, db = +f("db").value * 1e3;
+      const nsp = +f("nsp").value / 100, dsp = +f("dsp").value / 100, same = f("same").checked;
+      if (!(clk > 0 && nb > 0 && db > 0 && nsp > 0 && nsp < 1 && dsp > 0 && dsp < 1)) { out.innerHTML = ""; return; }
+      const all = solve(clk, nb, nsp, db, dsp, same);
+      if (!keepChoice) chosen = 0;
+      if (!all.length) { out.innerHTML = `<p class="ct-warn">${esc(T.none)}</p>`; return; }
+      const [n, d] = all[Math.min(chosen, all.length - 1)];
+
+      // TDC: secondary sample point offset = data prescaler x (sync + TSEG1), in CAN clock cycles
+      const tdco = d.brp * (1 + d.t1), need = db > 1e6, can = d.brp <= 2;
+      const tdcMsg = !need ? T.tdcNo : can ? T.tdcOk : T.tdcBad;
+      const tdc = `<div class="ct-tdc ${need && !can ? "bad" : ""}"><b>${esc(T.tdc)}</b>
+        <span class="mono">${esc(T.tdco)} = ${d.brp} × (1 + ${d.t1}) = ${tdco} ${esc(T.cycles)}</span>
+        <span>${esc(tdcMsg)}${tdco > 127 ? " " + esc(T.tdcMax) : ""}</span></div>`;
+
+      // M_CAN NBTP / DBTP / TDCR (fields hold value - 1, TDCO as is)
+      const nbtp = ((n.sjw - 1) << 25) | ((n.brp - 1) << 16) | ((n.t1 - 1) << 8) | (n.t2 - 1);
+      const useTdc = need && can;
+      const dbtp = ((useTdc ? 1 : 0) << 23) | ((d.brp - 1) << 16) | ((d.t1 - 1) << 8) | ((d.t2 - 1) << 4) | (d.sjw - 1);
+      const tdcr = (Math.min(tdco, 127) & 0x7f) << 8;
+      const ip = `ip link set can0 up type can bitrate ${nb} sample-point ${(n.sp).toFixed(3)} dbitrate ${db} dsample-point ${(d.sp).toFixed(3)} fd on`;
+
+      const alts = all.slice(0, 8).map(([an, ad], i) =>
+        `<tr class="${i === Math.min(chosen, all.length - 1) ? "on" : ""}"><td>${an.brp} / ${ad.brp}</td><td>${an.n} / ${ad.n}</td><td>${fmt(an.sp * 100, 1)} / ${fmt(ad.sp * 100, 1)} %</td>
+         <td><button type="button" class="ct-pick" data-i="${i}">${esc(T.pick)}</button></td></tr>`).join("");
+
+      out.innerHTML = `
+        <div class="ct-grid">${card(T.nom, n, clk, nb, nsp)}${card(T.data, d, clk, db, dsp, tdc)}</div>
+        <div class="ct-grid">
+          <div class="ct-card"><h3>${esc(T.regs)}</h3><dl class="mono">
+            <dt>NBTP</dt><dd>${hex(nbtp)}</dd><dt>DBTP</dt><dd>${hex(dbtp)}</dd><dt>TDCR</dt><dd>${hex(tdcr)}</dd></dl>
+            <h3 class="ct-h2">${esc(T.linux)}</h3><pre class="ct-pre mono">${esc(ip)}</pre>
+            <div class="ct-btns"><button type="button" class="ct-copy" data-v="${esc(ip)}">${esc(T.copy)}</button>
+            <button type="button" class="ct-copy" data-share="1">${esc(T.share)}</button></div></div>
+          <div class="ct-card"><h3>${esc(T.alts)}</h3><div class="ct-scroll"><table class="mono"><thead><tr><th>${esc(T.brp)}</th><th>tq</th><th>${esc(T.sp)}</th><th></th></tr></thead><tbody>${alts}</tbody></table></div></div>
+        </div>`;
+    }
+
+    form.addEventListener("input", () => render());
+    out.addEventListener("click", async (e) => {
+      const b = (e.target as HTMLElement).closest("button");
+      if (!b) return;
+      if (b.classList.contains("ct-pick")) { chosen = +b.dataset.i!; render(true); return; }
+      let v = b.dataset.v || "";
+      if (b.dataset.share) {
+        const q = new URLSearchParams({ clk: f("clk").value, nb: f("nb").value, nsp: f("nsp").value, db: f("db").value, dsp: f("dsp").value, same: f("same").checked ? "1" : "0" });
+        v = `${location.origin}${location.pathname}#${q}`;
+        history.replaceState(null, "", `#${q}`);
+      }
+      try { await navigator.clipboard.writeText(v); const o = b.textContent; b.textContent = T.copied; setTimeout(() => (b.textContent = o), 1400); } catch {}
+    });
+    render();
+  }
+</script>
+
+<style is:global>
+  .ct { gap: 18px; }
+  .ct-sub { color: var(--muted); margin: -6px 0 0; }
+  .ct-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr)); gap: 14px; padding: 18px; border: 1px solid var(--line); border-radius: var(--r); background: var(--card); }
+  .ct-form label { display: grid; gap: 6px; font-size: 13.5px; color: var(--muted); }
+  .ct-form input[type="number"] { width: 100%; min-height: 44px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line-2); background: var(--bg-2); color: var(--fg); font-size: 16px; }
+  .ct-form input:focus { border-color: var(--accent); outline: none; }
+  .ct-form .ct-check { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; color: var(--fg); cursor: pointer; min-height: 44px; }
+  .ct-check input { width: 20px; height: 20px; accent-color: var(--accent); }
+  .ct-out { display: grid; gap: 16px; }
+  .ct-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: 16px; }
+  .ct-card { display: grid; gap: 14px; align-content: start; padding: 18px; border: 1px solid var(--line); border-radius: var(--r); background: var(--card); min-width: 0; }
+  .ct-card h3 { font-size: 18px; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+  .ct-card h3 small { color: var(--accent); font-size: 13px; font-weight: 500; }
+  .ct-card .ct-h2 { font-size: 15px; margin-top: 4px; }
+  .ct-card dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 14px; margin: 0; font-size: 14px; }
+  .ct-card dt { color: var(--muted); font-family: var(--f-body); }
+  .ct-card dd { margin: 0; text-align: end; overflow-wrap: anywhere; }
+  .ct-card dd small { display: block; color: var(--muted); font-size: 12px; }
+  .ct-bar { position: relative; display: flex; height: 34px; border-radius: 6px; overflow: hidden; border: 1px solid var(--line-2); font: 600 12px var(--f-mono); }
+  .ct-bar > span { display: grid; place-items: center; min-width: 0; overflow: hidden; color: var(--accent-ink);
+    background-image: repeating-linear-gradient(90deg, transparent 0 calc(100% - 1px), rgba(0, 0, 0, .25) calc(100% - 1px) 100%); }
+  .ct-bar .ct-s0 { background-color: var(--muted); }
+  .ct-bar .ct-s1 { background-color: var(--accent); }
+  .ct-bar .ct-s2 { background-color: var(--ai); }
+  .ct-spm { position: absolute; top: -4px; bottom: -4px; width: 3px; translate: -1.5px 0; background: var(--fg); box-shadow: 0 0 0 2px var(--bg); border-radius: 2px; }
+  .ct-tdc { display: grid; gap: 4px; padding: 12px 14px; border-radius: 10px; border: 1px dashed var(--line-2); font-size: 14px; }
+  .ct-tdc .mono { font-size: 13px; overflow-wrap: anywhere; }
+  .ct-tdc.bad, .ct-warn { border: 1px solid var(--progress); color: var(--progress); }
+  .ct-warn { padding: 14px 16px; border-radius: 10px; margin: 0; }
+  .ct-pre { margin: 0; padding: 12px; border-radius: 8px; background: var(--bg-2); border: 1px solid var(--line); font-size: 12.5px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .ct-pre, .ct-scroll { direction: ltr; text-align: left; }
+  .ct-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ct-card button { min-height: 40px; padding: 6px 14px; border-radius: 8px; border: 1px solid var(--line-2); background: var(--panel-2); color: var(--fg); font: 600 13.5px var(--f-body); cursor: pointer; }
+  .ct-card button:hover { border-color: var(--accent); }
+  .ct-scroll { overflow-x: auto; }
+  .ct-card table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .ct-card th { text-align: left; color: var(--muted); font: 500 12px var(--f-body); padding: 0 8px 6px 0; }
+  .ct-card td { padding: 6px 8px 6px 0; border-top: 1px solid var(--line); white-space: nowrap; }
+  .ct-card tr.on td { color: var(--accent); }
+  .ct-card td button { min-height: 32px; padding: 2px 10px; }
+  .ct-limits { color: var(--muted); font-size: 13px; margin: 0; }
+  /* numbers + units always read left to right, also on the Arabic page */
+  .ct-card dd, .ct-card h3 small, .ct-tdc .mono, .ct-card td, .ct-form input[type="number"] { direction: ltr; unicode-bidi: isolate; }
+  :root[dir="rtl"] .ct-card dd { text-align: left; }
+  :root[dir="rtl"] .ct-form input[type="number"] { text-align: right; }
+  :root[dir="rtl"] .ct-card th { text-align: right; }
+  :root[data-theme="light"] .ct-form, :root[data-theme="light"] .ct-card { border: 2px solid var(--ink); box-shadow: var(--shadow); }
+  @media (pointer: coarse) { .ct-card td button { min-height: 44px; } }
+</style>

@@ -1,6 +1,7 @@
 ---
 import Base from "../../../layouts/Base.astro";
 import Flow from "../../../components/Flow.astro";
+import CanTiming from "../../../components/CanTiming.astro";
 import { LANGS, ui, path } from "../../../content/site.js";
 import { projects } from "../../../content/projects.js";
 
@@ -25,6 +26,8 @@ const next = projects[(i + 1) % projects.length];
       <p class="tagline">{c.tagline}</p>
       <div class="chips">{p.tags.map((x) => <span class="chip">{x}</span>)}</div>
     </header>
+
+    {p.tool === "can-timing" && <CanTiming lang={lang} />}
 
     <section class="part">
       <h2 class="label">{t.problem}</h2>

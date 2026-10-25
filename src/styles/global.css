@@ -128,7 +128,7 @@ section.block { padding-block: clamp(64px, 10vw, 120px); border-top: 1px solid v
 .status { display: inline-flex; align-items: center; gap: 8px; font: 600 12px var(--f-mono); letter-spacing: .04em; text-transform: uppercase; }
 :root[lang="ar"] .status { font-family: var(--f-body); text-transform: none; letter-spacing: 0; font-size: 13px; }
 .status i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 10px currentColor; }
-.status.live { color: var(--live); }
+.status.live, .status.web { color: var(--live); }
 .status.progress { color: var(--progress); }
 .status.planned { color: var(--planned); }
 .status.planned i { box-shadow: none; }

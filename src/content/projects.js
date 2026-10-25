@@ -1,5 +1,5 @@
 // Own-time projects only. No IPs, hostnames, tunnel IDs or anything from work.
-// status: live | progress | planned. repo: null until a clean public repo exists.
+// status: live | web | progress | planned (web = runs in the browser). tool: optional interactive part on the project page. repo: null until a clean public repo exists.
 
 export const projects = [
   {
@@ -209,42 +209,52 @@ export const projects = [
   },
   {
     slug: "can-tools",
-    status: "planned",
+    status: "web",
+    tool: "can-timing",
     repo: null,
     tags: ["CAN FD", "Bit timing", "Browser", "Open source"],
-    flow: ["Clock + bit rates", "Bit-timing solver", "Sample point & TDC", "Frame decoder", "Runs in the browser"],
+    flow: ["Clock + bit rates", "Bit-timing solver", "Sample point & TDC", "Registers + Linux command", "Next: frame decoder"],
     en: {
       title: "CAN tools",
-      tagline: "Open-source CAN FD bit-timing calculator and frame decoder that run entirely in the browser.",
+      tagline: "A CAN FD bit-timing calculator that runs entirely in the browser. A frame decoder comes next.",
       problem: "Choosing CAN FD bit timing (prescaler, segments, sample point, transmitter delay compensation) is error-prone and usually done in spreadsheets. A clear visual tool helps.",
       decisions: [
         "Built only from public standards, in my own time.",
         "Pure client-side: no server, no cost, works offline.",
         "Shows every intermediate value, so the result can be checked by hand.",
       ],
-      learned: ["Planned."],
+      learned: [
+        "Most clock and bit-rate pairs have only a few exact settings. Using the same prescaler in both phases narrows them down further, so it is worth showing the alternatives.",
+        "TDC is only allowed with a data prescaler of 1 or 2, so the clock frequency decides early whether high data rates are possible.",
+      ],
     },
     de: {
       title: "CAN-Tools",
-      tagline: "Open-Source-Rechner für CAN-FD-Bit-Timing und ein Frame-Decoder, die komplett im Browser laufen.",
+      tagline: "Ein Rechner für CAN-FD-Bit-Timing, der komplett im Browser läuft. Ein Frame-Decoder folgt als Nächstes.",
       problem: "CAN-FD-Bit-Timing (Prescaler, Segmente, Sample Point, Transmitter Delay Compensation) zu wählen ist fehleranfällig und passiert meist in Tabellen. Ein klares visuelles Tool hilft.",
       decisions: [
         "Nur aus öffentlichen Standards gebaut, in meiner Freizeit.",
         "Rein clientseitig: kein Server, keine Kosten, funktioniert offline.",
         "Zeigt jeden Zwischenwert, damit das Ergebnis von Hand prüfbar ist.",
       ],
-      learned: ["Geplant."],
+      learned: [
+        "Die meisten Paare aus Takt und Bitrate haben nur wenige exakte Einstellungen. Ein gemeinsamer Prescaler für beide Phasen schränkt sie weiter ein, deshalb lohnt es sich, die Alternativen zu zeigen.",
+        "TDC ist nur mit Daten-Prescaler 1 oder 2 erlaubt. Der Takt entscheidet also früh, ob hohe Datenraten möglich sind.",
+      ],
     },
     ar: {
       title: "أدوات CAN",
-      tagline: "حاسبة مفتوحة المصدر لتوقيت بِتّات CAN FD ومفكّك إطارات، تعمل بالكامل داخل المتصفح.",
+      tagline: "حاسبة لتوقيت بِتّات CAN FD تعمل بالكامل داخل المتصفح. مفكّك الإطارات هو الخطوة التالية.",
       problem: "اختيار توقيت بِتّات CAN FD (المقسّم، المقاطع، نقطة أخذ العيّنة، تعويض تأخير المرسِل) عرضة للخطأ ويتم غالباً بجداول. أداة بصرية واضحة تساعد.",
       decisions: [
         "مبنية فقط من المعايير العامة، في وقتي الخاص.",
         "تعمل في المتصفح بالكامل: بلا خادم، بلا تكلفة، وتعمل دون اتصال.",
         "تعرض كل قيمة وسيطة لتمكن مراجعة النتيجة يدوياً.",
       ],
-      learned: ["مخطط له."],
+      learned: [
+        "معظم أزواج الساعة والسرعة لها إعدادات دقيقة قليلة فقط، واستخدام نفس المقسّم في المرحلتين يقلّلها أكثر، لذلك من المفيد عرض البدائل.",
+        "تعويض تأخير المرسِل مسموح فقط مع مقسّم بيانات 1 أو 2، لذا تحدّد الساعة مبكراً إن كانت السرعات العالية ممكنة.",
+      ],
     },
   },
 ];
