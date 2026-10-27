@@ -109,7 +109,7 @@ export const projects = [
   {
     slug: "diag-agent",
     status: "live",
-    repo: null,
+    repo: "https://github.com/moutaz121493/diag-agent",
     tags: ["Privilege separation", "Redaction", "LLM", "systemd", "Uptime Kuma"],
     flow: ["Monitor: DOWN", "Re-check after 2 min", "Whitelisted evidence + redaction", "LLM with no tools", "Push: cause + fix"],
     en: {

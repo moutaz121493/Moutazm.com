@@ -9,7 +9,7 @@ Trilingual (English, German, Arabic with full right-to-left layout), static, and
 - Two themes: HUD (dark) and Retro-Tech (light); hand-drawn SVG "photos" in `src/components/Illo.astro` until real photos exist
 - Self-hosted fonts via Fontsource (no requests to Google)
 - CV PDFs (EN/DE) generated at build time with [PDFKit](https://pdfkit.org) from the same data as the CV page
-- Hosted on Cloudflare Pages · no cookies, no analytics, no trackers
+- Hosted on Cloudflare Workers (static assets) · no cookies, no analytics, no trackers
 
 ## Structure
 
