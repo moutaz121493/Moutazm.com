@@ -2,7 +2,7 @@
 import { LANGS, path } from "../content/site.js";
 import { projects } from "../content/projects.js";
 
-const ROUTES = ["/", "/cv", "/privacy", ...projects.map((p) => `/projects/${p.slug}`)];
+const ROUTES = ["/", "/cv", "/privacy", "/3d", ...projects.map((p) => `/projects/${p.slug}`)];
 
 export function GET({ site }) {
   const base = site.toString().replace(/\/$/, "");

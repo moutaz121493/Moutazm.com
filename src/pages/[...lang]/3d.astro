@@ -1,0 +1,61 @@
+---
+// Interactive 3D version of the GitHub profile hero: a CAN FD frame on a twisted pair flows into a rotating
+// neural network; the project nodes show their names on hover and open the project page on click.
+// three.js is bundled into this page only; nothing is loaded from other sites (CSP: 'self').
+import Base from "../../layouts/Base.astro";
+import { LANGS, path } from "../../content/site.js";
+import { projects } from "../../content/projects.js";
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === "en" ? undefined : l }, props: { lang: l } }));
+}
+const { lang } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const T = {
+  en: { title: "From CAN bits to RAG pipelines · 3D", h: "From CAN bits to RAG pipelines", hint: "Drag to rotate · scroll or pinch to zoom · hover a glowing node", nodes: "The bright nodes are my projects.", fallback: "3D needs WebGL; here is the still version.", back: "Back to the home page" },
+  de: { title: "Von CAN-Bits bis zu RAG-Pipelines · 3D", h: "Von CAN-Bits bis zu RAG-Pipelines", hint: "Ziehen zum Drehen · Scrollen oder Zwei-Finger zum Zoomen · leuchtenden Knoten antippen", nodes: "Die hellen Knoten sind meine Projekte.", fallback: "3D braucht WebGL; hier die Standbild-Version.", back: "Zur Startseite" },
+  ar: { title: "من بِتّات CAN إلى أنظمة RAG · ثلاثي الأبعاد", h: "من بِتّات CAN إلى أنظمة RAG", hint: "اسحب للتدوير · مرّر أو قرّب بإصبعين للتكبير · مرّر فوق عقدة مضيئة", nodes: "العقد المضيئة هي مشاريعي.", fallback: "يحتاج العرض ثلاثي الأبعاد إلى WebGL؛ هذه النسخة الثابتة.", back: "العودة إلى الصفحة الرئيسية" },
+}[lang];
+const items = projects.map((p) => ({ title: p[lang].title, tagline: p[lang].tagline, href: base + path(lang, `/projects/${p.slug}`) }));
+---
+<Base lang={lang} route="/3d" title={`${T.title} · Moutaz Mohammad`} description={T.nodes}>
+  <section class="wrap d3">
+    <header>
+      <span class="label">// 3D</span>
+      <h1>{T.h}</h1>
+      <p class="hint">{T.hint}. {T.nodes}</p>
+    </header>
+    <div class="stage" id="d3-stage" data-items={JSON.stringify(items)}>
+      <canvas id="d3-canvas" aria-label={T.h} role="img"></canvas>
+      <div class="tip" id="d3-tip" hidden><b></b><span></span></div>
+      <img class="still" id="d3-still" hidden src="/3d/loop.webp" alt={T.h} width="800" height="450" loading="lazy" />
+      <p class="still-note" id="d3-note" hidden>{T.fallback}</p>
+    </div>
+    <ul class="list">{items.map((it) => <li><a href={it.href}>{it.title}</a> <span>{it.tagline}</span></li>)}</ul>
+    <a class="btn" href={base + path(lang, "/")}>{T.back}</a>
+  </section>
+</Base>
+
+<style>
+  .d3 { padding-block: 28px 64px; }
+  .d3 h1 { margin: 6px 0 8px; }
+  .hint { color: var(--muted); margin: 0 0 16px; }
+  .stage { position: relative; border: 1px solid var(--line-2); border-radius: var(--r); overflow: hidden; background: var(--bg-2);
+           aspect-ratio: 16 / 9; touch-action: none; }
+  canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+  canvas:active { cursor: grabbing; }
+  .tip { position: absolute; pointer-events: none; max-width: 280px; padding: 10px 12px; border-radius: 12px;
+         background: var(--panel); border: 1px solid var(--accent); box-shadow: var(--shadow); font-size: 14px; }
+  .tip b { display: block; font-family: var(--f-display); font-size: 16px; color: var(--fg); }
+  .tip span { color: var(--muted); }
+  .still { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .still-note { position: absolute; bottom: 8px; inset-inline-start: 12px; margin: 0; color: var(--muted); font-size: 13px; }
+  .list { margin: 20px 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+  .list span { color: var(--muted); }
+  @media (max-width: 640px) { .stage { aspect-ratio: 4 / 5; } }
+</style>
+
+<script>
+  import { initD3 } from "../../scripts/d3hero.js";
+  initD3();
+</script>
