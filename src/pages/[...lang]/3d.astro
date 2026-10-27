@@ -1,6 +1,6 @@
 ---
-// Interactive 3D version of the GitHub profile hero: a CAN FD frame on a twisted pair flows into a rotating
-// neural network; the project nodes show their names on hover and open the project page on click.
+// Interactive 3D version of the GitHub profile hero: five stages from a CAN FD frame to an answer with sources.
+// Hovering a stage explains it; clicking opens the related project page.
 // three.js is bundled into this page only; nothing is loaded from other sites (CSP: 'self').
 import Base from "../../layouts/Base.astro";
 import { LANGS, path } from "../../content/site.js";
@@ -12,10 +12,16 @@ export function getStaticPaths() {
 const { lang } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const T = {
-  en: { title: "From CAN bits to RAG pipelines · 3D", h: "From CAN bits to RAG pipelines", hint: "Drag to rotate · scroll or pinch to zoom · hover a glowing node", nodes: "The bright nodes are my projects.", fallback: "3D needs WebGL; here is the still version.", back: "Back to the home page" },
-  de: { title: "Von CAN-Bits bis zu RAG-Pipelines · 3D", h: "Von CAN-Bits bis zu RAG-Pipelines", hint: "Ziehen zum Drehen · Scrollen oder Zwei-Finger zum Zoomen · leuchtenden Knoten antippen", nodes: "Die hellen Knoten sind meine Projekte.", fallback: "3D braucht WebGL; hier die Standbild-Version.", back: "Zur Startseite" },
-  ar: { title: "من بِتّات CAN إلى أنظمة RAG · ثلاثي الأبعاد", h: "من بِتّات CAN إلى أنظمة RAG", hint: "اسحب للتدوير · مرّر أو قرّب بإصبعين للتكبير · مرّر فوق عقدة مضيئة", nodes: "العقد المضيئة هي مشاريعي.", fallback: "يحتاج العرض ثلاثي الأبعاد إلى WebGL؛ هذه النسخة الثابتة.", back: "العودة إلى الصفحة الرئيسية" },
+  en: { title: "From CAN bits to RAG pipelines · 3D", h: "From CAN bits to RAG pipelines", hint: "Drag to rotate · scroll or pinch to zoom · hover a stage", nodes: "Five stages, one pipeline: how a frame on the bus becomes an answer with sources.", fallback: "3D needs WebGL; here is the animated version.", back: "Back to the home page",
+        stages: [["CAN FD bits", "A CAN FD frame on the twisted pair: CAN_H rises, CAN_L falls for every dominant bit."], ["Decode", "A microcontroller samples the bus and turns the bit stream back into bytes."], ["Embed", "Bytes and text become tokens and vectors a model can work with."], ["Reason", "A layered network processes them, one layer after another."], ["Answer + sources", "The answer comes with the passages it is based on: measured, not guessed."]] },
+  de: { title: "Von CAN-Bits bis zu RAG-Pipelines · 3D", h: "Von CAN-Bits bis zu RAG-Pipelines", hint: "Ziehen zum Drehen · Scrollen oder Zwei-Finger zum Zoomen · auf eine Stufe zeigen", nodes: "Fünf Stufen, eine Pipeline: wie aus einem Frame auf dem Bus eine Antwort mit Quellen wird.", fallback: "3D braucht WebGL; hier die animierte Version.", back: "Zur Startseite",
+        stages: [["CAN-FD-Bits", "Ein CAN-FD-Frame auf der verdrillten Leitung: CAN_H steigt, CAN_L fällt bei jedem dominanten Bit."], ["Dekodieren", "Ein Mikrocontroller tastet den Bus ab und macht aus dem Bitstrom wieder Bytes."], ["Einbetten", "Bytes und Text werden zu Tokens und Vektoren, mit denen ein Modell arbeiten kann."], ["Schlussfolgern", "Ein mehrschichtiges Netz verarbeitet sie, Schicht für Schicht."], ["Antwort + Quellen", "Die Antwort kommt mit den Passagen, auf denen sie beruht: gemessen, nicht geraten."]] },
+  ar: { title: "من بِتّات CAN إلى أنظمة RAG · ثلاثي الأبعاد", h: "من بِتّات CAN إلى أنظمة RAG", hint: "اسحب للتدوير · مرّر أو قرّب بإصبعين للتكبير · مرّر فوق أي مرحلة", nodes: "خمس مراحل في خط واحد: كيف يصبح إطار على الناقل إجابةً مع مصادرها.", fallback: "يحتاج العرض ثلاثي الأبعاد إلى WebGL؛ هذه النسخة المتحركة.", back: "العودة إلى الصفحة الرئيسية",
+        stages: [["بِتّات CAN FD", "إطار CAN FD على السلكين المجدولين: يرتفع CAN_H وينخفض CAN_L مع كل بت مهيمن."], ["فك الترميز", "متحكم دقيق يقرأ الناقل ويعيد تدفق البتات إلى بايتات."], ["التضمين", "تتحول البايتات والنصوص إلى رموز ومتجهات يعمل عليها النموذج."], ["الاستدلال", "شبكة متعددة الطبقات تعالجها طبقةً بعد طبقة."], ["إجابة + مصادر", "تأتي الإجابة مع المقاطع التي بُنيت عليها: مقيسة لا مخمّنة."]] },
 }[lang];
+const proj = (slug) => base + path(lang, `/projects/${slug}`);
+const stageLinks = ["can-tools", "can-tools", "home-rag", "home-rag", "home-rag"];
+const stages = T.stages.map(([name, desc], i) => ({ n: `0${i + 1}`, name, desc, href: proj(stageLinks[i]) }));
 const items = projects.map((p) => ({ title: p[lang].title, tagline: p[lang].tagline, href: base + path(lang, `/projects/${p.slug}`) }));
 ---
 <Base lang={lang} route="/3d" title={`${T.title} · Moutaz Mohammad`} description={T.nodes}>
@@ -25,8 +31,9 @@ const items = projects.map((p) => ({ title: p[lang].title, tagline: p[lang].tagl
       <h1>{T.h}</h1>
       <p class="hint">{T.hint}. {T.nodes}</p>
     </header>
-    <div class="stage" id="d3-stage" data-items={JSON.stringify(items)}>
+    <div class="stage" id="d3-stage" data-stages={JSON.stringify(stages)}>
       <canvas id="d3-canvas" aria-label={T.h} role="img"></canvas>
+      <div class="labels" id="d3-labels" aria-hidden="true">{stages.map((st) => <span class="lab">{st.n} · {st.name}</span>)}</div>
       <div class="tip" id="d3-tip" hidden><b></b><span></span></div>
       <img class="still" id="d3-still" hidden src="/3d/loop.webp" alt={T.h} width="800" height="450" loading="lazy" />
       <p class="still-note" id="d3-note" hidden>{T.fallback}</p>
@@ -44,6 +51,9 @@ const items = projects.map((p) => ({ title: p[lang].title, tagline: p[lang].tagl
            aspect-ratio: 16 / 9; touch-action: none; }
   canvas { display: block; width: 100%; height: 100%; cursor: grab; }
   canvas:active { cursor: grabbing; }
+  .labels .lab { position: absolute; transform: translate(-50%, 0); white-space: nowrap; pointer-events: none; font-family: var(--f-mono); font-size: 12px;
+                 letter-spacing: .08em; color: var(--muted); }
+  .labels .lab:nth-child(-n+2) { color: var(--accent); } .labels .lab:nth-child(n+3):nth-child(-n+4) { color: var(--ai); } .labels .lab:nth-child(5) { color: var(--live); }
   .tip { position: absolute; pointer-events: none; max-width: 280px; padding: 10px 12px; border-radius: 12px;
          background: var(--panel); border: 1px solid var(--accent); box-shadow: var(--shadow); font-size: 14px; }
   .tip b { display: block; font-family: var(--f-display); font-size: 16px; color: var(--fg); }
@@ -52,7 +62,7 @@ const items = projects.map((p) => ({ title: p[lang].title, tagline: p[lang].tagl
   .still-note { position: absolute; bottom: 8px; inset-inline-start: 12px; margin: 0; color: var(--muted); font-size: 13px; }
   .list { margin: 20px 0; padding: 0; list-style: none; display: grid; gap: 6px; }
   .list span { color: var(--muted); }
-  @media (max-width: 640px) { .stage { aspect-ratio: 4 / 5; } }
+  @media (max-width: 640px) { .stage { aspect-ratio: 4 / 3; } }
 </style>
 
 <script>
