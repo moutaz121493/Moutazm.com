@@ -211,7 +211,7 @@ export const projects = [
     slug: "can-tools",
     status: "web",
     tool: ["can-timing", "can-frame"],
-    repo: null,
+    repo: "https://github.com/moutaz121493/canfd-bittiming",
     tags: ["CAN FD", "Bit timing", "Browser", "Open source"],
     flow: ["Clock + bit rates", "Bit-timing solver", "Sample point & TDC", "Registers + Linux command", "Next: frame decoder"],
     en: {
