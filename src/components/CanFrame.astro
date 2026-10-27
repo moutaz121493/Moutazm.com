@@ -1,0 +1,196 @@
+---
+// CAN FD frame builder. Runs fully in the browser. Builds the exact bit stream of a CAN FD data frame
+// (ISO 11898-1:2015): base (FBFF) or extended (FEFF) format, dynamic stuffing, Gray-coded stuff count + parity,
+// fixed stuff bits, CRC-17 (<= 16 bytes) / CRC-21 (> 16 bytes), and the bit-rate switch at the BRS / CRC-delimiter
+// sample points. Same rules as the profile's decoder strip (github.com/moutaz121493 · scripts/canfd.py).
+const { lang = "en" } = Astro.props;
+const T = {
+  en: {
+    h: "Try it: CAN FD frame builder", sub: "Type an ID and data bytes and see every bit that goes on the wire.",
+    id: "Identifier (hex)", ext: "Extended ID (29 bit)", data: "Data bytes (hex)", brs: "Bit-rate switch (BRS)",
+    nb: "Nominal bit rate (kbit/s)", db: "Data bit rate (kbit/s)", nsp: "Nominal sample point (%)", dsp: "Data sample point (%)",
+    dlc: "DLC", len: "bytes", pad: "padded with 0x00 to", stuff: "Dynamic stuff bits", sbc: "Stuff count", gray: "Gray", parity: "parity",
+    fixed: "Fixed stuff bits", crc: "CRC", bits: "Bits on the wire", dur: "Frame duration", ifs: "without the 3-bit intermission",
+    eff: "Payload efficiency", legend: "Legend", sb: "stuff bit", fsb: "fixed stuff bit", fast: "data phase",
+    bad: "Use hex: ID up to 7FF (base) or 1FFFFFFF (extended), data as pairs like 01 A2 FF, at most 64 bytes.",
+    fields: "Fields",
+  },
+  de: {
+    h: "Ausprobieren: CAN-FD-Frame-Baukasten", sub: "ID und Datenbytes eingeben und jedes Bit sehen, das auf die Leitung geht.",
+    id: "Identifier (hex)", ext: "Erweiterte ID (29 Bit)", data: "Datenbytes (hex)", brs: "Bitratenumschaltung (BRS)",
+    nb: "Nominale Bitrate (kbit/s)", db: "Daten-Bitrate (kbit/s)", nsp: "Nominaler Sample Point (%)", dsp: "Daten-Sample-Point (%)",
+    dlc: "DLC", len: "Bytes", pad: "mit 0x00 aufgefüllt auf", stuff: "Dynamische Stuff-Bits", sbc: "Stuff Count", gray: "Gray", parity: "Parität",
+    fixed: "Feste Stuff-Bits", crc: "CRC", bits: "Bits auf der Leitung", dur: "Frame-Dauer", ifs: "ohne die 3 Bit Intermission",
+    eff: "Nutzdaten-Effizienz", legend: "Legende", sb: "Stuff-Bit", fsb: "festes Stuff-Bit", fast: "Datenphase",
+    bad: "Hex verwenden: ID bis 7FF (Basis) oder 1FFFFFFF (erweitert), Daten als Paare wie 01 A2 FF, höchstens 64 Bytes.",
+    fields: "Felder",
+  },
+  ar: {
+    h: "جرّبها: باني إطار CAN FD", sub: "أدخل المعرّف وبايتات البيانات وشاهد كل بِت يُرسل على الناقل.",
+    id: "المعرّف (hex)", ext: "معرّف موسّع (29 بِت)", data: "بايتات البيانات (hex)", brs: "تبديل السرعة (BRS)",
+    nb: "السرعة الاسمية (kbit/s)", db: "سرعة البيانات (kbit/s)", nsp: "نقطة العيّنة الاسمية (%)", dsp: "نقطة عيّنة البيانات (%)",
+    dlc: "DLC", len: "بايت", pad: "أُكمِل بـ 0x00 حتى", stuff: "بِتّات الحشو الديناميكية", sbc: "عدّاد الحشو", gray: "Gray", parity: "تكافؤ",
+    fixed: "بِتّات الحشو الثابتة", crc: "CRC", bits: "عدد البِتّات على الناقل", dur: "مدة الإطار", ifs: "دون فاصل الـ 3 بِتّات",
+    eff: "كفاءة الحمولة", legend: "دليل الألوان", sb: "بِت حشو", fsb: "بِت حشو ثابت", fast: "مرحلة البيانات",
+    bad: "استخدم hex: المعرّف حتى 7FF (أساسي) أو 1FFFFFFF (موسّع)، والبيانات أزواجاً مثل 01 A2 FF، بحد أقصى 64 بايت.",
+    fields: "الحقول",
+  },
+}[lang];
+---
+<section class="part cf" id="frame-builder" data-t={JSON.stringify(T)}>
+  <h2 class="label">{T.h}</h2>
+  <p class="ct-sub">{T.sub}</p>
+  <form class="ct-form cf-form" onsubmit="return false">
+    <label><span>{T.id}</span><input class="mono" name="id" dir="ltr" value="4D4" spellcheck="false" autocomplete="off" /></label>
+    <label class="cf-wide"><span>{T.data}</span><input class="mono" name="data" dir="ltr" value="43 41 4E 20 46 44 20 3E 20 52 41 47" spellcheck="false" autocomplete="off" /></label>
+    <label><span>{T.nb}</span><input class="mono" name="nb" type="number" min="10" max="1000" step="any" value="500" /></label>
+    <label><span>{T.db}</span><input class="mono" name="db" type="number" min="125" max="15000" step="any" value="2000" /></label>
+    <label><span>{T.nsp}</span><input class="mono" name="nsp" type="number" min="50" max="95" step="0.1" value="80" /></label>
+    <label><span>{T.dsp}</span><input class="mono" name="dsp" type="number" min="50" max="95" step="0.1" value="75" /></label>
+    <label class="ct-check"><input name="ext" type="checkbox" /><span>{T.ext}</span></label>
+    <label class="ct-check"><input name="brs" type="checkbox" checked /><span>{T.brs}</span></label>
+  </form>
+  <div class="cf-out" aria-live="polite"></div>
+</section>
+
+<script>
+  // ---- frame construction (ISO 11898-1:2015, CAN FD data frame) ----
+  type Bit = { v: number; f: string; k: "" | "s" | "fs" };
+  const LENS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 32, 48, 64];
+  const CRC17 = 0x3685b, CRC21 = 0x302899;
+  const bits = (v: number, n: number) => Array.from({ length: n }, (_, i) => Math.floor(v / 2 ** (n - 1 - i)) % 2);
+
+  function crc(stream: number[], n: number, poly: number) {
+    let r = 2 ** (n - 1);                                     // register initialised with a 1 in the MSB
+    const top = 2 ** (n - 1), mask = 2 ** n - 1;
+    for (const b of stream) {
+      const t = r >= top ? 1 : 0;
+      r = (r * 2) % (mask + 1);
+      if (b ^ t) r = (r ^ (poly & mask)) >>> 0;
+    }
+    return r;
+  }
+
+  function buildFrame(id: number, ext: boolean, data: number[], brs: boolean) {
+    const dlc = LENS.findIndex((l) => l >= data.length);
+    const payload = data.concat(Array(LENS[dlc] - data.length).fill(0));
+    const F: [string, number[]][] = [["SOF", [0]]];
+    if (ext) F.push(["ID", bits(Math.floor(id / 2 ** 18), 11)], ["SRR", [1]], ["IDE", [1]], ["ID ext", bits(id % 2 ** 18, 18)]);
+    else F.push(["ID", bits(id, 11)], ["RRS", [0]], ["IDE", [0]]);
+    if (ext) F.push(["RRS", [0]]);
+    F.push(["FDF", [1]], ["res", [0]], ["BRS", [brs ? 1 : 0]], ["ESI", [0]], ["DLC", bits(dlc, 4)]);
+    payload.forEach((b, i) => F.push([`D${i}`, bits(b, 8)]));
+    const total = F.reduce((a, [, b]) => a + b.length, 0);
+    const out: Bit[] = [];
+    let rv = -1, rn = 0, k = 0, ns = 0;
+    for (const [f, bl] of F) for (const v of bl) {                // dynamic stuffing, SOF .. end of data
+      k++;
+      out.push({ v, f, k: "" });
+      rn = v === rv ? rn + 1 : 1; rv = v;
+      if (rn === 5 && k < total) { out.push({ v: 1 - v, f, k: "s" }); ns++; rv = 1 - v; rn = 1; }
+    }
+    const g = (ns % 8) ^ ((ns % 8) >> 1);
+    const sc = bits(g, 3); sc.push(sc.reduce((a, b) => a + b, 0) % 2);   // Gray code + even parity
+    const long = payload.length > 16;
+    const c = crc(out.map((b) => b.v).concat(sc), long ? 21 : 17, long ? CRC21 : CRC17);
+    const cf: [string, number][] = sc.map((v) => ["SBC", v] as [string, number]).concat(bits(c, long ? 21 : 17).map((v) => ["CRC", v] as [string, number]));
+    cf.forEach(([f, v], i) => { if (i % 4 === 0) out.push({ v: 1 - out[out.length - 1].v, f, k: "fs" }); out.push({ v, f, k: "" }); });
+    out.push({ v: 1, f: "CRC del", k: "" }, { v: 0, f: "ACK", k: "" }, { v: 1, f: "ACK del", k: "" });
+    for (let i = 0; i < 7; i++) out.push({ v: 1, f: "EOF", k: "" });
+    return { bits: out, dlc, len: payload.length, padded: payload.length - data.length, ns, gray: g, sc, crc: c, crcN: long ? 21 : 17 };
+  }
+
+  (window as any).__cfBuild = buildFrame;              // used by the cross-check against the Python reference
+
+  // ---- rendering ----
+  const COL: Record<string, string> = { SOF: "m", ID: "a", "ID ext": "a", SRR: "m", IDE: "m", RRS: "m", FDF: "i", res: "m", BRS: "i", ESI: "m",
+    DLC: "l", SBC: "m", CRC: "a", "CRC del": "m", ACK: "l", "ACK del": "m", EOF: "m" };
+  const esc = (s: string) => s.replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]!);
+  const hexOk = (s: string) => /^[0-9a-fA-F\s,]*$/.test(s);
+
+  for (const root of document.querySelectorAll<HTMLElement>(".cf")) {
+    const T = JSON.parse(root.dataset.t || "{}");
+    const form = root.querySelector("form")!, out = root.querySelector<HTMLElement>(".cf-out")!;
+    const f = (n: string) => form.elements.namedItem(n) as HTMLInputElement;
+    function render() {
+      const idS = f("id").value.trim(), dS = f("data").value.trim(), ext = f("ext").checked;
+      const id = parseInt(idS || "0", 16), toks = dS ? dS.replace(/,/g, " ").split(/\s+/).filter(Boolean) : [];
+      const data = toks.map((x) => parseInt(x, 16));
+      const ok = /^[0-9a-fA-F]+$/.test(idS) && hexOk(dS) && id <= (ext ? 0x1fffffff : 0x7ff) && data.length <= 64
+        && toks.every((x) => x.length <= 2) && data.every((b) => b >= 0 && b <= 255);
+      if (!ok) { out.innerHTML = `<p class="ct-warn">${esc(T.bad)}</p>`; return; }
+      const brs = f("brs").checked;
+      const r = buildFrame(id, ext, data, brs);
+      const nb = +f("nb").value * 1e3, db = (brs ? +f("db").value : +f("nb").value) * 1e3;
+      const spn = +f("nsp").value / 100, spd = +f("dsp").value / 100;
+      const iB = r.bits.findIndex((b) => b.f === "BRS"), iD = r.bits.findIndex((b) => b.f === "CRC del");
+      // durations: nominal up to the BRS sample point, data rate until the CRC-delimiter sample point
+      let ns = 0;
+      const w: number[] = r.bits.map((b, i) => {
+        const tn = 1 / nb, td = 1 / db;
+        const t = !brs ? tn : i < iB ? tn : i === iB ? spn * tn + (1 - spd) * td : i < iD ? td : i === iD ? spd * td + (1 - spn) * tn : tn;
+        ns += t;
+        return t;
+      });
+      const tn = 1 / nb, px = 26 / (tn * 1e9) * 1e9;            // 26 px per nominal bit
+      let x = 0;
+      const cells = r.bits.map((b, i) => {
+        const wpx = w[i] * px, key = b.f.startsWith("D") && b.f !== "DLC" ? "DATA" : b.f;
+        const cls = `cf-b ${COL[key] || "d"} ${b.k}${brs && i > iB && i < iD ? " fast" : ""}`;
+        const s = `<span class="${cls}" style="width:${wpx.toFixed(2)}px" title="${esc(key)}${b.k === "s" ? " · " + esc(T.sb) : b.k === "fs" ? " · " + esc(T.fsb) : ""}">${b.v}</span>`;
+        x += wpx;
+        return s;
+      }).join("");
+      const groups: string[] = [];
+      r.bits.forEach((b, i) => {
+        const key = b.f.startsWith("D") && b.f !== "DLC" ? "DATA" : b.f;
+        const last = groups[groups.length - 1];
+        if (last && last.startsWith(key + "|")) groups[groups.length - 1] = `${key}|${+last.split("|")[1] + w[i] * px}`;
+        else groups.push(`${key}|${w[i] * px}`);
+      });
+      const labels = groups.map((g) => { const [k, wv] = g.split("|"); return `<span class="cf-f ${COL[k] || "d"}" style="width:${(+wv).toFixed(2)}px">${+wv > 30 ? esc(k) : ""}</span>`; }).join("");
+      const us = (v: number) => (v * 1e6).toFixed(2) + " µs";
+      const eff = (8 * r.len - 8 * r.padded) / r.bits.length;
+      out.innerHTML = `
+        <div class="cf-stats mono">
+          <div><small>${esc(T.dlc)}</small><b>${r.dlc}</b><span>${r.len} ${esc(T.len)}${r.padded ? ` · ${esc(T.pad)} ${r.len}` : ""}</span></div>
+          <div><small>${esc(T.stuff)}</small><b>${r.ns}</b><span>${esc(T.sbc)} ${r.ns % 8} → ${esc(T.gray)} ${r.sc.slice(0, 3).join("")} + ${esc(T.parity)} ${r.sc[3]}</span></div>
+          <div><small>${esc(T.crc)}-${r.crcN}</small><b>0x${r.crc.toString(16).toUpperCase().padStart(r.crcN === 21 ? 6 : 5, "0")}</b><span>${esc(T.fixed)}: ${r.crcN === 21 ? 7 : 6}</span></div>
+          <div><small>${esc(T.bits)}</small><b>${r.bits.length}</b><span>${esc(T.eff)} ${(eff * 100).toFixed(0)} %</span></div>
+          <div><small>${esc(T.dur)}</small><b>${us(ns)}</b><span>${esc(T.ifs)}</span></div>
+        </div>
+        <div class="cf-scroll" dir="ltr"><div class="cf-fields">${labels}</div><div class="cf-bits">${cells}</div></div>
+        <p class="cf-legend"><span class="cf-key s"></span>${esc(T.sb)} <span class="cf-key fs"></span>${esc(T.fsb)} <span class="cf-key fast"></span>${esc(T.fast)}</p>`;
+    }
+    form.addEventListener("input", render);
+    render();
+  }
+</script>
+
+<style is:global>
+  .cf .cf-wide { grid-column: span 2; }
+  .cf-form input:not([type]) { width: 100%; min-height: 44px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line-2);
+    background: var(--bg-2); color: var(--fg); font-size: 16px; letter-spacing: .04em; text-align: left; }
+  .cf-form input:not([type]):focus { border-color: var(--accent); outline: none; }
+  @media (max-width: 560px) { .cf .cf-wide { grid-column: 1 / -1; } }
+  .cf-out { display: grid; gap: 14px; }
+  .cf-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr)); gap: 12px; }
+  .cf-stats > div { display: grid; gap: 2px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+  .cf-stats small { color: var(--muted); font: 500 12px var(--f-body); }
+  .cf-stats b { font: 700 24px var(--f-display); color: var(--accent); }
+  .cf-stats span { color: var(--muted); font-size: 12.5px; }
+  .cf-scroll { overflow-x: auto; padding-bottom: 6px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-2); }
+  .cf-fields, .cf-bits { display: flex; width: max-content; }
+  .cf-f { flex: none; height: 24px; display: grid; place-items: center; font: 600 11px var(--f-mono); border-inline-end: 1px solid var(--line-2); white-space: nowrap; overflow: hidden; }
+  .cf-b { flex: none; height: 30px; display: grid; place-items: center; font: 600 11px var(--f-mono); border-inline-end: 1px solid color-mix(in srgb, var(--line-2) 60%, transparent); overflow: hidden; }
+  .cf-b.a, .cf-f.a { color: var(--accent); } .cf-b.i, .cf-f.i { color: var(--ai); } .cf-b.l, .cf-f.l { color: var(--live); } .cf-b.m, .cf-f.m, .cf-b.d { color: var(--muted); }
+  .cf-f.d { color: var(--live); }
+  .cf-b.fast { background: color-mix(in srgb, var(--ai) 10%, transparent); font-size: 8px; }
+  .cf-b.s { background: color-mix(in srgb, #ff6b6b 35%, transparent); color: var(--fg); }
+  .cf-b.fs { background: color-mix(in srgb, var(--ai) 40%, transparent); color: var(--fg); }
+  .cf-legend { margin: 0; color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+  .cf-key { display: inline-block; width: 14px; height: 10px; border-radius: 3px; margin-inline-end: 6px; vertical-align: middle; }
+  .cf-key.s { background: color-mix(in srgb, #ff6b6b 60%, transparent); } .cf-key.fs { background: color-mix(in srgb, var(--ai) 60%, transparent); }
+  .cf-key.fast { background: color-mix(in srgb, var(--ai) 20%, transparent); border: 1px solid var(--ai); }
+  .cf-stats b, .cf-stats span { direction: ltr; unicode-bidi: isolate; }
+</style>

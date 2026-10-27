@@ -1,5 +1,5 @@
 // Own-time projects only. No IPs, hostnames, tunnel IDs or anything from work.
-// status: live | web | progress | planned (web = runs in the browser). tool: optional interactive part on the project page. repo: null until a clean public repo exists.
+// status: live | web | progress | planned (web = runs in the browser). tool: optional interactive parts on the project page (list). repo: null until a clean public repo exists.
 
 export const projects = [
   {
@@ -210,7 +210,7 @@ export const projects = [
   {
     slug: "can-tools",
     status: "web",
-    tool: "can-timing",
+    tool: ["can-timing", "can-frame"],
     repo: null,
     tags: ["CAN FD", "Bit timing", "Browser", "Open source"],
     flow: ["Clock + bit rates", "Bit-timing solver", "Sample point & TDC", "Registers + Linux command", "Next: frame decoder"],
