@@ -37,7 +37,7 @@ export const ui = {
     projects: {
       h: "Projects",
       sub: "Things I built in my own time. Status is honest.",
-      status: { live: "Live in my home", web: "Live in the browser", progress: "In progress", planned: "Planned" },
+      status: { live: "Live in my home", web: "Live in the browser", oss: "Open-source template", progress: "In progress", planned: "Planned" },
       more: "Read more",
       problem: "Problem",
       architecture: "Architecture",
@@ -89,7 +89,7 @@ export const ui = {
     projects: {
       h: "Projekte",
       sub: "Eigene Projekte aus meiner Freizeit. Der Status ist ehrlich.",
-      status: { live: "Läuft bei mir zu Hause", web: "Läuft im Browser", progress: "In Arbeit", planned: "Geplant" },
+      status: { live: "Läuft bei mir zu Hause", web: "Läuft im Browser", oss: "Open-Source-Vorlage", progress: "In Arbeit", planned: "Geplant" },
       more: "Mehr lesen",
       problem: "Problem",
       architecture: "Architektur",
@@ -141,7 +141,7 @@ export const ui = {
     projects: {
       h: "المشاريع",
       sub: "مشاريع بنيتها في وقتي الخاص. والحالة مكتوبة بصدق.",
-      status: { live: "يعمل في بيتي", web: "يعمل في المتصفح", progress: "قيد العمل", planned: "مخطط له" },
+      status: { live: "يعمل في بيتي", web: "يعمل في المتصفح", oss: "قالب مفتوح المصدر", progress: "قيد العمل", planned: "مخطط له" },
       more: "التفاصيل",
       problem: "المشكلة",
       architecture: "البنية",

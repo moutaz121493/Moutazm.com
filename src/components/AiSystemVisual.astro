@@ -7,8 +7,8 @@ const { slug, lang = "en" } = Astro.props;
 
 const UI = {
   en: {
-    eyebrow: "3D SYSTEM ARCHITECTURE & LIVE TELEMETRY",
-    subtitle: "Orbit the bespoke 3D hardware-to-AI modules on the left or click any stage on the right to inspect how requests, guardrails, and budgets behave in real time.",
+    eyebrow: "3D SYSTEM ARCHITECTURE · EXAMPLE RUNS",
+    subtitle: "Orbit the bespoke 3D hardware-to-AI modules on the left or click any stage on the right to see how requests, guardrails and budgets behave in three example runs.",
     camIso: "Isometric",
     camTop: "Top Plan",
     camFront: "Low Angle",
@@ -20,13 +20,13 @@ const UI = {
     latency: "LATENCY",
     cost: "COST",
     guard: "GUARDRAIL",
-    impactTitle: "QUANTIFIED IMPACT — DAILY LIFE & PRODUCTION SYSTEMS",
+    impactTitle: "MEASURED & VERIFIED ON A RASPBERRY PI 5", telNote: "Example run with the built-in mock planner: costs are the template's own estimates, not real API spend.",
     lifeHead: "In Daily Life",
     projHead: "In Production Engineering",
   },
   de: {
-    eyebrow: "3D-SYSTEMARCHITEKTUR & LIVE-TELEMETRIE",
-    subtitle: "Drehe links die 3D-Systemmodule oder wähle rechts eine Stufe, um Datenfluss, Sicherheits-Gates und Kostenkontrolle in Echtzeit zu prüfen.",
+    eyebrow: "3D-SYSTEMARCHITEKTUR · BEISPIELLÄUFE",
+    subtitle: "Drehe links die 3D-Systemmodule oder wähle rechts eine Stufe, um Datenfluss, Sicherheits-Gates und Kostenkontrolle in drei Beispielläufen zu sehen.",
     camIso: "Isometrisch",
     camTop: "Grundriss",
     camFront: "Perspektive",
@@ -38,13 +38,13 @@ const UI = {
     latency: "LATENZ",
     cost: "KOSTEN",
     guard: "SCHUTZ",
-    impactTitle: "MESSBARER NUTZEN — ALLTAG & PRODUKTIVSYSTEME",
+    impactTitle: "GEMESSEN & GEPRÜFT AUF EINEM RASPBERRY PI 5", telNote: "Beispiellauf mit dem eingebauten Mock-Planer: Kosten sind Schätzwerte des Templates, keine echten API-Kosten.",
     lifeHead: "Nutzen im Alltag",
     projHead: "Nutzen in Engineering & Projekten",
   },
   ar: {
-    eyebrow: "البنية ثلاثية الأبعاد والقياس الحي",
-    subtitle: "قم بتدوير الوحدات الهندسية ثلاثية الأبعاد أو اختر أي مرحلة من القائمة لمعاينة تدفق البيانات وبوابات الأمان والميزانية لحظة بلحظة.",
+    eyebrow: "البنية ثلاثية الأبعاد · أمثلة تشغيل",
+    subtitle: "قم بتدوير الوحدات الهندسية ثلاثية الأبعاد أو اختر أي مرحلة من القائمة لمعاينة تدفق البيانات وبوابات الأمان والميزانية في ثلاثة أمثلة تشغيل.",
     camIso: "منظور ثلاثي",
     camTop: "مسقط علوي",
     camFront: "زاوية منخفضة",
@@ -56,7 +56,7 @@ const UI = {
     latency: "الزمن",
     cost: "التكلفة",
     guard: "الحماية",
-    impactTitle: "الأثر الملموس — في الحياة اليومية والأنظمة الإنتاجية",
+    impactTitle: "مقاس ومُتحقَّق منه على Raspberry Pi 5", telNote: "مثال تشغيل بالمخطِّط التجريبي المدمج: التكاليف تقديرات القالب نفسه وليست إنفاقاً فعلياً على الـ API.",
     lifeHead: "في الحياة اليومية",
     projHead: "في المشاريع الهندسية",
   },
@@ -120,9 +120,9 @@ const DATA = {
         },
       ],
       metrics: [
-        { val: "4–6 hrs/wk", lbl: "Manual triage & checks eliminated" },
-        { val: "0 Ports", lbl: "Exposed on your home router" },
-        { val: "384 MB", lbl: "Max RAM cap on a 4 GB Pi 5" },
+        { val: "0", lbl: "ports published beyond localhost (both profiles)" },
+        { val: "384 MB", lbl: "hard RAM cap for n8n on the 4 GB Pi profile" },
+        { val: "3 / 3", lbl: "workflows pass the CI secret & private-IP scan" },
       ],
       lifeImpact: [
         "Replaces paid SaaS automation tools (Zapier/Make) with a private engine you own for €0/month.",
@@ -191,9 +191,9 @@ const DATA = {
         },
       ],
       metrics: [
-        { val: "4–6 Std/Wo", lbl: "Weniger manuelle Routinearbeit" },
-        { val: "0 Ports", lbl: "Am Heimrouter geöffnet" },
-        { val: "384 MB", lbl: "Max. RAM auf einem 4-GB-Pi-5" },
+        { val: "0", lbl: "Ports außerhalb von localhost (beide Profile)" },
+        { val: "384 MB", lbl: "festes RAM-Limit für n8n im 4-GB-Pi-Profil" },
+        { val: "3 / 3", lbl: "Workflows bestehen den CI-Scan auf Secrets & private IPs" },
       ],
       lifeImpact: [
         "Ersetzt kostenpflichtige SaaS-Tools (Zapier/Make) durch eine eigene Plattform für 0 €/Monat.",
@@ -262,9 +262,9 @@ const DATA = {
         },
       ],
       metrics: [
-        { val: "4–6 س/أسبوع", lbl: "توفير من الفرز والمتابعة اليدوية" },
-        { val: "0 منافذ", lbl: "مفتوحة على راوتر المنزل" },
-        { val: "384 MB", lbl: "أقصى ذاكرة على Pi 5" },
+        { val: "0", lbl: "منافذ مكشوفة خارج localhost (في الوضعين)" },
+        { val: "384 MB", lbl: "حد ذاكرة ثابت لـ n8n في وضع Pi بذاكرة 4 GB" },
+        { val: "3 / 3", lbl: "قوالب تجتاز فحص CI للأسرار والعناوين الخاصة" },
       ],
       lifeImpact: [
         "يغنيك عن اشتراكات Zapier/Make بمنصة خاصة تملكها بتكلفة 0 يورو شهرياً.",
@@ -336,9 +336,9 @@ const DATA = {
         },
       ],
       metrics: [
-        { val: "100%", lbl: "12/12 golden evals passing in CI" },
-        { val: "$0.00", lbl: "Cost to block prompt injections" },
-        { val: "<100 MB", lbl: "Container RAM footprint on ARM64" },
+        { val: "12 / 12", lbl: "golden evals (EN/DE/AR) pass in CI" },
+        { val: "1.9 ms · $0", lbl: "prompt injection blocked before any model call" },
+        { val: "68 MB", lbl: "measured container RAM on the Pi 5" },
       ],
       lifeImpact: [
         "Delegate real daily tasks (contracts, backups, server checks) with a hard mathematical ceiling on API spend.",
@@ -407,9 +407,9 @@ const DATA = {
         },
       ],
       metrics: [
-        { val: "100%", lbl: "12/12 Golden-Evals grün in CI" },
-        { val: "$0.00", lbl: "Kosten für blockierte Angriffe" },
-        { val: "<100 MB", lbl: "Container-RAM auf ARM64" },
+        { val: "12 / 12", lbl: "Golden-Evals (EN/DE/AR) grün in CI" },
+        { val: "1,9 ms · 0 $", lbl: "Prompt-Injection vor jedem Modellaufruf blockiert" },
+        { val: "68 MB", lbl: "gemessener Container-RAM auf dem Pi 5" },
       ],
       lifeImpact: [
         "Alltagsaufgaben mit mathematisch festem Kostenlimit delegieren.",
@@ -478,9 +478,9 @@ const DATA = {
         },
       ],
       metrics: [
-        { val: "100%", lbl: "نجاح 12/12 اختبار تقييم في CI" },
-        { val: "$0.00", lbl: "تكلفة صدّ محاولات حقن الأوامر" },
-        { val: "<100 MB", lbl: "استهلاك الذاكرة على ARM64" },
+        { val: "12 / 12", lbl: "اختبار تقييم (EN/DE/AR) ناجح في CI" },
+        { val: "1.9 ms · $0", lbl: "صدّ حقن الأوامر قبل أي استدعاء للنموذج" },
+        { val: "68 MB", lbl: "ذاكرة الحاوية المقاسة على Pi 5" },
       ],
       lifeImpact: [
         "تفويض مهام يومية حقيقية بسقف مالي رياضي صارم.",
@@ -552,18 +552,18 @@ const DATA = {
         },
       ],
       metrics: [
-        { val: "5 sec", lbl: "Voice note to actionable answer" },
-        { val: "30 sec", lbl: "Local /demo test without Meta keys" },
-        { val: "5 min", lbl: "Sender-bound HITL approval TTL" },
+        { val: "0", lbl: "Meta keys needed to try the local /demo" },
+        { val: "38 MB", lbl: "measured container RAM on the Pi 5" },
+        { val: "5 min", lbl: "sender-bound approval code lifetime" },
       ],
       lifeImpact: [
-        "Turns WhatsApp into a private, voice-first command center for your server, notes, and documents.",
+        "Designed to turn WhatsApp into a private command center for your server, notes and documents (text works today; voice notes need a real transcription service plugged in).",
         "Manage tasks in seconds while commuting in Arabic, German, or English — no laptop required.",
         "Sender-bound YES/NO codes ensure an accidental voice note can never break a running service.",
       ],
       projImpact: [
         "Official WhatsApp Cloud API webhook architecture instead of fragile browser-scraping bots.",
-        "Built-in /demo simulator + n8n router lets stakeholders test live in 30 seconds without Meta keys.",
+        "Built-in /demo simulator + n8n router lets anyone try the flow locally without Meta keys.",
         "Demonstrates constant-time HMAC, allowlists, TTL approvals, and automated pytest CI.",
       ],
     },
@@ -623,12 +623,12 @@ const DATA = {
         },
       ],
       metrics: [
-        { val: "5 Sek.", lbl: "Von Sprachnotiz zur Antwort" },
-        { val: "30 Sek.", lbl: "Lokaler /demo-Test ohne Meta-Keys" },
-        { val: "5 Min.", lbl: "Sendergebundene HITL-Gültigkeit" },
+        { val: "0", lbl: "Meta-Keys nötig für die lokale /demo" },
+        { val: "38 MB", lbl: "gemessener Container-RAM auf dem Pi 5" },
+        { val: "5 Min.", lbl: "Gültigkeit des sendergebundenen Freigabecodes" },
       ],
       lifeImpact: [
-        "WhatsApp wird zur privaten Sprach-Zentrale für Homelab, Notizen und Dokumente.",
+        "Gedacht als private Steuerzentrale über WhatsApp für Homelab, Notizen und Dokumente (Text läuft heute; für Sprachnotizen muss ein echter Transkriptionsdienst angebunden werden).",
         "Unterwegs in Sekunden nutzbar auf Deutsch, Englisch oder Arabisch.",
         "JA/NEIN-Codes verhindern versehentliche Eingriffe zuverlässig.",
       ],
@@ -694,18 +694,18 @@ const DATA = {
         },
       ],
       metrics: [
-        { val: "5 ثوانٍ", lbl: "من رسالة صوتية إلى إجابة عملية" },
-        { val: "30 ثانية", lbl: "تجربة محلية عبر /demo بدون مفاتيح Meta" },
+        { val: "0", lbl: "مفاتيح Meta مطلوبة لتجربة /demo محلياً" },
+        { val: "38 MB", lbl: "ذاكرة الحاوية المقاسة على Pi 5" },
         { val: "5 دقائق", lbl: "صلاحية رمز الموافقة المرتبط بالمرسِل" },
       ],
       lifeImpact: [
-        "يحوّل واتساب إلى مركز تحكم صوتي خاص للسيرفر والملاحظات والمستندات.",
+        "مصمَّم ليحوّل واتساب إلى مركز تحكم خاص للسيرفر والملاحظات والمستندات (النص يعمل اليوم؛ الرسائل الصوتية تحتاج ربط خدمة تفريغ نصي حقيقية).",
         "أنجز المهام خلال ثوانٍ بالعربية أو الألمانية أو الإنجليزية.",
         "رموز التأكيد تمنع أي إجراء خاطئ غير مقصود.",
       ],
       projImpact: [
         "بنية رسمية وآمنة لـ WhatsApp Cloud API بدلاً من الحلول الهشّة.",
-        "محاكي /demo وموجّه n8n لعرض النظام حياً خلال 30 ثانية.",
+        "محاكي /demo وموجّه n8n لتجربة النظام محلياً بدون مفاتيح Meta.",
         "توقيع HMAC وقوائم سماح وموافقات مؤقتة واختبارات CI كاملة.",
       ],
     },
@@ -763,6 +763,7 @@ const uid = `aiv3d-${slug}`;
           <div class="tel-item"><span>{u.cost}</span><b data-cost>{spec.scenarios[0].cost}</b></div>
           <div class="tel-item"><span>{u.guard}</span><b data-guard>{spec.scenarios[0].guard}</b></div>
         </div>
+        <p class="aiv3d-telnote">{u.telNote}</p>
       </div>
 
       <div class="aiv3d-right">
@@ -978,6 +979,7 @@ const uid = `aiv3d-${slug}`;
     color: var(--fg);
   }
 
+  .aiv3d-telnote { margin: 8px 2px 0; font-size: 12px; line-height: 1.5; color: var(--muted); }
   .aiv3d-telemetry {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

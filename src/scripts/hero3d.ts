@@ -187,7 +187,9 @@ if (cv) {
         });
       }
       composer.render();
+      if (!shown) { shown = true; cv.closest(".viz")?.classList.add("live"); }   // fade out the still picture
     };
+    let shown = false;
     requestAnimationFrame(tick);
   }
 }

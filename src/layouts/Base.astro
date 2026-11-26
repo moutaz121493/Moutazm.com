@@ -6,14 +6,13 @@ import "@fontsource/ibm-plex-sans/600.css";
 import "@fontsource/ibm-plex-sans-arabic/400.css";
 import "@fontsource/ibm-plex-sans-arabic/600.css";
 import "@fontsource/jetbrains-mono/400.css";
-import "@fontsource/jetbrains-mono/500.css";
 import "../styles/global.css";
 import Guide from "../components/Guide.astro";
 // preloaded: the hero title + body fonts, so they are ready before first paint (no swap jump)
 import fDisplay from "@fontsource/chakra-petch/files/chakra-petch-latin-700-normal.woff2?url";
 import fBody from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url";
 import fArabic from "@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-600-normal.woff2?url";
-import { LANGS, DIR, LANG_NAME, ui, path, LINKS } from "../content/site.js";
+import { LANGS, DIR, LANG_NAME, ui, path, LINKS, experience, education, languages } from "../content/site.js";
 
 interface Props { lang: string; route?: string; title: string; description: string; noindex?: boolean; }
 const { lang, route = "/", title, description, noindex = false } = Astro.props;
@@ -24,6 +23,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const href = (p) => base + p;
 const ogLocale = { en: "en_US", de: "de_DE", ar: "ar" }[lang];
 const home = href(path(lang, "/"));
+// schema.org Person: lets search engines show a proper profile result for the name (data = the public CV)
+const person = {
+  "@context": "https://schema.org", "@type": "Person", name: "Moutaz Mohammad", url: site + "/",
+  jobTitle: ui.en.hero.title, description: ui.en.hero.line, email: `mailto:${LINKS.email}`, image: `${site}/og/en.png`,
+  address: { "@type": "PostalAddress", addressLocality: "Wolfenbüttel", addressCountry: "DE" },
+  sameAs: [LINKS.linkedin, LINKS.github],
+  worksFor: experience.filter((e) => !e.to).map((e) => ({ "@type": "Organization", name: e.org, url: e.url })),
+  alumniOf: education.map((e) => ({ "@type": "CollegeOrUniversity", name: e.school.replace(/ \(online\)$/, "") })),
+  knowsLanguage: languages.map((x) => x.name.en),
+  knowsAbout: ["CAN FD", "Embedded systems", "Automotive networks", "Linux", "Retrieval-augmented generation", "Applied AI"],
+};
 ---
 <!doctype html>
 <html lang={lang} dir={DIR[lang]} data-theme="dark">
@@ -50,6 +60,7 @@ const home = href(path(lang, "/"));
   <meta name="twitter:image" content={`${site}/og/${lang}.png`} />
   <meta name="theme-color" content="#05090e" />
   <link rel="icon" href={href("/favicon.svg")} type="image/svg+xml" />
+  {route === "/" && <script type="application/ld+json" set:html={JSON.stringify(person).replace(/</g, "\\u003c")} />}
   <script is:inline>
     document.documentElement.classList.add("js");
     /* saved choice first, otherwise follow the device setting (dark = HUD stays the default) */

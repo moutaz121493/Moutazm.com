@@ -53,7 +53,7 @@ const svg = (k) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
           <div class="proj-top">
             <span class:list={["status", p.status]}><i></i>{t.projects.status[p.status]}</span>
             <span class="mono pn">
-              {[].concat(p.tool || []).includes("ai-visual") && <em class="tag3d">3D LIVE</em>}
+              {[].concat(p.tool || []).includes("ai-visual") && <em class="tag3d">3D</em>}
               P{String(i + 1).padStart(2, "0")}
             </span>
           </div>

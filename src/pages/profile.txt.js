@@ -6,6 +6,7 @@ import { projects } from "../content/projects.js";
 const ok = (s) => s && !String(s).includes("TODO(user)");
 const L = (o) => (o && typeof o === "object" ? o.en : o);
 
+const STATUS = { live: "running in my home", web: "runs in the browser", progress: "in progress", planned: "planned", oss: "open-source template on GitHub, tested in CI, not deployed in my home" };
 export function GET({ site }) {
   const base = site.toString().replace(/\/$/, "");
   const t = ui.en;
@@ -27,7 +28,7 @@ export function GET({ site }) {
     "", "## Own projects",
     ...projects.map((p) => {
       const e = p.en;
-      const parts = [`### ${e.title} (${p.status}) - ${base}/projects/${p.slug}/`, e.tagline, `Tags: ${(p.tags || []).join(", ")}`];
+      const parts = [`### ${e.title} (${STATUS[p.status] || p.status}) - ${base}/projects/${p.slug}/`, e.tagline, `Tags: ${(p.tags || []).join(", ")}`];
       for (const k of ["problem", "decisions", "learned"]) if (e[k]) parts.push(`${k}: ${[].concat(e[k]).map((x) => (typeof x === "object" ? Object.values(x).join(": ") : x)).join(" ")}`);
       return parts.join("\n");
     }),
