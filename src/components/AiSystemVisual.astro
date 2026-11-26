@@ -827,6 +827,10 @@ const uid = `aiv3d-${slug}`;
 
 <script>
   import * as THREE from "three";
+  import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+  import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+  import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+  import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 
   document.querySelectorAll<HTMLElement>(".aiv3d").forEach((root) => {
     const raw = root.dataset.spec;
@@ -862,9 +866,17 @@ const uid = `aiv3d-${slug}`;
     // --- Three.js 3D Floorplan Setup ---
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(40, 16 / 9, 0.1, 100);
+
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new UnrealBloomPass(new THREE.Vector2(720, 420), 0.65, 0.42, 0.22);
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
 
     const camTargets = {
       iso: { theta: 0.58, phi: 0.78, dist: 14.5 },
@@ -1019,6 +1031,7 @@ const uid = `aiv3d-${slug}`;
       const light = document.documentElement.dataset.theme === "light";
       baseMat.color.setHex(light ? 0xe7ecf2 : 0x0e1722);
       nodeMeshes.forEach((n) => n.mat.color.setHex(light ? 0xdbe3ec : 0x18283a));
+      bloom.strength = light ? 0.16 : 0.68;
     }
     syncTheme();
     new MutationObserver(syncTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
@@ -1069,6 +1082,8 @@ const uid = `aiv3d-${slug}`;
       const w = canvas.clientWidth || 720;
       const h = canvas.clientHeight || 420;
       renderer.setSize(w, h, false);
+      composer.setSize(w, h);
+      bloom.setSize(w, h);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
     }
@@ -1201,7 +1216,7 @@ const uid = `aiv3d-${slug}`;
       });
 
       particles.rotation.y += dt * 0.04;
-      renderer.render(scene, camera);
+      composer.render();
     }
     requestAnimationFrame(tick);
   });

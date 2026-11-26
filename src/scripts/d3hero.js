@@ -5,6 +5,10 @@
 
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 
 const LOOP = 9.0;
 const X = [-6.6, -3.3, 0.0, 3.3, 6.6];
@@ -43,6 +47,13 @@ export function initD3() {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(36, 16 / 9, 0.1, 120);
   camera.position.set(0.6, 6.4, 16.2);
+
+  // Cinematic HDR Bloom Post-Processing
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  const bloom = new UnrealBloomPass(new THREE.Vector2(960, 540), 0.72, 0.45, 0.22);
+  composer.addPass(bloom);
+  composer.addPass(new OutputPass());
 
   const controls = new OrbitControls(camera, canvas);
   Object.assign(controls, {
@@ -137,6 +148,7 @@ export function initD3() {
     goldLight.color.copy(cAcc);
     cyanLight.color.copy(cAi);
     liveLight.color.copy(cLive);
+    bloom.strength = light ? 0.18 : 0.76;
   }
   applyTheme();
   new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
@@ -399,6 +411,8 @@ export function initD3() {
     const w = Math.max(300, r.width);
     const h = Math.max(240, r.height);
     renderer.setSize(w, h, false);
+    composer.setSize(w, h);
+    bloom.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
@@ -470,7 +484,7 @@ export function initD3() {
     });
 
     dust.rotation.y += dt * 0.025;
-    renderer.render(scene, camera);
+    composer.render();
 
     // Project 3D pedestal positions to 2D HUD labels
     const rw = stage.clientWidth;
