@@ -38,10 +38,12 @@ const next = projects[(i + 1) % projects.length];
       <p class="big">{c.problem}</p>
     </section>
 
-    <section class="part">
-      <h2 class="label">{t.architecture}</h2>
-      <Flow steps={p.flow} />
-    </section>
+    {![].concat(p.tool || []).includes("ai-visual") && (
+      <section class="part">
+        <h2 class="label">{t.architecture}</h2>
+        <Flow steps={p.flow} />
+      </section>
+    )}
 
     <div class="two">
       <section class="part">

@@ -66,6 +66,7 @@ const home = href(path(lang, "/"));
       <nav class="links" aria-label="Main">
         <a href={home + "#about"}>{t.nav.about}</a>
         <a href={home + "#projects"}>{t.nav.projects}</a>
+        <a class="nav3d mono" href={href(path(lang, "/3d"))}>3D</a>
         <a href={home + "#experience"}>{t.nav.work}</a>
         <a href={home + "#contact"}>{t.nav.contact}</a>
         <a class="cv" href={href(path(lang, "/cv"))}>{t.nav.cv}</a>
@@ -123,6 +124,8 @@ const home = href(path(lang, "/"));
   .links a { text-decoration: none; color: var(--muted); transition: color .2s; }
   .links a:hover, .links a.cv { color: var(--fg); }
   .links a.cv { border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; }
+  .links a.nav3d { color: var(--ai); font-size: 12.5px; font-weight: 600; border: 1px solid color-mix(in srgb, var(--ai) 45%, var(--line)); border-radius: 999px; padding: 2px 10px; }
+  .links a.nav3d:hover { border-color: var(--accent); color: var(--accent); }
   .tools { display: flex; align-items: center; gap: 10px; }
   .langs { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
   .langs a { font: 600 12px var(--f-mono); padding: 6px 9px; text-decoration: none; color: var(--muted); }

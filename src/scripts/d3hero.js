@@ -1,7 +1,6 @@
-// Premium PBR Interactive 3D Showcase for /3d/:
-// Five sculptural stages from a CAN FD signal frame to a grounded AI answer with sources.
-// Features ACESFilmic tone mapping, PBR metallic/glass materials, curved fiber conduits,
-// smooth camera fly-to presets, hover tooltips, and theme reactivity (dark HUD / light Retro-Tech).
+// Studio-Grade Precision CAD 3D Showcase for /3d/:
+// Five bespoke hardware-to-AI sculptures mounted along a brushed-slate optical bench.
+// Selective high-threshold bloom keeps dark anodized metal & glass razor-sharp with zero neon smear.
 
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -42,16 +41,16 @@ export function initD3() {
 
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+  renderer.toneMappingExposure = 1.05;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(36, 16 / 9, 0.1, 120);
-  camera.position.set(0.6, 6.4, 16.2);
+  const camera = new THREE.PerspectiveCamera(35, 16 / 9, 0.1, 120);
+  camera.position.set(0.4, 5.8, 15.8);
 
-  // Cinematic HDR Bloom Post-Processing
+  // Selective bloom: high threshold (0.85) so ONLY true emissive filaments glow, keeping metal crisp
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(960, 540), 0.72, 0.45, 0.22);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(960, 540), 0.28, 0.32, 0.85);
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
 
@@ -61,65 +60,74 @@ export function initD3() {
     dampingFactor: 0.06,
     enablePan: false,
     minDistance: 6.5,
-    maxDistance: 26,
+    maxDistance: 25,
     maxPolarAngle: Math.PI * 0.48,
   });
   controls.target.set(0, 0.25, 0);
 
-  // --- Studio 3-Point + Accent Lighting ---
-  const hemi = new THREE.HemisphereLight(0xdbeafe, 0x0b1118, 0.85);
-  scene.add(hemi);
-
-  const keyLight = new THREE.DirectionalLight(0xffffff, 1.55);
-  keyLight.position.set(9, 16, 11);
+  // --- Studio Key / Rim / Fill Lighting ---
+  scene.add(new THREE.HemisphereLight(0xe2e8f0, 0x090e14, 0.95));
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.9);
+  keyLight.position.set(8, 16, 12);
   scene.add(keyLight);
 
-  const goldLight = new THREE.PointLight(0xf5b83f, 2.2, 22);
-  goldLight.position.set(-6.5, 4.2, 3.5);
+  const rimBack = new THREE.DirectionalLight(0x4fd1ff, 0.85);
+  rimBack.position.set(-6, 8, -10);
+  scene.add(rimBack);
+
+  const goldLight = new THREE.PointLight(0xf5b83f, 1.6, 18);
+  goldLight.position.set(-5.5, 3.2, 4.0);
   scene.add(goldLight);
 
-  const cyanLight = new THREE.PointLight(0x4fd1ff, 2.4, 24);
-  cyanLight.position.set(4.5, 4.5, -3.5);
+  const cyanLight = new THREE.PointLight(0x4fd1ff, 1.8, 20);
+  cyanLight.position.set(3.5, 3.6, 4.0);
   scene.add(cyanLight);
 
-  const liveLight = new THREE.PointLight(0x45e08f, 1.6, 18);
-  liveLight.position.set(6.8, 3.6, 3.0);
-  scene.add(liveLight);
-
-  // --- Theme-reactive PBR Materials ---
+  // --- Precision CAD Materials ---
   const M = {
-    acc: new THREE.MeshStandardMaterial({ roughness: 0.28, metalness: 0.65, emissiveIntensity: 0.42 }),
-    ai: new THREE.MeshStandardMaterial({ roughness: 0.22, metalness: 0.55, emissiveIntensity: 0.48 }),
-    live: new THREE.MeshStandardMaterial({ roughness: 0.28, metalness: 0.45, emissiveIntensity: 0.45 }),
-    panel: new THREE.MeshStandardMaterial({ roughness: 0.45, metalness: 0.35 }),
-    pedestal: new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.3 }),
-    glass: new THREE.MeshPhysicalMaterial({ roughness: 0.12, metalness: 0.1, transmission: 0.35, transparent: true, opacity: 0.85 }),
-    metal: new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0.85 }),
-    muted: new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0.2 }),
-    die: new THREE.MeshStandardMaterial({ roughness: 0.18, metalness: 0.5, emissiveIntensity: 0.9, transparent: true }),
-    pipe: new THREE.MeshStandardMaterial({ roughness: 0.35, metalness: 0.6, transparent: true, opacity: 0.65 }),
-    edge: new THREE.LineBasicMaterial({ transparent: true, opacity: 0.32 }),
-    ring: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.35, side: THREE.DoubleSide }),
+    acc: new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0.75, emissiveIntensity: 0.65 }),
+    ai: new THREE.MeshStandardMaterial({ roughness: 0.22, metalness: 0.7, emissiveIntensity: 0.65 }),
+    live: new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0.65, emissiveIntensity: 0.65 }),
+    anodized: new THREE.MeshStandardMaterial({ roughness: 0.35, metalness: 0.82 }),
+    slate: new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.45 }),
+    chrome: new THREE.MeshStandardMaterial({ roughness: 0.18, metalness: 0.92 }),
+    glass: new THREE.MeshPhysicalMaterial({ roughness: 0.12, metalness: 0.1, transmission: 0.45, transparent: true, opacity: 0.88 }),
+    die: new THREE.MeshStandardMaterial({ roughness: 0.18, metalness: 0.6, emissiveIntensity: 0.95 }),
+    pipe: new THREE.MeshStandardMaterial({ roughness: 0.35, metalness: 0.75 }),
+    edgeCyan: new THREE.LineBasicMaterial({ transparent: true, opacity: 0.48 }),
+    edgeGold: new THREE.LineBasicMaterial({ transparent: true, opacity: 0.55 }),
   };
 
-  // Architectural floor + subtle dual grid
+  // Continuous Optical Hardware Bench underneath all 5 stages
+  const bench = new THREE.Group();
+  bench.position.y = -1.2;
+  scene.add(bench);
+
   const floorPlane = new THREE.Mesh(
-    new THREE.PlaneGeometry(46, 26),
-    new THREE.MeshStandardMaterial({ roughness: 0.82, metalness: 0.18 })
+    new THREE.PlaneGeometry(48, 28),
+    new THREE.MeshStandardMaterial({ roughness: 0.88, metalness: 0.15 })
   );
   floorPlane.rotation.x = -Math.PI / 2;
-  floorPlane.position.y = -1.22;
-  scene.add(floorPlane);
+  floorPlane.position.y = -0.06;
+  bench.add(floorPlane);
 
-  const grid = new THREE.GridHelper(38, 38);
-  grid.position.y = -1.2;
+  const grid = new THREE.GridHelper(36, 36);
+  grid.position.y = -0.04;
   grid.material.transparent = true;
-  scene.add(grid);
+  bench.add(grid);
 
-  const nodeMats = [];
+  // Machined optical rail spanning X = -8.4 .. +8.4
+  const railSlab = new THREE.Mesh(new THREE.BoxGeometry(17.2, 0.14, 3.2), M.slate);
+  railSlab.position.y = 0.04;
+  bench.add(railSlab);
+  const railEdges = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(17.22, 0.15, 3.22)), M.edgeCyan);
+  railEdges.position.y = 0.04;
+  bench.add(railEdges);
+
   let cAcc = new THREE.Color("#f5b83f");
   let cAi = new THREE.Color("#4fd1ff");
   let cLive = new THREE.Color("#45e08f");
+  const nodeMats = [];
 
   function applyTheme() {
     const light = document.documentElement.dataset.theme === "light";
@@ -132,128 +140,129 @@ export function initD3() {
     M.ai.color.copy(cAi); M.ai.emissive.copy(cAi);
     M.live.color.copy(cLive); M.live.emissive.copy(cLive);
     M.die.color.copy(cAcc); M.die.emissive.copy(cAcc);
-    M.panel.color = c("--panel", light ? "#f8f1e1" : "#111b26");
-    M.pedestal.color = c("--panel-2", light ? "#e6dac0" : "#162230");
-    M.glass.color = c("--panel-2", light ? "#ffffff" : "#1a2a3a");
-    M.metal.color = c("--muted", light ? "#7c6b55" : "#9db0bf");
-    M.muted.color = c("--muted", "#8d9ca8");
-    M.pipe.color = c("--line-2", "#2b3c4a");
-    M.edge.color.copy(cAi);
-    M.ring.color.copy(cAi);
 
-    floorPlane.material.color = c("--bg-2", light ? "#e2d6ba" : "#080e15");
-    grid.material.color = c("--line", light ? "#c3b28c" : "#1f2e3c");
-    grid.material.opacity = light ? 0.38 : 0.65;
-    scene.fog = new THREE.Fog(c("--bg-2", light ? "#e2d6ba" : "#080e15"), 17, 42);
-    goldLight.color.copy(cAcc);
-    cyanLight.color.copy(cAi);
-    liveLight.color.copy(cLive);
-    bloom.strength = light ? 0.18 : 0.76;
+    M.anodized.color.setHex(light ? 0xd8ccb4 : 0x131f2c);
+    M.slate.color.setHex(light ? 0xe5dac3 : 0x0f1923);
+    M.chrome.color.setHex(light ? 0x6c5c46 : 0xaec2d4);
+    M.glass.color.setHex(light ? 0xffffff : 0x1b2e42);
+    M.pipe.color.setHex(light ? 0x9e8c6c : 0x24384b);
+    M.edgeCyan.color.copy(cAi);
+    M.edgeGold.color.copy(cAcc);
+
+    floorPlane.material.color = c("--bg-2", light ? "#e2d6ba" : "#070c12");
+    grid.material.color = c("--line", light ? "#c3b28c" : "#1a2836");
+    grid.material.opacity = light ? 0.35 : 0.55;
+    scene.fog = new THREE.Fog(c("--bg-2", light ? "#e2d6ba" : "#070c12"), 18, 42);
+    bloom.strength = light ? 0.12 : 0.28;
   }
   applyTheme();
   new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
   const ghost = new THREE.MeshBasicMaterial({ visible: false });
   const hit = [];
-  const pedestals = [];
 
-  function makePedestal(x, accentMat) {
-    const pg = new THREE.Group();
-    pg.position.set(x, -1.2, 0);
-    const base = new THREE.Mesh(new THREE.CylinderGeometry(1.38, 1.54, 0.24, 32), M.pedestal);
-    base.position.y = 0.12;
-    pg.add(base);
-    const trim = new THREE.Mesh(new THREE.TorusGeometry(1.42, 0.028, 12, 48), accentMat);
-    trim.rotation.x = Math.PI / 2;
-    trim.position.y = 0.25;
-    pg.add(trim);
-    scene.add(pg);
-    pedestals.push({ group: pg, trim });
-    return pg;
+  function makeMountPad(x, trimMat) {
+    const g = new THREE.Group();
+    g.position.set(x, -1.08, 0);
+    const pad = new THREE.Mesh(new THREE.BoxGeometry(2.35, 0.12, 2.35), M.anodized);
+    g.add(pad);
+    const rim = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(2.37, 0.13, 2.37)), trimMat);
+    g.add(rim);
+    scene.add(g);
   }
 
-  // ----- 01 CAN FD Signal Bus (Extruded 3D differential tubes) -----
-  makePedestal(X[0], M.acc);
-  const g1 = new THREE.Group(); g1.position.set(X[0], 0.1, 0); scene.add(g1);
-  const BITS = [1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1];
-  function buildWaveTube(rec, dom, zOff, mat) {
+  // ----- 01 CAN FD Differential Bus (Crisp 3D traces + transceiver block) -----
+  makeMountPad(X[0], M.edgeGold);
+  const g1 = new THREE.Group(); g1.position.set(X[0], 0.05, 0); scene.add(g1);
+  const BITS = [1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1];
+  function buildSquareTrace(highY, lowY, zOff, mat) {
     const pts = [];
-    let x = -1.25;
-    const step = 2.5 / BITS.length;
+    let x = -1.08;
+    const step = 2.16 / BITS.length;
     for (const b of BITS) {
-      const y = b ? rec : dom;
-      pts.push(new THREE.Vector3(x, y, zOff), new THREE.Vector3(x + step * 0.92, y, zOff));
+      const y = b ? lowY : highY;
+      pts.push(new THREE.Vector3(x, y, zOff), new THREE.Vector3(x + step * 0.94, y, zOff));
       x += step;
     }
-    const curve = new THREE.CatmullRomCurve3(pts, false, "catmullrom", 0.08);
-    return new THREE.Mesh(new THREE.TubeGeometry(curve, 96, 0.048, 10, false), mat);
+    const curve = new THREE.CatmullRomCurve3(pts, false, "catmullrom", 0.02);
+    return new THREE.Mesh(new THREE.TubeGeometry(curve, 120, 0.032, 8, false), mat);
   }
-  const waveH = buildWaveTube(0.28, 0.82, 0.26, M.acc);
-  const waveL = buildWaveTube(-0.12, -0.58, -0.26, M.ai);
-  g1.add(waveH, waveL);
-  const busPlate = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.08, 1.15), M.glass);
-  busPlate.position.y = -0.82;
-  g1.add(busPlate);
-  hit.push(new THREE.Mesh(new THREE.BoxGeometry(3.0, 2.4, 2.4), ghost));
-  hit[0].position.set(X[0], 0.2, 0);
+  const waveH = buildSquareTrace(0.72, 0.22, 0.28, M.acc);
+  const waveL = buildSquareTrace(-0.52, -0.04, -0.28, M.ai);
+  const scopeScreen = new THREE.Mesh(new THREE.BoxGeometry(2.3, 1.55, 0.06), M.glass);
+  scopeScreen.position.set(0, 0.1, 0);
+  const scopeFrame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(2.34, 1.59, 0.08)), M.edgeGold);
+  scopeFrame.position.copy(scopeScreen.position);
+  g1.add(scopeScreen, scopeFrame, waveH, waveL);
+  hit.push(new THREE.Mesh(new THREE.BoxGeometry(2.6, 2.2, 2.2), ghost));
+  hit[0].position.set(X[0], 0.1, 0);
 
-  // ----- 02 Automotive MCU Silicon Package -----
-  makePedestal(X[1], M.acc);
-  const g2 = new THREE.Group(); g2.position.set(X[1], -0.1, 0); scene.add(g2);
-  const body = new THREE.Mesh(new THREE.BoxGeometry(1.78, 0.34, 1.78), M.panel);
-  g2.add(body);
-  const heatSpreader = new THREE.Mesh(new THREE.BoxGeometry(1.22, 0.08, 1.22), M.metal);
-  heatSpreader.position.y = 0.2;
-  g2.add(heatSpreader);
-  const dieCore = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.06, 0.64), M.die);
-  dieCore.position.y = 0.26;
-  g2.add(dieCore);
-  for (let i = 0; i < 6; i++) {
-    const o = -0.65 + i * 0.26;
-    const p1 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.3), M.metal); p1.position.set(o, -0.1, 1.02);
-    const p2 = p1.clone(); p2.position.set(o, -0.1, -1.02);
-    const p3 = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.08), M.metal); p3.position.set(1.02, -0.1, o);
-    const p4 = p3.clone(); p4.position.set(-1.02, -0.1, o);
+  // ----- 02 Automotive MCU Silicon (QFP-32 IC package + brushed heat spreader + die) -----
+  makeMountPad(X[1], M.edgeGold);
+  const g2 = new THREE.Group(); g2.position.set(X[1], -0.22, 0); scene.add(g2);
+  const icBody = new THREE.Mesh(new THREE.BoxGeometry(1.76, 0.28, 1.76), M.anodized);
+  const icEdges = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.78, 0.29, 1.78)), M.edgeGold);
+  const spreader = new THREE.Mesh(new THREE.BoxGeometry(1.18, 0.07, 1.18), M.chrome);
+  spreader.position.y = 0.17;
+  const dieCore = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.06, 0.58), M.die);
+  dieCore.position.y = 0.22;
+  g2.add(icBody, icEdges, spreader, dieCore);
+  for (let i = 0; i < 8; i++) {
+    const o = -0.7 + i * 0.2;
+    const leadZ = new THREE.BoxGeometry(0.06, 0.05, 0.26);
+    const leadX = new THREE.BoxGeometry(0.26, 0.05, 0.06);
+    const p1 = new THREE.Mesh(leadZ, M.chrome); p1.position.set(o, -0.08, 1.0);
+    const p2 = new THREE.Mesh(leadZ, M.chrome); p2.position.set(o, -0.08, -1.0);
+    const p3 = new THREE.Mesh(leadX, M.chrome); p3.position.set(1.0, -0.08, o);
+    const p4 = new THREE.Mesh(leadX, M.chrome); p4.position.set(-1.0, -0.08, o);
     g2.add(p1, p2, p3, p4);
   }
-  const mcuRing = new THREE.Mesh(new THREE.TorusGeometry(1.05, 0.02, 10, 48), M.acc);
+  const mcuRing = new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.016, 12, 64), M.acc);
   mcuRing.rotation.x = Math.PI / 2;
-  mcuRing.position.y = 0.48;
+  mcuRing.position.y = 0.52;
   g2.add(mcuRing);
-  hit.push(new THREE.Mesh(new THREE.BoxGeometry(2.6, 2.2, 2.6), ghost));
-  hit[1].position.set(X[1], 0.1, 0);
+  hit.push(new THREE.Mesh(new THREE.BoxGeometry(2.5, 2.0, 2.5), ghost));
+  hit[1].position.set(X[1], 0.0, 0);
 
-  // ----- 03 Token Embedding Crystal Matrix -----
-  makePedestal(X[2], M.ai);
-  const g3 = new THREE.Group(); g3.position.set(X[2], 0.05, 0); scene.add(g3);
+  // ----- 03 Hybrid Vector Tensor Cube (3x3x2 dark-glass & active voxel array) -----
+  makeMountPad(X[2], M.edgeCyan);
+  const g3 = new THREE.Group(); g3.position.set(X[2], 0.12, 0); scene.add(g3);
+  const tensorCage = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.92, 1.52, 1.92)), M.edgeCyan);
+  tensorCage.position.y = 0.08;
+  g3.add(tensorCage);
   const cubes = [];
-  for (let j = 0; j < 3; j++) {
-    for (let i = 0; i < 3; i++) {
-      const h = 0.36 + ((i * 5 + j * 3) % 4) * 0.16;
-      const mat = [M.ai, M.acc, M.live][(i + j) % 3];
-      const cube = new THREE.Mesh(new THREE.BoxGeometry(0.42, h, 0.42), mat);
+  for (let z = 0; z < 3; z++) {
+    for (let x = 0; x < 3; x++) {
+      const h = 0.32 + ((x * 5 + z * 3) % 4) * 0.16;
+      const isHot = (x + z) % 2 === 0;
+      const mat = isHot ? ((x === 1 && z === 1) ? M.acc : M.ai) : M.anodized;
+      const voxel = new THREE.Mesh(new THREE.BoxGeometry(0.42, h, 0.42), mat);
       const baseY = -0.58 + h / 2;
-      cube.position.set((i - 1) * 0.56, baseY, (j - 1) * 0.56);
-      cube.userData.baseY = baseY;
-      cube.userData.phase = i * 0.7 + j * 0.9;
-      g3.add(cube);
-      cubes.push(cube);
+      voxel.position.set((x - 1) * 0.56, baseY, (z - 1) * 0.56);
+      voxel.userData.baseY = baseY;
+      voxel.userData.phase = x * 0.8 + z * 1.1;
+      g3.add(voxel);
+      cubes.push(voxel);
     }
   }
   hit.push(new THREE.Mesh(new THREE.BoxGeometry(2.4, 2.2, 2.4), ghost));
-  hit[2].position.set(X[2], 0.2, 0);
+  hit[2].position.set(X[2], 0.15, 0);
 
-  // ----- 04 Sculptural Neural Core -----
-  makePedestal(X[3], M.ai);
-  const g4 = new THREE.Group(); g4.position.set(X[3], 0.35, 0); scene.add(g4);
-  const NET = [3, 4, 4, 2];
+  // ----- 04 Multi-Plane Neural Architecture (3 parallel glass layer slices + crisp nodes) -----
+  makeMountPad(X[3], M.edgeCyan);
+  const g4 = new THREE.Group(); g4.position.set(X[3], 0.28, 0); scene.add(g4);
+  const NET = [3, 4, 3];
   const nodes = [];
   NET.forEach((n, li) => {
+    const lx = -0.78 + li * 0.78;
+    const slice = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(0.06, 1.72, 1.48)), M.edgeCyan);
+    slice.position.x = lx;
+    g4.add(slice);
     for (let k = 0; k < n; k++) {
-      const mat = new THREE.MeshStandardMaterial({ roughness: 0.2, metalness: 0.5, emissiveIntensity: 0.5 });
+      const mat = new THREE.MeshStandardMaterial({ roughness: 0.22, metalness: 0.7, emissiveIntensity: 0.55 });
       nodeMats.push(mat);
-      const node = new THREE.Mesh(new THREE.SphereGeometry(0.16, 24, 18), mat);
-      node.position.set(-1.14 + li * 0.76, (k - (n - 1) / 2) * 0.56, (k % 2 ? 0.32 : -0.32));
+      const node = new THREE.Mesh(new THREE.OctahedronGeometry(0.13, 1), mat);
+      node.position.set(lx, (k - (n - 1) / 2) * 0.46, (k % 2 ? 0.28 : -0.28));
       node.userData.layer = li;
       g4.add(node);
       nodes.push(node);
@@ -261,79 +270,72 @@ export function initD3() {
   });
   const ep = [];
   nodes.forEach((a) => nodes.forEach((b) => { if (b.userData.layer === a.userData.layer + 1) ep.push(a.position, b.position); }));
-  g4.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(ep), M.edge));
-  hit.push(new THREE.Mesh(new THREE.BoxGeometry(2.9, 2.6, 2.2), ghost));
-  hit[3].position.set(X[3], 0.35, 0);
+  g4.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(ep), M.edgeCyan));
+  hit.push(new THREE.Mesh(new THREE.BoxGeometry(2.6, 2.4, 2.2), ghost));
+  hit[3].position.set(X[3], 0.28, 0);
 
-  // ----- 05 Grounded Answer & Citations Monolith -----
-  makePedestal(X[4], M.live);
-  const g5 = new THREE.Group(); g5.position.set(X[4], 0.45, 0); scene.add(g5);
-  const docBack = new THREE.Mesh(new THREE.BoxGeometry(1.72, 2.18, 0.14), M.panel);
-  const docGlass = new THREE.Mesh(new THREE.BoxGeometry(1.78, 2.24, 0.06), M.glass);
-  docGlass.position.z = 0.08;
-  g5.add(docBack, docGlass);
-  const bars = [0.84, 0.72, 0.8, 0.54].map((f, i) => {
-    const geo = new THREE.BoxGeometry(1.32 * f, 0.08, 0.04);
-    geo.translate((1.32 * f) / 2, 0, 0);
-    const b = new THREE.Mesh(geo, M.metal);
-    b.position.set(-0.66, 0.68 - i * 0.28, 0.14);
+  // ----- 05 Grounded Answer Terminal (Illuminated angled glass display facing camera) -----
+  makeMountPad(X[4], M.edgeCyan);
+  const g5 = new THREE.Group();
+  g5.position.set(X[4], 0.35, 0);
+  g5.rotation.y = -0.28; // angled cleanly toward isometric viewer so it's 100% bright & legible
+  scene.add(g5);
+
+  const termBack = new THREE.Mesh(new THREE.BoxGeometry(1.76, 2.1, 0.12), M.anodized);
+  const termFrame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.8, 2.14, 0.15)), M.edgeCyan);
+  const termScreen = new THREE.Mesh(new THREE.BoxGeometry(1.62, 1.94, 0.04), M.glass);
+  termScreen.position.z = 0.06;
+  g5.add(termBack, termFrame, termScreen);
+
+  const bars = [0.86, 0.72, 0.8, 0.56].map((f, i) => {
+    const geo = new THREE.BoxGeometry(1.28 * f, 0.075, 0.04);
+    geo.translate((1.28 * f) / 2, 0, 0);
+    const b = new THREE.Mesh(geo, i === 0 ? M.ai : M.chrome);
+    b.position.set(-0.64, 0.64 - i * 0.26, 0.11);
     g5.add(b);
     return b;
   });
   const cites = [0, 1].map((i) => {
-    const c = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.22, 0.05), i === 0 ? M.acc : M.live);
-    c.position.set(-0.42 + i * 0.56, -0.58, 0.14);
+    const c = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.2, 0.05), i === 0 ? M.acc : M.live);
+    c.position.set(-0.4 + i * 0.56, -0.56, 0.11);
     g5.add(c);
     return c;
   });
-  const halo = new THREE.Mesh(new THREE.TorusGeometry(1.38, 0.018, 10, 64), M.live);
-  halo.rotation.x = Math.PI * 0.38;
+  const halo = new THREE.Mesh(new THREE.TorusGeometry(1.25, 0.015, 12, 64), M.live);
+  halo.rotation.x = Math.PI * 0.42;
   g5.add(halo);
-  hit.push(new THREE.Mesh(new THREE.BoxGeometry(2.4, 2.8, 1.8), ghost));
-  hit[4].position.set(X[4], 0.45, 0);
+  hit.push(new THREE.Mesh(new THREE.BoxGeometry(2.4, 2.6, 1.8), ghost));
+  hit[4].position.set(X[4], 0.35, 0);
 
   hit.forEach((h, i) => { h.userData.i = i; scene.add(h); });
 
-  // ----- Curved Fiber-Optic Conduits + Luminous Data Packets -----
+  // ----- Recessed Optical Conduits + Safe Clamped Data Packets -----
   const conduits = [];
   const packets = [];
   for (let i = 0; i < 4; i++) {
-    const a = new THREE.Vector3(X[i] + 1.15, -0.78, 0);
-    const b = new THREE.Vector3(X[i + 1] - 1.15, -0.78, 0);
+    const a = new THREE.Vector3(X[i] + 1.18, -0.92, 0);
+    const b = new THREE.Vector3(X[i + 1] - 1.18, -0.92, 0);
     const mid = a.clone().lerp(b, 0.5);
-    mid.y = -0.25;
+    mid.y = -0.58;
     const curve = new THREE.CatmullRomCurve3([a, mid, b]);
     conduits.push(curve);
-    scene.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.045, 10, false), M.pipe));
+    scene.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 28, 0.032, 8, false), M.pipe));
 
     for (let k = 0; k < 2; k++) {
-      const pMat = new THREE.MeshBasicMaterial({ color: i < 2 ? cAcc : i === 2 ? cAi : cLive });
-      const p = new THREE.Mesh(new THREE.SphereGeometry(0.11, 16, 12), pMat);
+      const pMat = i < 2 ? M.acc : i === 2 ? M.ai : M.live;
+      const p = new THREE.Mesh(new THREE.SphereGeometry(0.085, 14, 10), pMat);
       scene.add(p);
-      packets.push({ mesh: p, seg: i, t: k * 0.5, speed: 0.42 });
+      packets.push({ mesh: p, seg: i, t: k * 0.5, speed: 0.44 });
     }
   }
 
-  // ----- Ambient Telemetry Dust -----
-  const dustCount = 90;
-  const dustPos = new Float32Array(dustCount * 3);
-  for (let i = 0; i < dustCount; i++) {
-    dustPos[i * 3] = (Math.random() - 0.5) * 24;
-    dustPos[i * 3 + 1] = -0.8 + Math.random() * 6.5;
-    dustPos[i * 3 + 2] = (Math.random() - 0.5) * 12;
-  }
-  const dustGeo = new THREE.BufferGeometry();
-  dustGeo.setAttribute("position", new THREE.BufferAttribute(dustPos, 3));
-  const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ color: 0x4fd1ff, size: 0.075, transparent: true, opacity: 0.45 }));
-  scene.add(dust);
-
-  // ----- Smooth Camera Fly-To & Presets -----
+  // ----- Camera Presets & Stage Card Fly-To -----
   let flyPos = null;
   let flyTarget = null;
   const PRESETS = {
-    iso: { pos: new THREE.Vector3(0.6, 6.4, 16.2), target: new THREE.Vector3(0, 0.25, 0) },
-    top: { pos: new THREE.Vector3(0, 16.5, 4.2), target: new THREE.Vector3(0, 0, 0) },
-    low: { pos: new THREE.Vector3(-4.2, 2.8, 13.8), target: new THREE.Vector3(0.5, 0.4, 0) },
+    iso: { pos: new THREE.Vector3(0.4, 5.8, 15.8), target: new THREE.Vector3(0, 0.25, 0) },
+    top: { pos: new THREE.Vector3(0, 16.2, 3.8), target: new THREE.Vector3(0, 0, 0) },
+    low: { pos: new THREE.Vector3(-4.0, 2.6, 13.4), target: new THREE.Vector3(0.4, 0.3, 0) },
   };
   let autoOrbit = !reduce;
 
@@ -365,7 +367,7 @@ export function initD3() {
       const idx = Number(card.getAttribute("data-d3-focus"));
       if (Number.isNaN(idx) || idx < 0 || idx >= X.length) return;
       autoOrbit = false;
-      flyTo(new THREE.Vector3(X[idx] * 0.82, 3.0, 7.6), new THREE.Vector3(X[idx], 0.35, 0));
+      flyTo(new THREE.Vector3(X[idx] * 0.85, 2.7, 7.2), new THREE.Vector3(X[idx], 0.25, 0));
       document.querySelectorAll("[data-d3-focus]").forEach((c) => c.classList.toggle("active", c === card));
     });
   });
@@ -376,7 +378,7 @@ export function initD3() {
     autoOrbit = false;
   });
 
-  // ----- Hover Tooltips & Click Navigation -----
+  // ----- Hover Tooltips -----
   const tip = document.getElementById("d3-tip");
   const ray = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
@@ -402,7 +404,6 @@ export function initD3() {
   canvas.addEventListener("pointerleave", () => { if (tip) tip.hidden = true; hover = -1; });
   canvas.addEventListener("dblclick", () => { if (hover >= 0 && stages[hover]) location.href = stages[hover].href; });
 
-  // ----- Projected Stage Labels -----
   const labelEls = Array.from(document.querySelectorAll("#d3-labels .lab"));
   const tmpV = new THREE.Vector3();
 
@@ -422,75 +423,70 @@ export function initD3() {
   let visible = true;
   new IntersectionObserver((entries) => { visible = entries[0]?.isIntersecting ?? true; }, { threshold: 0.05 }).observe(stage);
 
-  const t0 = performance.now();
-  let last = t0;
+  let startTime = 0;
+  let last = 0;
 
   function renderFrame(now) {
     requestAnimationFrame(renderFrame);
+    if (!startTime) startTime = now;
     if (!visible && fixedT === null) { last = now; return; }
-    const dt = Math.min((now - last) / 1000, 0.05);
+    const dt = last ? Math.max(0, Math.min((now - last) / 1000, 0.05)) : 0.016;
     last = now;
-    const t = fixedT !== null ? fixedT : (reduce ? 5.6 : ((now - t0) / 1000) % LOOP);
+    const elapsed = Math.max(0, (now - startTime) / 1000);
+    const t = fixedT !== null ? fixedT : (reduce ? 6.2 : elapsed % LOOP);
     const f = fixedT !== null || reduce ? 1 : fade(t);
 
-    // Smooth camera fly-to or gentle studio orbit
     if (flyPos && flyTarget) {
-      camera.position.lerp(flyPos, 0.075);
-      controls.target.lerp(flyTarget, 0.075);
+      camera.position.lerp(flyPos, 0.08);
+      controls.target.lerp(flyTarget, 0.08);
       if (camera.position.distanceTo(flyPos) < 0.06) { flyPos = null; flyTarget = null; }
     } else if (autoOrbit && fixedT === null) {
-      const ang = now * 0.00018;
-      camera.position.x = Math.sin(ang) * 4.2;
-      camera.position.z = 15.2 + Math.cos(ang) * 1.1;
+      const ang = elapsed * 0.18;
+      camera.position.x = Math.sin(ang) * 3.8;
+      camera.position.z = 15.2 + Math.cos(ang) * 1.0;
     }
     controls.update();
 
-    // Stage 1: gentle wave breathing
-    waveH.position.y = Math.sin(now * 0.0022) * 0.06;
-    waveL.position.y = -Math.sin(now * 0.0022) * 0.06;
+    waveH.position.y = Math.sin(elapsed * 2.2) * 0.04;
+    waveL.position.y = -Math.sin(elapsed * 2.2) * 0.04;
 
-    // Stage 2: MCU die pulse + orbital ring
-    M.die.emissiveIntensity = 0.35 + ramp(t, 1.3, 0.6) * f * 1.1;
+    M.die.emissiveIntensity = 0.4 + ramp(t, 1.2, 0.6) * f * 0.85;
     mcuRing.rotation.z += dt * 0.9;
 
-    // Stage 3: Levitating token crystals
     cubes.forEach((c, i) => {
-      const k = ramp(t, 2.0 + i * 0.1, 0.45) * f;
-      c.scale.y = Math.max(0.08, k);
-      c.position.y = c.userData.baseY + Math.sin(now * 0.0024 + c.userData.phase) * 0.09;
+      const k = 0.68 + 0.32 * ramp(t, 1.8 + i * 0.08, 0.45) * f;
+      c.scale.y = k;
+      c.position.y = c.userData.baseY + Math.sin(elapsed * 2.4 + c.userData.phase) * 0.06;
     });
 
-    // Stage 4: Neural core sweeping activation + slow sculptural rotation
-    g4.rotation.y = Math.sin(now * 0.0007) * 0.25;
+    g4.rotation.y = Math.sin(elapsed * 0.6) * 0.18;
     nodes.forEach((n, idx) => {
-      const act = ramp(t, 3.3 + n.userData.layer * 0.35, 0.45) * f;
+      const act = ramp(t, 3.2 + n.userData.layer * 0.35, 0.45) * f;
       const col = cAi.clone().lerp(cAcc, act);
       nodeMats[idx].color.copy(col);
       nodeMats[idx].emissive.copy(col);
-      nodeMats[idx].emissiveIntensity = 0.25 + act * 0.9;
-      n.scale.setScalar(0.92 + act * 0.26);
+      nodeMats[idx].emissiveIntensity = 0.35 + act * 0.65;
+      n.scale.setScalar(0.95 + act * 0.22);
     });
 
-    // Stage 5: Answer bars reveal + rotating verification halo
-    bars.forEach((b, i) => { b.scale.x = Math.max(0.02, ramp(t, 5.1 + i * 0.22, 0.42) * f); });
-    cites.forEach((c, i) => { c.scale.setScalar(Math.max(0.02, ramp(t, 6.0 + i * 0.2, 0.35) * f)); });
+    bars.forEach((b, i) => { b.scale.x = 0.65 + 0.35 * ramp(t, 5.0 + i * 0.2, 0.42) * f; });
+    cites.forEach((c, i) => { c.scale.setScalar(0.75 + 0.25 * ramp(t, 5.9 + i * 0.2, 0.35) * f); });
     halo.rotation.z += dt * 0.55;
-    g5.position.y = 0.45 + Math.sin(now * 0.0018) * 0.07;
+    g5.position.y = 0.35 + Math.sin(elapsed * 1.8) * 0.05;
 
-    // Luminous packets flowing along curved fiber conduits
     packets.forEach((p) => {
-      if (!reduce && fixedT === null) p.t = (p.t + dt * p.speed) % 1;
-      p.mesh.position.copy(conduits[p.seg].getPoint(p.t));
+      if (!reduce && fixedT === null) {
+        p.t = ((p.t + dt * p.speed) % 1 + 1) % 1;
+      }
+      p.mesh.position.copy(conduits[p.seg].getPoint(clamp(p.t, 0, 0.9999)));
     });
 
-    dust.rotation.y += dt * 0.025;
     composer.render();
 
-    // Project 3D pedestal positions to 2D HUD labels
     const rw = stage.clientWidth;
     const rh = stage.clientHeight;
     labelEls.forEach((el, i) => {
-      tmpV.set(X[i], -1.55, 1.45).project(camera);
+      tmpV.set(X[i], -1.48, 1.55).project(camera);
       el.style.left = `${(tmpV.x * 0.5 + 0.5) * rw}px`;
       el.style.top = `${(-tmpV.y * 0.5 + 0.5) * rh}px`;
       el.style.opacity = tmpV.z < 1 ? "1" : "0";
