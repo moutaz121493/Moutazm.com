@@ -27,7 +27,7 @@ export const path = (lang, p = "/") => {
 
 export const ui = {
   en: {
-    nav: { about: "About", work: "Experience", projects: "Projects", now: "Now", skills: "Skills", contact: "Contact", cv: "CV" },
+    nav: { about: "About", work: "Experience", projects: "Projects", d3: "3D", now: "Now", skills: "Skills", contact: "Contact", cv: "CV" },
     hero: {
       cta: { cv: "View CV", projects: "Projects", contact: "Contact" },
       lab: "the workbench", local: "Local time",
@@ -56,7 +56,8 @@ export const ui = {
     },
     cv: {
       h: "Curriculum vitae",
-      download: "Download PDF",
+      download: "Download CV (PDF)",
+      summary: "Profile",
       exp: "Experience",
       edu: "Education",
       skills: "Skills",
@@ -72,7 +73,7 @@ export const ui = {
     skip: "Skip to content",
   },
   de: {
-    nav: { about: "Über mich", work: "Erfahrung", projects: "Projekte", now: "Aktuell", skills: "Skills", contact: "Kontakt", cv: "Lebenslauf" },
+    nav: { about: "Über mich", work: "Erfahrung", projects: "Projekte", d3: "3D", now: "Aktuell", skills: "Skills", contact: "Kontakt", cv: "Lebenslauf" },
     hero: {
       cta: { cv: "Lebenslauf", projects: "Projekte", contact: "Kontakt" },
       lab: "die Werkbank", local: "Ortszeit",
@@ -101,7 +102,8 @@ export const ui = {
     },
     cv: {
       h: "Lebenslauf",
-      download: "PDF herunterladen",
+      download: "Lebenslauf herunterladen (PDF)",
+      summary: "Profil",
       exp: "Berufserfahrung",
       edu: "Ausbildung",
       skills: "Kenntnisse",
@@ -117,7 +119,7 @@ export const ui = {
     skip: "Zum Inhalt springen",
   },
   ar: {
-    nav: { about: "عنّي", work: "الخبرة", projects: "المشاريع", now: "الآن", skills: "المهارات", contact: "تواصل", cv: "السيرة الذاتية" },
+    nav: { about: "عنّي", work: "الخبرة", projects: "المشاريع", d3: "3D", now: "الآن", skills: "المهارات", contact: "تواصل", cv: "السيرة الذاتية" },
     hero: {
       cta: { cv: "السيرة الذاتية", projects: "المشاريع", contact: "تواصل" },
       lab: "طاولة العمل", local: "التوقيت المحلي",
@@ -146,7 +148,8 @@ export const ui = {
     },
     cv: {
       h: "السيرة الذاتية",
-      download: "تنزيل PDF",
+      download: "تنزيل السيرة الذاتية (PDF)",
+      summary: "نبذة مهنية",
       exp: "الخبرة المهنية",
       edu: "التعليم",
       skills: "المهارات",

@@ -66,10 +66,10 @@ const home = href(path(lang, "/"));
       <nav class="links" aria-label="Main">
         <a href={home + "#about"}>{t.nav.about}</a>
         <a href={home + "#projects"}>{t.nav.projects}</a>
-        <a class="nav3d mono" href={href(path(lang, "/3d"))}>3D</a>
+        <a href={href(path(lang, "/3d"))} aria-current={route === "/3d" ? "page" : undefined}>{t.nav.d3}</a>
         <a href={home + "#experience"}>{t.nav.work}</a>
         <a href={home + "#contact"}>{t.nav.contact}</a>
-        <a class="cv" href={href(path(lang, "/cv"))}>{t.nav.cv}</a>
+        <a class="cv" href={href(path(lang, "/cv"))} aria-current={route === "/cv" ? "page" : undefined}>{t.nav.cv}</a>
       </nav>
       <div class="tools">
         <div class="langs" role="group" aria-label={t.langSwitch}>
@@ -120,12 +120,16 @@ const home = href(path(lang, "/"));
   .mark i:nth-child(1) { height: 18px; } .mark i:nth-child(2) { height: 8px; opacity: .55; } .mark i:nth-child(3) { height: 14px; background: var(--ai); }
   .mark i { animation: eq 2.4s ease-in-out infinite; transform-origin: bottom; } .mark i:nth-child(2) { animation-delay: -.8s; } .mark i:nth-child(3) { animation-delay: -1.6s; }
   @keyframes eq { 50% { transform: scaleY(.55); } }
-  .links { display: flex; gap: 22px; margin-inline-start: auto; font-size: 14.5px; }
-  .links a { text-decoration: none; color: var(--muted); transition: color .2s; }
-  .links a:hover, .links a.cv { color: var(--fg); }
-  .links a.cv { border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; }
-  .links a.nav3d { color: var(--ai); font-size: 12.5px; font-weight: 600; border: 1px solid color-mix(in srgb, var(--ai) 45%, var(--line)); border-radius: 999px; padding: 2px 10px; }
-  .links a.nav3d:hover { border-color: var(--accent); color: var(--accent); }
+  .links { display: flex; align-items: center; gap: 24px; margin-inline-start: auto; font-size: 14.5px; }
+  .links a { position: relative; text-decoration: none; color: var(--muted); transition: color .2s ease; padding-block: 4px; }
+  .links a:not(.cv)::after {
+    content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 2px; border-radius: 2px;
+    background: var(--accent); transform: scaleX(0); transform-origin: center; transition: transform .22s ease-out;
+  }
+  .links a:hover, .links a[aria-current="page"], .links a.cv { color: var(--fg); }
+  .links a:not(.cv):hover::after, .links a:not(.cv)[aria-current="page"]::after { transform: scaleX(1); }
+  .links a.cv { border: 1px solid var(--line); border-radius: 6px; padding: 4px 12px; transition: border-color .2s, color .2s, background .2s; }
+  .links a.cv:hover, .links a.cv[aria-current="page"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
   .tools { display: flex; align-items: center; gap: 10px; }
   .langs { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
   .langs a { font: 600 12px var(--f-mono); padding: 6px 9px; text-decoration: none; color: var(--muted); }

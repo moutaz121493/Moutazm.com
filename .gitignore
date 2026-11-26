@@ -1,5 +1,5 @@
 node_modules/
 dist/
+dist-old-*/
 .astro/
-public/cv/*.pdf
 .DS_Store

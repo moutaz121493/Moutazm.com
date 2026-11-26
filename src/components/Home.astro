@@ -100,14 +100,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   <div class="wrap">
     <div class="sec-head reveal"><span class="idx">06</span><h2>{t.beyond.h}</h2></div>
     <div class="beyond">
-      {hobbies[lang].map((h) => (
-        <div class="hobby reveal">
-          <figure class="polaroid reveal">
-            <div class="shot"><Illo name={h.icon} /></div>
-            <figcaption class="mono">{h.h}</figcaption>
-          </figure>
-          <p set:html={todo(h.v)} />
-        </div>
+      {hobbies[lang].map((h, i) => (
+        <article class="hobby card reveal">
+          <div class="hobby-screen">
+            <span class="hobby-tag mono">0{i + 1} · {["CADENCE", "STRATEGY", "HOMELAB", "SYSTEMS"][i % 4]}</span>
+            <div class="hobby-art"><Illo name={h.icon} /></div>
+          </div>
+          <div class="hobby-copy">
+            <h3>{h.h}</h3>
+            <p set:html={todo(h.v)} />
+          </div>
+        </article>
       ))}
     </div>
   </div>
@@ -178,20 +181,36 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   @media (max-width: 960px) { .now { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 520px) { .now { grid-template-columns: 1fr; } }
 
-  .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
-  .skills .card { display: grid; gap: 14px; align-content: start; }
-  .skills h3 { font-size: 17px; }
+  .skills { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 18px; }
+  .skills .card { grid-column: span 2; display: grid; gap: 14px; align-content: start; border-top: 2px solid color-mix(in srgb, var(--accent) 45%, var(--line)); }
+  .skills .card:nth-child(1), .skills .card:nth-child(2) { grid-column: span 3; }
+  .skills .card:nth-child(4) { border-top-color: color-mix(in srgb, var(--ai) 65%, var(--line)); }
+  .skills h3 { font-size: 18px; }
   .skills .chip { color: var(--fg); background: var(--panel-2); }
+  @media (max-width: 960px) { .skills { grid-template-columns: repeat(2, minmax(0, 1fr)); } .skills .card, .skills .card:nth-child(1), .skills .card:nth-child(2) { grid-column: auto; } }
+  @media (max-width: 600px) { .skills { grid-template-columns: 1fr; } }
 
-  .beyond { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px 22px; }
-  .hobby { display: grid; gap: 16px; align-content: start; }
-  .hobby:nth-child(4n+1) .polaroid { rotate: -2.5deg; } .hobby:nth-child(4n+2) .polaroid { rotate: 1.8deg; }
-  .hobby:nth-child(4n+3) .polaroid { rotate: -1.2deg; } .hobby:nth-child(4n+4) .polaroid { rotate: 2.4deg; }
-  .hobby .polaroid figcaption { font-weight: 600; font-size: 13.5px; }
-  :root[lang="ar"] .hobby .polaroid figcaption { font-family: var(--f-body); letter-spacing: 0; }
-  .hobby p { color: var(--muted); font-size: 15px; padding-inline: 4px; }
-  @media (max-width: 960px) { .beyond { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 480px) { .beyond { grid-template-columns: 1fr; } }
+  .beyond { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+  .hobby { padding: 16px; display: grid; gap: 16px; align-content: start; }
+  .hobby-screen {
+    position: relative; border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--line); background: var(--panel-2);
+    aspect-ratio: 4 / 3;
+  }
+  .hobby-tag {
+    position: absolute; top: 10px; inset-inline-start: 10px; z-index: 2;
+    font-size: 10px; letter-spacing: .08em; color: var(--accent);
+    padding: 3px 8px; border-radius: 999px;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    border: 1px solid var(--line); backdrop-filter: blur(6px);
+  }
+  .hobby-art { width: 100%; height: 100%; }
+  .hobby:hover :global(.illo *), .hobby.in :global(.illo *) { animation-play-state: running; }
+  .hobby-copy { display: grid; gap: 8px; padding: 2px 4px 4px; }
+  .hobby-copy h3 { font-size: 18px; color: var(--fg); }
+  .hobby-copy p { color: var(--muted); font-size: 14.5px; line-height: 1.6; }
+  @media (max-width: 980px) { .beyond { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .beyond { grid-template-columns: 1fr; } }
 
   .contact { padding: clamp(28px, 5vw, 56px); position: relative; overflow: hidden; }
   .contact::before { content: ""; position: absolute; inset: auto -10% -60% auto; width: 60%; height: 140%; background: radial-gradient(closest-side, var(--glow), transparent 70%); pointer-events: none; }

@@ -53,9 +53,9 @@ export default {
         "ar": "درست هندسة الاتصالات والإلكترونيات، ثم انتقلت إلى عالم شبكات السيارات: CAN و CAN FD والمتحكمات والتعريفات التي تعمل تحتها. منذ 2022 أختبر هذه الشبكات وأصلح أعطالها وأشغّلها في مختبر اختبار متخصص في ألمانيا."
       },
       {
-        "en": "In my own time I built a small self-hosted infrastructure on a Raspberry Pi: zero-trust access, encrypted 3-2-1 backups with restore tests, monitoring, and LLM-powered automation that files my paperwork and diagnoses outages on its own.",
-        "de": "In meiner Freizeit habe ich eine kleine selbst gehostete Infrastruktur auf einem Raspberry Pi aufgebaut: Zero-Trust-Zugriff, verschlüsselte 3-2-1-Backups mit Restore-Tests, Monitoring und LLM-gestützte Automatisierung, die meine Dokumente ablegt und Ausfälle selbst diagnostiziert.",
-        "ar": "في وقتي الخاص بنيت بنية تحتية صغيرة على Raspberry Pi: وصول بمبدأ Zero Trust، ونسخ احتياطي مشفّر بنظام 3-2-1 مع اختبارات استرجاع، ومراقبة، وأتمتة بالذكاء الاصطناعي ترتّب أوراقي وتشخّص الأعطال وحدها."
+        "en": "In my own time I built a self-hosted AI & infrastructure lab on a Raspberry Pi 5: zero-trust access, encrypted 3-2-1 backups with restore verification, hardened n8n workflow automation, bounded Agentic AI microservices with automated CI evaluations, WhatsApp Cloud API voice/text agents with Human-in-the-Loop gates, and LLM document filing.",
+        "de": "In meiner Freizeit habe ich ein selbst gehostetes KI- und Infrastruktur-Lab auf einem Raspberry Pi 5 aufgebaut: Zero-Trust-Zugriff, verschlüsselte 3-2-1-Backups mit Restore-Tests, gehärtete n8n-Workflow-Automatisierung, begrenzte Agentic-AI-Microservices mit automatisierten CI-Evals, WhatsApp-Cloud-API-Agenten mit Human-in-the-Loop-Freigaben sowie automatische Dokumentenablage.",
+        "ar": "في وقتي الخاص بنيت مختبر بنية تحتية وذكاء اصطناعي على Raspberry Pi 5: وصول Zero Trust، نسخ احتياطي مشفّر 3-2-1 مع اختبارات استرجاع، أتمتة محصّنة بـ n8n، خدمات Agentic AI محدودة التكلفة مع تقييم تلقائي في CI، وكلاء WhatsApp Cloud API ببوابات موافقة بشرية، وأرشفة ذكية للمستندات."
       },
       {
         "en": "That is where I am heading: AI engineering, with the discipline of embedded work behind it. Measured, secure, and built to keep running.",
@@ -433,9 +433,9 @@ export default {
         "ar": "أبني"
       },
       "v": {
-        "en": "A measurable RAG system over my own documents, with an evaluation set and experiments.",
-        "de": "Ein messbares RAG-System über meine eigenen Dokumente – mit Evaluationsset und Experimenten.",
-        "ar": "نظام RAG قابل للقياس فوق مستنداتي الخاصة، مع مجموعة تقييم وتجارب."
+        "en": "A measurable cross-lingual RAG system plus open-source n8n, Guarded Agent, and WhatsApp AI templates on Raspberry Pi 5.",
+        "de": "Ein messbares sprachübergreifendes RAG-System sowie Open-Source-Templates für n8n, Guarded Agents und WhatsApp-KI auf dem Raspberry Pi 5.",
+        "ar": "نظام RAG عابر للغات قابل للقياس، مع قوالب مفتوحة المصدر لـ n8n والوكلاء المحميين وواتساب على Raspberry Pi 5."
       }
     },
     {
@@ -486,9 +486,9 @@ export default {
         "ar": "البرمجة والتقنية"
       },
       "v": {
-        "en": "Building things at home that run on their own.",
-        "de": "Dinge zu Hause bauen, die von selbst laufen.",
-        "ar": "أبني أشياء في البيت تعمل وحدها."
+        "en": "Designing self-hosted systems, AI agents, and hardware tools at home — engineered cleanly so they run unattended.",
+        "de": "Selbst gehostete Systeme, KI-Agenten und Hardware-Tools zu Hause entwerfen – sauber gebaut, damit sie wartungsarm durchlaufen.",
+        "ar": "تصميم أنظمة ذاتية الاستضافة ووكلاء ذكاء اصطناعي وأدوات عتادية في البيت — مبنية بإتقان لتعمل وحدها بثبات."
       }
     },
     {
