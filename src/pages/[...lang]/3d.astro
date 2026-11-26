@@ -1,7 +1,5 @@
 ---
-// Interactive 3D version of the GitHub profile hero: five stages from a CAN FD frame to an answer with sources.
-// Hovering a stage explains it; clicking opens the related project page.
-// three.js is bundled into this page only; nothing is loaded from other sites (CSP: 'self').
+// Premium Interactive 3D Showcase (/3d/): PBR-lit Three.js pipeline from CAN FD bits to grounded AI answers.
 import Base from "../../layouts/Base.astro";
 import { LANGS, path } from "../../content/site.js";
 import { projects } from "../../content/projects.js";
@@ -12,57 +10,187 @@ export function getStaticPaths() {
 const { lang } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const T = {
-  en: { title: "From CAN bits to RAG pipelines · 3D", h: "From CAN bits to RAG pipelines", hint: "Drag to rotate · scroll or pinch to zoom · hover a stage", nodes: "Five stages, one pipeline: how a frame on the bus becomes an answer with sources.", fallback: "3D needs WebGL; here is the animated version.", back: "Back to the home page",
-        stages: [["CAN FD bits", "A CAN FD frame on the twisted pair: CAN_H rises, CAN_L falls for every dominant bit."], ["Decode", "A microcontroller samples the bus and turns the bit stream back into bytes."], ["Embed", "Bytes and text become tokens and vectors a model can work with."], ["Reason", "A layered network processes them, one layer after another."], ["Answer + sources", "The answer comes with the passages it is based on: measured, not guessed."]] },
-  de: { title: "Von CAN-Bits bis zu RAG-Pipelines · 3D", h: "Von CAN-Bits bis zu RAG-Pipelines", hint: "Ziehen zum Drehen · Scrollen oder Zwei-Finger zum Zoomen · auf eine Stufe zeigen", nodes: "Fünf Stufen, eine Pipeline: wie aus einem Frame auf dem Bus eine Antwort mit Quellen wird.", fallback: "3D braucht WebGL; hier die animierte Version.", back: "Zur Startseite",
-        stages: [["CAN-FD-Bits", "Ein CAN-FD-Frame auf der verdrillten Leitung: CAN_H steigt, CAN_L fällt bei jedem dominanten Bit."], ["Dekodieren", "Ein Mikrocontroller tastet den Bus ab und macht aus dem Bitstrom wieder Bytes."], ["Einbetten", "Bytes und Text werden zu Tokens und Vektoren, mit denen ein Modell arbeiten kann."], ["Schlussfolgern", "Ein mehrschichtiges Netz verarbeitet sie, Schicht für Schicht."], ["Antwort + Quellen", "Die Antwort kommt mit den Passagen, auf denen sie beruht: gemessen, nicht geraten."]] },
-  ar: { title: "من بِتّات CAN إلى أنظمة RAG · ثلاثي الأبعاد", h: "من بِتّات CAN إلى أنظمة RAG", hint: "اسحب للتدوير · مرّر أو قرّب بإصبعين للتكبير · مرّر فوق أي مرحلة", nodes: "خمس مراحل في خط واحد: كيف يصبح إطار على الناقل إجابةً مع مصادرها.", fallback: "يحتاج العرض ثلاثي الأبعاد إلى WebGL؛ هذه النسخة المتحركة.", back: "العودة إلى الصفحة الرئيسية",
-        stages: [["بِتّات CAN FD", "إطار CAN FD على السلكين المجدولين: يرتفع CAN_H وينخفض CAN_L مع كل بت مهيمن."], ["فك الترميز", "متحكم دقيق يقرأ الناقل ويعيد تدفق البتات إلى بايتات."], ["التضمين", "تتحول البايتات والنصوص إلى رموز ومتجهات يعمل عليها النموذج."], ["الاستدلال", "شبكة متعددة الطبقات تعالجها طبقةً بعد طبقة."], ["إجابة + مصادر", "تأتي الإجابة مع المقاطع التي بُنيت عليها: مقيسة لا مخمّنة."]] },
+  en: {
+    title: "From CAN bits to AI pipelines · 3D",
+    h: "From CAN bits to AI pipelines",
+    hint: "Drag to orbit · Scroll to zoom · Click any stage card below to fly the 3D camera directly to it",
+    nodes: "Five sculpted 3D stages showing how embedded hardware discipline powers measurable AI & automation.",
+    fallback: "3D needs WebGL; here is the animated version.",
+    back: "Back to home",
+    camIso: "Isometric",
+    camTop: "Floorplan Top",
+    camLow: "Low Angle",
+    camOrbit: "Auto-Orbit",
+    openProj: "Open project →",
+    allProjects: "Explore All Projects",
+    stages: [
+      ["CAN FD bits", "Differential CAN_H / CAN_L waveforms carrying real-time automotive frames at up to 2 Mbit/s."],
+      ["MCU Silicon", "Automotive microcontroller sampling the bus with TDC and turning bit streams into verified bytes."],
+      ["Token Matrix", "Cross-lingual text & telemetry transformed into structured vectors for hybrid retrieval."],
+      ["Neural Core", "Multi-layer reasoning & bounded agent loops with cost caps and Human-in-the-Loop gates."],
+      ["Verified Answer", "Grounded output with explicit citations, eval scores, and automated delivery via n8n & WhatsApp."],
+    ],
+  },
+  de: {
+    title: "Von CAN-Bits bis zu KI-Pipelines · 3D",
+    h: "Von CAN-Bits bis zu KI-Pipelines",
+    hint: "Ziehen zum Drehen · Scrollen zum Zoomen · Stufenkarte anklicken für direkten 3D-Kamerafokus",
+    nodes: "Fünf 3D-Stufen zeigen, wie Embedded-Disziplin messbare KI und Automatisierung antreibt.",
+    fallback: "3D braucht WebGL; hier ist die animierte Version.",
+    back: "Zur Startseite",
+    camIso: "Isometrisch",
+    camTop: "Grundriss",
+    camLow: "Perspektive",
+    camOrbit: "Auto-Orbit",
+    openProj: "Projekt öffnen →",
+    allProjects: "Alle Projekte entdecken",
+    stages: [
+      ["CAN-FD-Bits", "Differenzielle CAN_H-/CAN_L-Signale mit Echtzeit-Frames bis 2 Mbit/s."],
+      ["MCU-Silizium", "Automotive-Mikrocontroller tastet den Bus mit TDC ab und dekodiert geprüfte Bytes."],
+      ["Token-Matrix", "Mehrsprachiger Text & Telemetrie werden zu strukturierten Vektoren für hybride Suche."],
+      ["Neural-Kern", "Mehrschichtiges Schlussfolgern & begrenzte Agenten mit Kostenlimit und HITL-Gates."],
+      ["Geprüfte Antwort", "Belegte Antworten mit Quellen, Eval-Metriken und Auslieferung über n8n & WhatsApp."],
+    ],
+  },
+  ar: {
+    title: "من بِتّات CAN إلى خطوط الذكاء الاصطناعي · ثلاثي الأبعاد",
+    h: "من بِتّات CAN إلى خطوط الذكاء الاصطناعي",
+    hint: "اسحب للتدوير · مرّر للتكبير · انقر على أي مرحلة بالأسفل لتحريك الكاميرا ثلاثية الأبعاد نحوها",
+    nodes: "خمس مراحل ثلاثية الأبعاد توضّح كيف يقود انضباط الأنظمة المدمجة ذكاءً اصطناعياً وأتمتة قابلة للقياس.",
+    fallback: "يحتاج العرض ثلاثي الأبعاد إلى WebGL؛ هذه النسخة المتحركة.",
+    back: "العودة للرئيسية",
+    camIso: "منظور ثلاثي",
+    camTop: "مخطط علوي",
+    camLow: "زاوية قريبة",
+    camOrbit: "دوران تلقائي",
+    openProj: "فتح المشروع ←",
+    allProjects: "استكشف جميع المشاريع",
+    stages: [
+      ["بِتّات CAN FD", "إشارات تفاضلية CAN_H و CAN_L تنقل إطارات السيارات بالزمن الحقيقي حتى 2 Mbit/s."],
+      ["شريحة MCU", "متحكم سيارات يقرأ الناقل مع تعويض التأخير ويحوّل البتات إلى بايتات موثّقة."],
+      ["مصفوفة المتجهات", "نصوص متعددة اللغات تتحول إلى متجهات منظّمة للبحث الهجين."],
+      ["النواة العصبية", "استدلال متعدد الطبقات ووكلاء محدودون بسقف تكلفة وبوابات موافقة بشرية."],
+      ["إجابة موثّقة", "نتائج مدعومة بالمصادر والتقييم وتصل تلقائياً عبر n8n وواتساب."],
+    ],
+  },
 }[lang];
+
 const proj = (slug) => base + path(lang, `/projects/${slug}`);
-const stageLinks = ["can-tools", "can-tools", "home-rag", "home-rag", "home-rag"];
+const stageLinks = ["can-tools", "can-tools", "home-rag", "guarded-agent-template", "whatsapp-agent-kit"];
 const stages = T.stages.map(([name, desc], i) => ({ n: `0${i + 1}`, name, desc, href: proj(stageLinks[i]) }));
-const items = projects.map((p) => ({ title: p[lang].title, tagline: p[lang].tagline, href: base + path(lang, `/projects/${p.slug}`) }));
+const items = projects.map((p) => ({ title: p[lang].title, tagline: p[lang].tagline, href: base + path(lang, `/projects/${p.slug}`), is3d: [].concat(p.tool || []).includes("ai-visual") }));
 ---
+
 <Base lang={lang} route="/3d" title={`${T.title} · Moutaz Mohammad`} description={T.nodes}>
   <section class="wrap d3">
-    <header>
-      <span class="label">// 3D</span>
-      <h1>{T.h}</h1>
-      <p class="hint">{T.hint}. {T.nodes}</p>
+    <header class="d3-head">
+      <div>
+        <span class="label">// INTERACTIVE 3D ARCHITECTURE</span>
+        <h1>{T.h}</h1>
+        <p class="hint">{T.nodes}</p>
+      </div>
+      <div class="d3-cams mono" aria-label="Camera Controls">
+        <button type="button" class="cam-btn active" data-d3-cam="iso">{T.camIso}</button>
+        <button type="button" class="cam-btn" data-d3-cam="top">{T.camTop}</button>
+        <button type="button" class="cam-btn" data-d3-cam="low">{T.camLow}</button>
+        <button type="button" class="cam-btn active" data-d3-cam="orbit">↻ {T.camOrbit}</button>
+      </div>
     </header>
+
     <div class="stage" id="d3-stage" data-stages={JSON.stringify(stages)}>
       <canvas id="d3-canvas" aria-label={T.h} role="img"></canvas>
-      <div class="labels" id="d3-labels" aria-hidden="true">{stages.map((st) => <span class="lab">{st.n} · {st.name}</span>)}</div>
+      <span class="stage-hint mono">{T.hint}</span>
+      <div class="labels" id="d3-labels" aria-hidden="true">
+        {stages.map((st) => <span class="lab">{st.n} · {st.name}</span>)}
+      </div>
       <div class="tip" id="d3-tip" hidden><b></b><span></span></div>
       <img class="still" id="d3-still" hidden src="/3d/loop.webp" alt={T.h} width="800" height="450" loading="lazy" />
       <p class="still-note" id="d3-note" hidden>{T.fallback}</p>
     </div>
-    <ul class="list">{items.map((it) => <li><a href={it.href}>{it.title}</a> <span>{it.tagline}</span></li>)}</ul>
+
+    <div class="stage-cards">
+      {stages.map((st, idx) => (
+        <div class="scard tile" data-d3-focus={idx} role="button" tabindex="0">
+          <div class="scard-top">
+            <span class="mono scard-n">{st.n}</span>
+            <a class="scard-link mono" href={st.href}>{T.openProj}</a>
+          </div>
+          <h3>{st.name}</h3>
+          <p>{st.desc}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="d3-projects">
+      <h2 class="label">{T.allProjects}</h2>
+      <ul class="plist">
+        {items.map((it) => (
+          <li>
+            <a class="pitem" href={it.href}>
+              <span class="pname">{it.title} {it.is3d && <em class="mono badge3d">3D</em>}</span>
+              <span class="ptag">{it.tagline}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
     <a class="btn" href={base + path(lang, "/")}>{T.back}</a>
   </section>
 </Base>
 
 <style>
-  .d3 { padding-block: 28px 64px; }
-  .d3 h1 { margin: 6px 0 8px; }
-  .hint { color: var(--muted); margin: 0 0 16px; }
-  .stage { position: relative; border: 1px solid var(--line-2); border-radius: var(--r); overflow: hidden; background: var(--bg-2);
-           aspect-ratio: 16 / 9; touch-action: none; }
+  .d3 { padding-block: 36px 84px; display: grid; gap: 28px; }
+  .d3-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
+  .d3 h1 { margin: 8px 0 10px; font-size: clamp(32px, 5vw, 54px); }
+  .hint { color: var(--muted); max-width: 66ch; font-size: 16px; }
+
+  .d3-cams { display: inline-flex; gap: 6px; padding: 5px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); flex-wrap: wrap; }
+  .cam-btn { background: transparent; color: var(--muted); border: 0; border-radius: 8px; padding: 8px 13px; font-size: 12px; cursor: pointer; transition: background .2s, color .2s; }
+  .cam-btn:hover, .cam-btn.active { background: color-mix(in srgb, var(--accent) 18%, var(--panel-2)); color: var(--fg); }
+
+  .stage { position: relative; border: 1px solid var(--line-2); border-radius: 18px; overflow: hidden;
+           background: radial-gradient(760px 380px at 50% 15%, color-mix(in srgb, var(--ai) 12%, transparent), transparent 72%), var(--bg-2);
+           aspect-ratio: 16 / 9; touch-action: none; box-shadow: var(--shadow-hi); }
   canvas { display: block; width: 100%; height: 100%; cursor: grab; }
   canvas:active { cursor: grabbing; }
-  .labels .lab { position: absolute; transform: translate(-50%, 0); white-space: nowrap; pointer-events: none; font-family: var(--f-mono); font-size: 12px;
-                 letter-spacing: .08em; color: var(--muted); }
-  .labels .lab:nth-child(-n+2) { color: var(--accent); } .labels .lab:nth-child(n+3):nth-child(-n+4) { color: var(--ai); } .labels .lab:nth-child(5) { color: var(--live); }
-  .tip { position: absolute; pointer-events: none; max-width: 280px; padding: 10px 12px; border-radius: 12px;
-         background: var(--panel); border: 1px solid var(--accent); box-shadow: var(--shadow); font-size: 14px; }
-  .tip b { display: block; font-family: var(--f-display); font-size: 16px; color: var(--fg); }
-  .tip span { color: var(--muted); }
+  .stage-hint { position: absolute; top: 14px; inset-inline-start: 16px; font-size: 11.5px; color: var(--muted);
+                background: color-mix(in srgb, var(--bg) 74%, transparent); border: 1px solid var(--line);
+                border-radius: 999px; padding: 5px 12px; backdrop-filter: blur(8px); pointer-events: none; }
+  .labels .lab { position: absolute; transform: translate(-50%, 0); white-space: nowrap; pointer-events: none; font-family: var(--f-mono); font-size: 11.5px;
+                 letter-spacing: .08em; padding: 3px 8px; border-radius: 999px; background: color-mix(in srgb, var(--bg) 72%, transparent); border: 1px solid var(--line); }
+  .labels .lab:nth-child(-n+2) { color: var(--accent); }
+  .labels .lab:nth-child(n+3):nth-child(-n+4) { color: var(--ai); }
+  .labels .lab:nth-child(5) { color: var(--live); }
+
+  .tip { position: absolute; pointer-events: none; max-width: 285px; padding: 12px 14px; border-radius: 12px;
+         background: color-mix(in srgb, var(--panel) 94%, transparent); border: 1px solid var(--accent);
+         box-shadow: var(--shadow-hi); font-size: 14px; backdrop-filter: blur(10px); }
+  .tip b { display: block; font-family: var(--f-display); font-size: 16px; color: var(--fg); margin-bottom: 4px; }
+  .tip span { color: var(--muted); line-height: 1.45; }
+
+  .stage-cards { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+  .scard { padding: 18px; display: grid; gap: 10px; align-content: start; cursor: pointer; }
+  .scard.active { --hot: color-mix(in srgb, var(--accent) 85%, transparent); border-color: var(--accent); }
+  .scard-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .scard-n { color: var(--accent); font-size: 12px; font-weight: 700; }
+  .scard-link { font-size: 11px; color: var(--ai); text-decoration: none; }
+  .scard-link:hover { text-decoration: underline; }
+  .scard h3 { font-size: 16px; }
+  .scard p { font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+
+  .d3-projects { display: grid; gap: 14px; padding-top: 8px; }
+  .plist { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .pitem { display: grid; gap: 4px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); text-decoration: none; transition: border-color .2s, transform .2s; }
+  .pitem:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .pname { font: 600 15px var(--f-display); color: var(--fg); display: inline-flex; align-items: center; gap: 8px; }
+  .ptag { font-size: 13.5px; color: var(--muted); }
+  .badge3d { font-style: normal; font-size: 10.5px; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--ai); color: var(--ai); }
+
   .still { width: 100%; height: 100%; object-fit: cover; display: block; }
   .still-note { position: absolute; bottom: 8px; inset-inline-start: 12px; margin: 0; color: var(--muted); font-size: 13px; }
-  .list { margin: 20px 0; padding: 0; list-style: none; display: grid; gap: 6px; }
-  .list span { color: var(--muted); }
-  @media (max-width: 640px) { .stage { aspect-ratio: 4 / 3; } }
+  @media (max-width: 980px) { .stage-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 680px) { .stage { aspect-ratio: 4 / 3; } .stage-cards, .plist { grid-template-columns: 1fr; } .stage-hint { display: none; } }
 </style>
 
 <script>

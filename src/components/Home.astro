@@ -30,7 +30,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         <a class:list={["proj", "tile", "reveal", { wide: i === 0 }]} href={base + path(lang, `/projects/${p.slug}`)}>
           <div class="proj-top">
             <span class:list={["status", p.status]}><i></i>{t.projects.status[p.status]}</span>
-            <span class="mono pn">P{String(i + 1).padStart(2, "0")}</span>
+            <span class="mono pn">
+              {[].concat(p.tool || []).includes("ai-visual") && <em class="tag3d">3D LIVE</em>}
+              P{String(i + 1).padStart(2, "0")}
+            </span>
           </div>
           <h3>{p[lang].title}</h3>
           <p class="tag">{p[lang].tagline}</p>
@@ -137,7 +140,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   :root[data-theme="light"] .proj:active { translate: 3px 3px; box-shadow: 1px 1px 0 var(--ink); }
   .proj.wide { grid-column: 1 / -1; }
   .proj-top { display: flex; justify-content: space-between; align-items: center; }
-  .pn { color: var(--muted); font-size: 12px; }
+  .pn { color: var(--muted); font-size: 12px; display: inline-flex; align-items: center; gap: 8px; }
+  .tag3d { font-style: normal; font-size: 10.5px; letter-spacing: .06em; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--ai); color: var(--ai); background: color-mix(in srgb, var(--ai) 12%, transparent); }
   .proj h3 { font-size: clamp(22px, 2.4vw, 28px); }
   .tag { color: var(--muted); }
   .more { margin-top: auto; display: inline-flex; gap: 8px; align-items: center; font-weight: 600; color: var(--accent); }

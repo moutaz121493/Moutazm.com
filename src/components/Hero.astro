@@ -18,8 +18,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         {t.keys.map((k, i) => <li><span class="mono">0{i + 1}</span>{k}</li>)}
       </ul>
       <div class="ctas">
-        <a class="btn primary" href={base + path(lang, "/cv")}>{t.cta.cv}
-          <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn primary" href={base + path(lang, "/3d")}>
+          <span>{lang === "de" ? "3D-Architektur" : lang === "ar" ? "استكشف 3D" : "Explore 3D"}</span>
+          <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn" href={base + path(lang, "/cv")}>{t.cta.cv}</a>
         <a class="btn" href="#projects">{t.cta.projects}</a>
         <a class="btn" href="#contact">{t.cta.contact}</a>
       </div>

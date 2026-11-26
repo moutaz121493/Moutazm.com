@@ -17,10 +17,10 @@
   --planned: #8d9ca8;
   --glow: color-mix(in srgb, var(--accent) 22%, transparent);
   --ink: var(--line-2);
-  --card: color-mix(in srgb, var(--panel) 76%, transparent);
-  --edge: color-mix(in srgb, var(--line-2) 75%, transparent);
-  --shadow: 0 1px 0 rgba(255, 255, 255, .045) inset, 0 22px 50px -30px rgba(0, 0, 0, .9);
-  --shadow-hi: 0 1px 0 rgba(255, 255, 255, .06) inset, 0 30px 60px -28px rgba(0, 0, 0, .95), 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
+  --card: color-mix(in srgb, var(--panel) 82%, transparent);
+  --edge: color-mix(in srgb, var(--line-2) 82%, transparent);
+  --shadow: 0 1px 0 rgba(255, 255, 255, .07) inset, 0 24px 54px -28px rgba(0, 0, 0, .92);
+  --shadow-hi: 0 1px 0 rgba(255, 255, 255, .11) inset, 0 34px 68px -26px rgba(0, 0, 0, .96), 0 0 0 1px color-mix(in srgb, var(--accent) 26%, transparent), 0 0 36px -14px color-mix(in srgb, var(--ai) 22%, transparent);
   --trace: #1d6f8f; --trace-hi: #f5b83f; --pulse: #4fd1ff; --fx-bg-a: .6;
   --spring: cubic-bezier(.34, 1.56, .64, 1);
   /* Arial/Helvetica first among the fallbacks: same widths as Chakra Petch 700 and Plex Sans (measured 100%), so text
@@ -139,10 +139,11 @@ section.block { padding-block: clamp(64px, 10vw, 120px); border-top: 1px solid v
   --hot: transparent;
   background:
     linear-gradient(var(--card), var(--card)) padding-box,
-    radial-gradient(280px circle at var(--mx, 50%) var(--my, 0%), var(--hot), var(--edge) 72%) border-box;
-  border: 1px solid transparent; border-radius: var(--r); padding: 24px; min-width: 0;
+    radial-gradient(300px circle at var(--mx, 50%) var(--my, 0%), var(--hot), var(--edge) 72%) border-box;
+  border: 1px solid transparent; border-radius: var(--r); padding: 26px; min-width: 0;
+  backdrop-filter: blur(12px);
   box-shadow: var(--shadow);
-  transition: --hot .35s ease, box-shadow .35s ease;
+  transition: --hot .3s ease-out, box-shadow .3s ease-out, transform .25s ease-out;
 }
 .card:hover, .tile:hover { --hot: color-mix(in srgb, var(--accent) 85%, transparent); box-shadow: var(--shadow-hi); }
 :root[data-theme="light"] .card, :root[data-theme="light"] .tile { border-width: 2px; }
