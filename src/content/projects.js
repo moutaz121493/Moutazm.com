@@ -309,7 +309,7 @@ export const projects = [
   },
   {
     slug: "guarded-agent-template",
-    status: "oss",
+    status: "live",
     tool: ["ai-visual"],
     repo: "https://github.com/moutaz121493/guarded-agent-template",
     tags: ["Agentic AI", "FastAPI", "LLM Evals", "HITL", "Cost Guard"],
@@ -366,12 +366,12 @@ export const projects = [
     flow: ["WhatsApp (Text / Voice)", "HMAC + Allowlist", "Media Adapter", "Guarded Agent", "HITL YES/NO Reply"],
     en: {
       title: "WhatsApp AI agent kit",
-      tagline: "Secure WhatsApp AI agent template with HMAC verification, a sender allowlist, a voice-note path (transcription stubbed in the demo), human approvals and a local /demo simulator.",
+      tagline: "Secure WhatsApp AI agent template with HMAC verification, a sender allowlist, real voice-note transcription (Whisper), human approvals and a local /demo simulator.",
       problem: "Connecting an AI agent to WhatsApp in a portfolio repo is hard to test without Meta Business credentials and easy to misconfigure insecurely.",
       decisions: [
         "Verifies Meta's X-Hub-Signature-256 header in constant time and enforces a deny-by-default E.164 sender allowlist.",
         "Stores Human-in-the-Loop approval codes in SQLite bound to the originating sender with a 5-minute TTL.",
-        "Includes a built-in /demo web chat simulator and an n8n router workflow so anyone can test text, simulated voice notes and approvals locally in under a minute.",
+        "Includes a built-in /demo web chat simulator and an n8n router workflow so anyone can test text, real voice notes and approvals locally in under a minute.",
       ],
       learned: [
         "Binding approval codes to the sender identity prevents cross-user confirmation bugs.",
@@ -380,12 +380,12 @@ export const projects = [
     },
     de: {
       title: "WhatsApp-KI-Agent-Kit",
-      tagline: "Sicheres WhatsApp-KI-Agent-Template mit HMAC-Prüfung, Absender-Allowlist, Sprachnotiz-Pfad (Transkription in der Demo simuliert), menschlichen Freigaben und lokalem /demo-Simulator.",
+      tagline: "Sicheres WhatsApp-KI-Agent-Template mit HMAC-Prüfung, Absender-Allowlist, echter Sprachnotiz-Transkription (Whisper), menschlichen Freigaben und lokalem /demo-Simulator.",
       problem: "Einen KI-Agenten in einem Portfolio-Repo an WhatsApp anzubinden ist ohne Meta-Business-Zugang schwer testbar und schnell unsicher konfiguriert.",
       decisions: [
         "Prüft Metas X-Hub-Signature-256 in konstanter Zeit und erzwingt eine Deny-by-Default-Allowlist für E.164-Nummern.",
         "Speichert HITL-Freigabecodes mit 5-Minuten-TTL sendergebunden in SQLite.",
-        "Enthält einen lokalen /demo-Chat-Simulator und einen n8n-Router-Workflow, damit Text, simulierte Sprachnotizen und Freigaben lokal in unter einer Minute testbar sind.",
+        "Enthält einen lokalen /demo-Chat-Simulator und einen n8n-Router-Workflow, damit Text, echte Sprachnotizen und Freigaben lokal in unter einer Minute testbar sind.",
       ],
       learned: [
         "Sendergebundene Freigabecodes verhindern Bestätigungen durch unbefugte Nutzer.",
@@ -394,12 +394,12 @@ export const projects = [
     },
     ar: {
       title: "حزمة وكيل ذكاء اصطناعي لواتساب",
-      tagline: "قالب وكيل ذكاء اصطناعي آمن لواتساب مع تحقق HMAC وقائمة سماح ومسار للرسائل الصوتية (التفريغ النصي محاكى في العرض) وموافقات بشرية ومحاكي محلي.",
+      tagline: "قالب وكيل ذكاء اصطناعي آمن لواتساب مع تحقق HMAC وقائمة سماح وتفريغ نصي حقيقي للرسائل الصوتية (Whisper) وموافقات بشرية ومحاكي محلي.",
       problem: "ربط وكيل ذكاء اصطناعي بواتساب في مستودع مفتوح يصعب اختباره بدون حساب Meta Business، ويسهل تهيئته بطريقة غير آمنة.",
       decisions: [
         "تحقق بزمن ثابت من توقيع X-Hub-Signature-256 مع قائمة سماح صارمة للأرقام (رفض افتراضي).",
         "تخزين رموز الموافقة البشرية (HITL) في SQLite مرتبطة بالمرسِل مع صلاحية 5 دقائق.",
-        "يتضمن محاكي دردشة مدمج على /demo وملف n8n router لتجربة الرسائل النصية والصوتية المحاكاة والموافقات محلياً في أقل من دقيقة.",
+        "يتضمن محاكي دردشة مدمج على /demo وملف n8n router لتجربة الرسائل النصية والصوتية الحقيقية والموافقات محلياً في أقل من دقيقة.",
       ],
       learned: [
         "ربط رمز الموافقة بهوية المرسِل يمنع أي تداخل أو تأكيد غير مصرح به.",

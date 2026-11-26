@@ -6,7 +6,7 @@ import { projects } from "../content/projects.js";
 const ok = (s) => s && !String(s).includes("TODO(user)");
 const L = (o) => (o && typeof o === "object" ? o.en : o);
 
-const STATUS = { live: "running in my home", web: "runs in the browser", progress: "in progress", planned: "planned", oss: "open-source template on GitHub, tested in CI, not deployed in my home" };
+const STATUS = { live: "running in my home (live)", web: "runs in the browser", progress: "in progress", planned: "planned", oss: "open-source template on GitHub, tested in CI, not deployed in my home" };
 export function GET({ site }) {
   const base = site.toString().replace(/\/$/, "");
   const t = ui.en;
