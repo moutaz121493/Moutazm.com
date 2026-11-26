@@ -260,6 +260,7 @@ export const projects = [
   {
     slug: "pi-n8n-ai-stack",
     status: "live",
+    tool: ["ai-visual"],
     repo: "https://github.com/moutaz121493/pi-n8n-ai-stack",
     tags: ["n8n", "Raspberry Pi 5", "Docker Compose", "Workflow Automation", "Template"],
     flow: ["Webhook / Cron", "Cloudflare Tunnel", "n8n (Queue / SQLite)", "Guarded Agent API", "Validated Workflow JSON"],
@@ -309,6 +310,7 @@ export const projects = [
   {
     slug: "guarded-agent-template",
     status: "live",
+    tool: ["ai-visual"],
     repo: "https://github.com/moutaz121493/guarded-agent-template",
     tags: ["Agentic AI", "FastAPI", "LLM Evals", "HITL", "Cost Guard"],
     flow: ["Untrusted Input", "Injection Screen", "Atomic Budget Reserve", "Bounded Tool Loop", "HITL Gate / JSON Trace"],
@@ -358,6 +360,7 @@ export const projects = [
   {
     slug: "whatsapp-agent-kit",
     status: "live",
+    tool: ["ai-visual"],
     repo: "https://github.com/moutaz121493/whatsapp-agent-kit",
     tags: ["WhatsApp Cloud API", "Agentic AI", "HITL", "n8n", "FastAPI"],
     flow: ["WhatsApp (Text / Voice)", "HMAC + Allowlist", "Media Adapter", "Guarded Agent", "HITL YES/NO Reply"],
