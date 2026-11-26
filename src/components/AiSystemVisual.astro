@@ -120,8 +120,8 @@ const DATA = {
         },
       ],
       metrics: [
-        { val: "0", lbl: "ports published beyond localhost (both profiles)" },
-        { val: "384 MB", lbl: "hard RAM cap for n8n on the 4 GB Pi profile" },
+        { val: "0.6 s", lbl: "webhook → n8n → guarded agent → answer, live on my Pi (measured)" },
+        { val: "130 MB", lbl: "n8n RAM on the Pi 5, running 24/7 (cap 384 MB)" },
         { val: "3 / 3", lbl: "workflows pass the CI secret & private-IP scan" },
       ],
       lifeImpact: [
@@ -191,8 +191,8 @@ const DATA = {
         },
       ],
       metrics: [
-        { val: "0", lbl: "Ports außerhalb von localhost (beide Profile)" },
-        { val: "384 MB", lbl: "festes RAM-Limit für n8n im 4-GB-Pi-Profil" },
+        { val: "0,6 s", lbl: "Webhook → n8n → Guarded Agent → Antwort, live auf meinem Pi (gemessen)" },
+        { val: "130 MB", lbl: "n8n-RAM auf dem Pi 5, rund um die Uhr (Limit 384 MB)" },
         { val: "3 / 3", lbl: "Workflows bestehen den CI-Scan auf Secrets & private IPs" },
       ],
       lifeImpact: [
@@ -262,8 +262,8 @@ const DATA = {
         },
       ],
       metrics: [
-        { val: "0", lbl: "منافذ مكشوفة خارج localhost (في الوضعين)" },
-        { val: "384 MB", lbl: "حد ذاكرة ثابت لـ n8n في وضع Pi بذاكرة 4 GB" },
+        { val: "0.6 ث", lbl: "من webhook عبر n8n والوكيل المحمي إلى الإجابة، يعمل فعلياً على جهازي (مقاس)" },
+        { val: "130 MB", lbl: "ذاكرة n8n على Pi 5، يعمل على مدار الساعة (الحد 384 MB)" },
         { val: "3 / 3", lbl: "قوالب تجتاز فحص CI للأسرار والعناوين الخاصة" },
       ],
       lifeImpact: [
@@ -557,7 +557,7 @@ const DATA = {
         { val: "5 min", lbl: "sender-bound approval code lifetime" },
       ],
       lifeImpact: [
-        "A private command center for my server, notes and documents: text and real voice notes work today (Whisper, ~0.4 s); linking my own WhatsApp number needs a Meta business account.",
+        "A private command center for my server, notes and documents: live on WhatsApp through Meta's Cloud API, I message it from my own phone, text and voice notes (Whisper, ~0.4 s).",
         "Manage tasks in seconds while commuting in Arabic, German, or English — no laptop required.",
         "Sender-bound YES/NO codes ensure an accidental voice note can never break a running service.",
       ],
@@ -628,7 +628,7 @@ const DATA = {
         { val: "5 Min.", lbl: "Gültigkeit des sendergebundenen Freigabecodes" },
       ],
       lifeImpact: [
-        "Private Steuerzentrale für Homelab, Notizen und Dokumente: Text und echte Sprachnotizen funktionieren heute (Whisper, ~0,4 s); für die eigene WhatsApp-Nummer fehlt noch ein Meta-Business-Konto.",
+        "Private Steuerzentrale für Homelab, Notizen und Dokumente: live in WhatsApp über die Meta Cloud API, ich schreibe ihm von meinem eigenen Handy, Text und Sprachnotizen (Whisper, ~0,4 s).",
         "Unterwegs in Sekunden nutzbar auf Deutsch, Englisch oder Arabisch.",
         "JA/NEIN-Codes verhindern versehentliche Eingriffe zuverlässig.",
       ],
@@ -699,7 +699,7 @@ const DATA = {
         { val: "5 دقائق", lbl: "صلاحية رمز الموافقة المرتبط بالمرسِل" },
       ],
       lifeImpact: [
-        "مركز تحكم خاص للسيرفر والملاحظات والمستندات: النص والرسائل الصوتية الحقيقية تعمل اليوم (Whisper، ~0.4 ث)؛ ربط رقم واتساب الخاص بي يحتاج حساب Meta للأعمال.",
+        "مركز تحكم خاص للسيرفر والملاحظات والمستندات: يعمل فعلياً على واتساب عبر Meta Cloud API، أراسله من هاتفي بالنص والرسائل الصوتية (Whisper، ~0.4 ث).",
         "أنجز المهام خلال ثوانٍ بالعربية أو الألمانية أو الإنجليزية.",
         "رموز التأكيد تمنع أي إجراء خاطئ غير مقصود.",
       ],

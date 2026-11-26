@@ -259,14 +259,14 @@ export const projects = [
   },
   {
     slug: "pi-n8n-ai-stack",
-    status: "oss",
+    status: "live",
     tool: ["ai-visual"],
     repo: "https://github.com/moutaz121493/pi-n8n-ai-stack",
     tags: ["n8n", "Raspberry Pi 5", "Docker Compose", "Workflow Automation", "Template"],
     flow: ["Webhook / Cron", "Cloudflare Tunnel", "n8n (Queue / SQLite)", "Guarded Agent API", "Validated Workflow JSON"],
     en: {
       title: "n8n AI stack for Raspberry Pi",
-      tagline: "Hardened ARM64 n8n infrastructure template for Raspberry Pi 5 with CI-validated agentic workflows.",
+      tagline: "Hardened ARM64 n8n stack, running on my Raspberry Pi 5 and wired to my guarded AI agent, with CI-validated agentic workflows.",
       problem: "Most self-hosted n8n examples are single-container setups with open ports, no memory caps, and unvalidated workflow exports. I wanted a reusable template built for small ARM64 boards.",
       decisions: [
         "Ships two profiles: production queue mode (PostgreSQL + Redis + worker) and a lightweight 4 GB Pi 5 profile (SQLite + 384 MB memory cap).",
@@ -280,7 +280,7 @@ export const projects = [
     },
     de: {
       title: "n8n-KI-Stack für den Raspberry Pi",
-      tagline: "Gehärtetes ARM64-Infrastruktur-Template für n8n auf dem Raspberry Pi 5 mit CI-geprüften Agent-Workflows.",
+      tagline: "Gehärteter ARM64-n8n-Stack, läuft auf meinem Raspberry Pi 5 und ist mit meinem abgesicherten KI-Agenten verbunden, mit CI-geprüften Agent-Workflows.",
       problem: "Die meisten Self-Hosting-Beispiele für n8n sind einfache Einzelcontainer mit offenen Ports, ohne Speicherlimits und ohne geprüfte Workflow-Exporte. Ich wollte ein wiederverwendbares Template für kleine ARM64-Boards.",
       decisions: [
         "Zwei Profile inklusive: Produktions-Queue-Modus (PostgreSQL + Redis + Worker) und ein leichtes 4-GB-Pi-5-Profil (SQLite + 384 MB RAM-Limit).",
@@ -294,7 +294,7 @@ export const projects = [
     },
     ar: {
       title: "منظومة n8n للذكاء الاصطناعي على Raspberry Pi",
-      tagline: "قالب بنية تحتية محصّن لتشغيل n8n على Raspberry Pi 5 (ARM64) مع قوالب أتمتة مفحوصة عبر CI.",
+      tagline: "منظومة n8n محصّنة (ARM64) تعمل على Raspberry Pi 5 الخاص بي ومتصلة بوكيل الذكاء الاصطناعي المحمي، مع قوالب أتمتة مفحوصة عبر CI.",
       problem: "معظم أمثلة n8n الذاتية هي حاوية واحدة بمنافذ مفتوحة وبلا حدود للذاكرة أو فحص لملفات الـ workflows. أردت قالباً قابلاً لإعادة الاستخدام ومصمماً لأجهزة ARM64 الصغيرة.",
       decisions: [
         "يوفّر وضعين: وضع الإنتاج بالطوابير (PostgreSQL + Redis + Worker) ووضع خفيف لـ Raspberry Pi 5 بذاكرة 4 GB (SQLite + حد 384 MB).",
@@ -359,7 +359,7 @@ export const projects = [
   },
   {
     slug: "whatsapp-agent-kit",
-    status: "oss",
+    status: "live",
     tool: ["ai-visual"],
     repo: "https://github.com/moutaz121493/whatsapp-agent-kit",
     tags: ["WhatsApp Cloud API", "Agentic AI", "HITL", "n8n", "FastAPI"],
