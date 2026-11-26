@@ -159,6 +159,8 @@ const home = href(path(lang, "/"));
   .langs { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
   .langs a { font: 600 12px var(--f-mono); padding: 6px 9px; text-decoration: none; color: var(--muted); }
   .langs a[lang="ar"] { font-family: "IBM Plex Sans Arabic", sans-serif; font-size: 13px; padding-block: 4px; }
+  /* EN/DE pages: draw the one "ع" with the system font instead of downloading the 45 KB Arabic web font for it */
+  :root:not([lang="ar"]) .langs a[lang="ar"] { font-family: system-ui, "Segoe UI", "Noto Sans Arabic", "Geeza Pro", Tahoma, sans-serif; }
   .langs a[aria-current] { background: var(--accent); color: var(--accent-ink); }
   .theme { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 6px; border: 1px solid var(--line); background: none; color: var(--muted); cursor: pointer; }
   .theme:hover { color: var(--fg); }
