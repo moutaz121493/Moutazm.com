@@ -270,6 +270,16 @@ export default {
           "en": "CLI tools",
           "de": "CLI-Tools",
           "ar": "أدوات سطر الأوامر"
+        },
+        {
+          "en": "FastAPI & microservices",
+          "de": "FastAPI & Microservices",
+          "ar": "FastAPI والخدمات المصغّرة"
+        },
+        {
+          "en": "GitHub Actions CI",
+          "de": "GitHub Actions CI",
+          "ar": "التكامل المستمر (GitHub Actions)"
         }
       ]
     },
@@ -314,11 +324,26 @@ export default {
     },
     {
       "h": {
-        "en": "AI / LLM integration",
-        "de": "KI- / LLM-Integration",
-        "ar": "دمج الذكاء الاصطناعي / LLM"
+        "en": "AI, Agents & Workflow Automation",
+        "de": "KI, Agenten & Workflow-Automatisierung",
+        "ar": "الذكاء الاصطناعي والوكلاء والأتمتة"
       },
       "items": [
+        {
+          "en": "Agentic AI & Human-in-the-Loop (HITL)",
+          "de": "Agentic AI & Human-in-the-Loop (HITL)",
+          "ar": "وكلاء الذكاء الاصطناعي والموافقة البشرية (HITL)"
+        },
+        {
+          "en": "n8n workflow automation (queue mode)",
+          "de": "n8n-Workflow-Automatisierung (Queue-Modus)",
+          "ar": "أتمتة سير العمل بـ n8n"
+        },
+        {
+          "en": "WhatsApp Cloud API agents",
+          "de": "WhatsApp-Cloud-API-Agenten",
+          "ar": "وكلاء WhatsApp Cloud API"
+        },
         {
           "en": "LLM APIs with structured output",
           "de": "LLM-APIs mit strukturierter Ausgabe",
@@ -330,9 +355,9 @@ export default {
           "ar": "RAG (بحث هجين)"
         },
         {
-          "en": "Evaluation (Recall@k, faithfulness)",
-          "de": "Evaluation (Recall@k, Faithfulness)",
-          "ar": "التقييم (Recall@k، الأمانة للمصادر)"
+          "en": "Automated LLM & RAG evals (Recall@k, faithfulness)",
+          "de": "Automatisierte LLM- & RAG-Evals (Recall@k, Faithfulness)",
+          "ar": "تقييم آلي لنماذج LLM و RAG (Recall@k، الأمانة للمصادر)"
         },
         {
           "en": "Prompt-injection-aware design",
@@ -340,9 +365,9 @@ export default {
           "ar": "تصميم واعٍ لـ prompt injection"
         },
         {
-          "en": "Cost guards",
-          "de": "Kostenkontrolle",
-          "ar": "ضبط التكلفة"
+          "en": "Atomic cost guards",
+          "de": "Atomare Kostenkontrolle",
+          "ar": "ضبط ذري للتكلفة"
         }
       ]
     },
