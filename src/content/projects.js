@@ -257,4 +257,151 @@ export const projects = [
       ],
     },
   },
+  {
+    slug: "pi-n8n-ai-stack",
+    status: "live",
+    repo: "https://github.com/moutaz121493/pi-n8n-ai-stack",
+    tags: ["n8n", "Raspberry Pi 5", "Docker Compose", "Workflow Automation", "Template"],
+    flow: ["Webhook / Cron", "Cloudflare Tunnel", "n8n (Queue / SQLite)", "Guarded Agent API", "Validated Workflow JSON"],
+    en: {
+      title: "pi-n8n-ai-stack",
+      tagline: "Hardened ARM64 n8n infrastructure template for Raspberry Pi 5 with CI-validated agentic workflows.",
+      problem: "Most self-hosted n8n examples are single-container setups with open ports, no memory caps, and unvalidated workflow exports. I wanted a reusable template built for small ARM64 boards.",
+      decisions: [
+        "Ships two profiles: production queue mode (PostgreSQL + Redis + worker) and a lightweight 4 GB Pi 5 profile (SQLite + 384 MB memory cap).",
+        "Loopback-only binding with an optional Cloudflare Tunnel profile and N8N_BLOCK_ENV_ACCESS_IN_NODE enabled.",
+        "Includes 3 sanitized agentic workflow templates validated in CI for schema integrity and zero leaked secrets or private IPs.",
+      ],
+      learned: [
+        "Explicit memory limits and execution pruning matter more on a 4 GB Pi than raw throughput.",
+        "Treating n8n workflows as CI-checked code prevents accidental credential leaks.",
+      ],
+    },
+    de: {
+      title: "pi-n8n-ai-stack",
+      tagline: "Gehärtetes ARM64-Infrastruktur-Template für n8n auf dem Raspberry Pi 5 mit CI-geprüften Agent-Workflows.",
+      problem: "Die meisten Self-Hosting-Beispiele für n8n sind einfache Einzelcontainer mit offenen Ports, ohne Speicherlimits und ohne geprüfte Workflow-Exporte. Ich wollte ein wiederverwendbares Template für kleine ARM64-Boards.",
+      decisions: [
+        "Zwei Profile inklusive: Produktions-Queue-Modus (PostgreSQL + Redis + Worker) und ein leichtes 4-GB-Pi-5-Profil (SQLite + 384 MB RAM-Limit).",
+        "Bindung nur an Localhost mit optionalem Cloudflare-Tunnel-Profil und aktiviertem N8N_BLOCK_ENV_ACCESS_IN_NODE.",
+        "Enthält 3 bereinigte Agent-Workflow-Templates, die per CI auf Schema-Validität und fehlende Secrets oder private IPs geprüft werden.",
+      ],
+      learned: [
+        "Klare Speicherlimits und Execution-Pruning sind auf einem 4-GB-Pi wichtiger als roher Durchsatz.",
+        "n8n-Workflows wie CI-geprüften Code zu behandeln verhindert versehentliche Secret-Leaks.",
+      ],
+    },
+    ar: {
+      title: "pi-n8n-ai-stack",
+      tagline: "قالب بنية تحتية محصّن لتشغيل n8n على Raspberry Pi 5 (ARM64) مع قوالب أتمتة مفحوصة عبر CI.",
+      problem: "معظم أمثلة n8n الذاتية هي حاوية واحدة بمنافذ مفتوحة وبلا حدود للذاكرة أو فحص لملفات الـ workflows. أردت قالباً قابلاً لإعادة الاستخدام ومصمماً لأجهزة ARM64 الصغيرة.",
+      decisions: [
+        "يوفّر وضعين: وضع الإنتاج بالطوابير (PostgreSQL + Redis + Worker) ووضع خفيف لـ Raspberry Pi 5 بذاكرة 4 GB (SQLite + حد 384 MB).",
+        "ربط محلي فقط (loopback) مع خيار Cloudflare Tunnel وتفعيل عزل المتغيرات البيئية داخل العقد.",
+        "يتضمن 3 قوالب workflows نظيفة تُفحص تلقائياً في CI للتأكد من صحة البنية وخلوها من المفاتيح أو العناوين الخاصة.",
+      ],
+      learned: [
+        "تحديد الذاكرة وتنظيف سجل التشغيل أهم على جهاز 4 GB من السرعة القصوى.",
+        "التعامل مع ملفات n8n ككود مفحوص بـ CI يمنع تسريب الأسرار بالخطأ.",
+      ],
+    },
+  },
+  {
+    slug: "guarded-agent-template",
+    status: "live",
+    repo: "https://github.com/moutaz121493/guarded-agent-template",
+    tags: ["Agentic AI", "FastAPI", "LLM Evals", "HITL", "Cost Guard"],
+    flow: ["Untrusted Input", "Injection Screen", "Atomic Budget Reserve", "Bounded Tool Loop", "HITL Gate / JSON Trace"],
+    en: {
+      title: "guarded-agent-template",
+      tagline: "A bounded, measurable Agentic AI microservice with atomic SQLite cost caps, HITL gates, and CI evals.",
+      problem: "Many agent demos run unbounded loops with no cost limit, no safety boundary on mutating tools, and no automated tests. I wanted a small template that brings embedded-systems discipline to LLM agents.",
+      decisions: [
+        "Every tool is explicitly classified as read-only or mutating; mutating tools pause and require an ephemeral approval code via /v1/approve.",
+        "Atomic SQLite budget ledger reserves max cost before calling an LLM and settles actual spend afterward.",
+        "Ships a 12-case multilingual (EN/DE/AR) golden evaluation suite that runs in GitHub Actions on every push.",
+      ],
+      learned: [
+        "Deterministic guardrails before the model call catch prompt injections at zero token cost.",
+        "A mock planner mode makes CI evals fast, reproducible, and free to run.",
+      ],
+    },
+    de: {
+      title: "guarded-agent-template",
+      tagline: "Ein begrenzter, messbarer Agentic-AI-Microservice mit atomarem SQLite-Kostenlimit, HITL-Gates und CI-Evals.",
+      problem: "Viele Agent-Demos laufen in unbegrenzten Schleifen ohne Kostenlimit, ohne Schutz bei schreibenden Tools und ohne Tests. Ich wollte ein kompaktes Template mit Embedded-Disziplin für LLM-Agenten.",
+      decisions: [
+        "Jedes Tool ist explizit als lesend oder verändernd markiert; verändernde Tools pausieren und erfordern einen kurzlebigen Freigabecode über /v1/approve.",
+        "Ein atomares SQLite-Budgetbuch reserviert Maximalkosten vor dem Modellaufruf und verbucht danach die echten Kosten.",
+        "Enthält eine 12-teilige mehrsprachige Eval-Suite (EN/DE/AR), die bei jedem Push in GitHub Actions läuft.",
+      ],
+      learned: [
+        "Deterministische Guardrails vor dem Modellaufruf blockieren Prompt-Injections ohne Token-Kosten.",
+        "Ein Mock-Planner macht CI-Evals schnell, reproduzierbar und kostenlos.",
+      ],
+    },
+    ar: {
+      title: "guarded-agent-template",
+      tagline: "خدمة Agentic AI محدودة وقابلة للقياس مع سقف تكلفة ذري بـ SQLite، بوابات موافقة بشرية، وتقييم تلقائي في CI.",
+      problem: "كثير من مشاريع الوكلاء تعمل بحلقات غير محدودة بلا سقف تكلفة ولا حماية للأدوات التغييرية ولا اختبارات آلية. أردت قالباً خفيفاً يطبّق انضباط الأنظمة المدمجة على وكلاء الـ LLM.",
+      decisions: [
+        "تصنيف صريح لكل أداة كقراءة فقط أو تغييرية؛ الأدوات التغييرية تتوقف وتطلب رمز موافقة مؤقت عبر /v1/approve.",
+        "دفتر ميزانية ذري بـ SQLite يحجز أقصى تكلفة قبل استدعاء النموذج ويسوّي التكلفة الفعلية بعده.",
+        "يتضمن مجموعة تقييم ذهبية من 12 حالة متعددة اللغات (EN/DE/AR) تعمل تلقائياً في GitHub Actions.",
+      ],
+      learned: [
+        "الحواجز الحتمية قبل استدعاء النموذج توقف محاولات حقن الأوامر بتكلفة صفر.",
+        "وجود وضع محاكاة يجعل اختبارات CI سريعة وقابلة للتكرار ومجانية.",
+      ],
+    },
+  },
+  {
+    slug: "whatsapp-agent-kit",
+    status: "live",
+    repo: "https://github.com/moutaz121493/whatsapp-agent-kit",
+    tags: ["WhatsApp Cloud API", "Agentic AI", "HITL", "n8n", "FastAPI"],
+    flow: ["WhatsApp (Text / Voice)", "HMAC + Allowlist", "Media Adapter", "Guarded Agent", "HITL YES/NO Reply"],
+    en: {
+      title: "whatsapp-agent-kit",
+      tagline: "Secure WhatsApp AI Agent template with HMAC verification, allowlist, voice intake, HITL approvals, and a local /demo simulator.",
+      problem: "Connecting an AI agent to WhatsApp in a portfolio repo is hard to test without Meta Business credentials and easy to misconfigure insecurely.",
+      decisions: [
+        "Verifies Meta's X-Hub-Signature-256 header in constant time and enforces a deny-by-default E.164 sender allowlist.",
+        "Stores Human-in-the-Loop approval codes in SQLite bound to the originating sender with a 5-minute TTL.",
+        "Includes a built-in /demo web chat simulator and an n8n router workflow so anyone can test text, voice notes, and HITL approvals in 30 seconds.",
+      ],
+      learned: [
+        "Binding approval codes to the sender identity prevents cross-user confirmation bugs.",
+        "Shipping a zero-credential local simulator makes an infrastructure template immediately verifiable.",
+      ],
+    },
+    de: {
+      title: "whatsapp-agent-kit",
+      tagline: "Sicheres WhatsApp-AI-Agent-Template mit HMAC-Prüfung, Allowlist, Sprachnotiz-Intake, HITL-Freigaben und lokalem /demo-Simulator.",
+      problem: "Einen KI-Agenten in einem Portfolio-Repo an WhatsApp anzubinden ist ohne Meta-Business-Zugang schwer testbar und schnell unsicher konfiguriert.",
+      decisions: [
+        "Prüft Metas X-Hub-Signature-256 in konstanter Zeit und erzwingt eine Deny-by-Default-Allowlist für E.164-Nummern.",
+        "Speichert HITL-Freigabecodes mit 5-Minuten-TTL sendergebunden in SQLite.",
+        "Enthält einen lokalen /demo-Chat-Simulator und einen n8n-Router-Workflow, damit Text, Sprachnotizen und HITL-Freigaben in 30 Sekunden testbar sind.",
+      ],
+      learned: [
+        "Sendergebundene Freigabecodes verhindern Bestätigungen durch unbefugte Nutzer.",
+        "Ein lokaler Simulator ohne Zugangsdaten macht Infrastruktur-Templates sofort prüfbar.",
+      ],
+    },
+    ar: {
+      title: "whatsapp-agent-kit",
+      tagline: "قالب وكيل ذكاء اصطناعي آمن لواتساب مع تحقق HMAC وقائمة سماح ومعالجة صوت وموافقات بشرية ومحاكي محلي.",
+      problem: "ربط وكيل ذكاء اصطناعي بواتساب في مستودع مفتوح يصعب اختباره بدون حساب Meta Business، ويسهل تهيئته بطريقة غير آمنة.",
+      decisions: [
+        "تحقق بزمن ثابت من توقيع X-Hub-Signature-256 مع قائمة سماح صارمة للأرقام (رفض افتراضي).",
+        "تخزين رموز الموافقة البشرية (HITL) في SQLite مرتبطة بالمرسِل مع صلاحية 5 دقائق.",
+        "يتضمن محاكي دردشة مدمج على /demo وملف n8n router لتجربة الرسائل النصية والصوتية والموافقات خلال 30 ثانية.",
+      ],
+      learned: [
+        "ربط رمز الموافقة بهوية المرسِل يمنع أي تداخل أو تأكيد غير مصرح به.",
+        "توفير محاكي محلي بدون مفاتيح يجعل القالب قابلاً للتجربة الفورية.",
+      ],
+    },
+  },
 ];
