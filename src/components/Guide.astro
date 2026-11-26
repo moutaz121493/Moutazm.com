@@ -63,17 +63,21 @@ const TOPICS = [
   { k: "contact", label: t.nav.contact,
     kw: "contact,email,mail,hire,reach,linkedin,github,cv,resume,interview,available,kontakt,lebenslauf,erreichen,bewerbung,تواصل,بريد,ايميل,سيرة,توظيف",
     a: `<p>${esc(t.contact.body)}</p><div class="gl">${link(`mailto:${LINKS.email}`, "✉ " + LINKS.email, false)}${link(LINKS.linkedin, "LinkedIn")}${link(LINKS.github, "GitHub")}${link(href("/cv"), "📄 " + S.cvl, false)}</div>` },
+  /* one hidden topic per project (not shown as a chip): the offline answer for "Ask about this project" */
+  ...projects.map((p) => ({ k: "p-" + p.slug, hide: true, label: p[lang].title,
+    kw: [p[lang].title.toLowerCase(), p.slug.replace(/-/g, " "), p.slug].join(","),
+    a: `<p><b>${esc(p[lang].title)}</b> — ${esc(p[lang].tagline)}</p><p>${esc(p[lang].problem)}</p><div class="gl">${link(href(`/projects/${p.slug}`), "→ " + p[lang].title, false)}${p.repo ? link(p.repo, "GitHub") : ""}</div>` })),
 ].filter((x) => x.a && x.a !== "<ul></ul>");
-const data = JSON.stringify({ lang, s: S, topics: TOPICS.map(({ k, label, kw, a }) => ({ k, label, kw: kw.split(","), a })) });
+const data = JSON.stringify({ lang, s: S, topics: TOPICS.map(({ k, label, kw, a, hide }) => ({ k, label, kw: kw.split(","), a, hide })) });
 ---
 <button class="gd-btn no-print" id="gd-btn" type="button" aria-expanded="false" aria-controls="gd" title={S.open} aria-label={S.open}>
   <svg class="gd-logo" viewBox="0 0 48 48" aria-hidden="true"><g class="pins"><path d="M17 5v4M24 4v5M31 5v4M17 39v4M24 39v5M31 39v4M5 17h4M4 24h5M5 31h4M39 17h4M39 24h5M39 31h4"/></g><rect x="9" y="9" width="30" height="30" rx="9"/><path class="spark" d="M24 14.5c.9 4.6 3.1 6.9 7.7 7.8-4.6.9-6.8 3.1-7.7 7.7-.9-4.6-3.1-6.8-7.7-7.7 4.6-.9 6.8-3.2 7.7-7.8z"/><circle class="dot" cx="31.5" cy="30.5" r="2"/></svg>
-  <span class="lbl">{S.open}</span>
+  <span class="lbl">{S.open}</span><kbd class="gd-kbd" aria-hidden="true">/</kbd>
 </button>
 <section class="gd no-print" id="gd" hidden role="dialog" aria-label={S.title}>
   <div class="gd-h">
     <svg class="gd-logo" viewBox="0 0 48 48" aria-hidden="true"><g class="pins"><path d="M17 5v4M24 4v5M31 5v4M17 39v4M24 39v5M31 39v4M5 17h4M4 24h5M5 31h4M39 17h4M39 24h5M39 31h4"/></g><rect x="9" y="9" width="30" height="30" rx="9"/><path class="spark" d="M24 14.5c.9 4.6 3.1 6.9 7.7 7.8-4.6.9-6.8 3.1-7.7 7.7-.9-4.6-3.1-6.8-7.7-7.7 4.6-.9 6.8-3.2 7.7-7.8z"/><circle class="dot" cx="31.5" cy="30.5" r="2"/></svg>
-    <div class="t"><b>{S.title}</b><small>{S.sub}</small></div>
+    <div class="t"><b>{S.title}</b><small><span class="gd-on" aria-hidden="true"></span>{S.sub}</small></div>
     <button type="button" class="gd-ib" id="gd-new" title={S.clear} aria-label={S.clear}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
     <button type="button" class="gd-ib" id="gd-x" title={S.close} aria-label={S.close}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   </div>
@@ -101,8 +105,18 @@ const data = JSON.stringify({ lang, s: S, topics: TOPICS.map(({ k, label, kw, a 
     log.append(r);
     log.scrollTop = log.scrollHeight;
   }
+  // the conversation follows the visitor from page to page (this tab only, nothing leaves the browser)
+  const KEY = "gd-chat-" + D.lang;
+  const save = () => { try { sessionStorage.setItem(KEY, JSON.stringify({ log: log.innerHTML, hist })); } catch (e) {} };
+  function restore() {
+    try {
+      const st = JSON.parse(sessionStorage.getItem(KEY) || "null");
+      if (!st || !st.log || st.log.includes("gd-typing")) return false;
+      log.innerHTML = st.log; hist.push(...(st.hist || []).slice(-3)); drawChips(); log.scrollTop = log.scrollHeight; return true;
+    } catch (e) { return false; }
+  }
   function drawChips(skip) {
-    chips.innerHTML = D.topics.filter((x) => x.k !== skip).map((x) => `<button type="button" data-k="${x.k}">${escT(x.label)}</button>`).join("");
+    chips.innerHTML = D.topics.filter((x) => x.k !== skip && !x.hide).map((x) => `<button type="button" data-k="${x.k}">${escT(x.label)}</button>`).join("");
   }
   function hello() {
     log.innerHTML = "";
@@ -113,12 +127,13 @@ const data = JSON.stringify({ lang, s: S, topics: TOPICS.map(({ k, label, kw, a 
     const tp = D.topics.find((x) => x.k === k);
     add("u", escT(asked || tp.label));
     if (tp) { add("a", tp.a); drawChips(k); } else { add("a", `<p>${escT(D.s.miss)}</p>`); drawChips(); }
+    save();
   }
   function match(text) {
     const s = " " + text.toLowerCase() + " ";
     let best = null, top = 0;
     for (const tp of D.topics) {
-      const n = tp.kw.reduce((a, w) => a + (s.includes(w.trim().toLowerCase()) ? w.length : 0), 0);
+      const n = tp.kw.reduce((a, w) => a + (s.includes(w.trim().toLowerCase()) ? w.length : 0), 0) * (tp.hide ? 3 : 1);   // a named project beats generic words
       if (n > top) { top = n; best = tp.k; }
     }
     return best;
@@ -127,14 +142,30 @@ const data = JSON.stringify({ lang, s: S, topics: TOPICS.map(({ k, label, kw, a 
     box.hidden = !on;
     btn.setAttribute("aria-expanded", String(on));
     if (on) {
-      if (!started) { hello(); started = true; }
+      if (!started) { if (!restore()) hello(); started = true; }
       if (matchMedia("(max-width: 620px)").matches) document.documentElement.style.overflow = "hidden";
       setTimeout(() => (matchMedia("(pointer: fine)").matches ? q : chips.querySelector("button") || q).focus(), 40);
     } else { document.documentElement.style.overflow = ""; btn.focus(); }
   }
   btn.addEventListener("click", () => open(true));
+  // any element with data-ask opens the chat; a non-empty value is asked right away ("Ask about this project")
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("[data-ask]"); if (!a) return;
+    e.preventDefault(); open(true);
+    const ask = a.dataset.ask?.trim(); if (ask) { q.value = ask; $("gd-f").requestSubmit(); }
+  });
+  // "/" opens the chat from anywhere (unless the visitor is typing somewhere)
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey || !box.hidden) return;
+    if (e.target.closest("input, textarea, select, [contenteditable]")) return;
+    e.preventDefault(); open(true);
+  });
+  // phones: the round button waits until the visitor scrolls past the first screen (it covered the hero cards)
+  const phone = matchMedia("(max-width: 620px)");
+  const away = () => btn.classList.toggle("gd-away", phone.matches && scrollY < innerHeight * 0.6 && !!document.querySelector(".hero"));
+  addEventListener("scroll", away, { passive: true }); phone.addEventListener("change", away); away();
   $("gd-x").addEventListener("click", () => open(false));
-  $("gd-new").addEventListener("click", hello);
+  $("gd-new").addEventListener("click", () => { hist.length = 0; hello(); save(); });
   chips.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) answer(b.dataset.k); });
   /* tiny markdown for AI answers: **bold**, [t](url), "- " lists, paragraphs */
   const inl = (s) => escT(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
@@ -162,7 +193,9 @@ const data = JSON.stringify({ lang, s: S, topics: TOPICS.map(({ k, label, kw, a 
       wait.innerHTML = tp ? tp.a : `<p>${escT(D.s.miss)}</p>`;
       drawChips(k || undefined);
     }
-    busy = false; log.scrollTop = log.scrollHeight; q.focus();
+    wait.classList.add("gd-new");
+    busy = false; log.scrollTop = log.scrollHeight; save();
+    if (matchMedia("(pointer: fine)").matches) q.focus();
   });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !box.hidden) open(false); });
 </script>
@@ -182,7 +215,15 @@ const data = JSON.stringify({ lang, s: S, topics: TOPICS.map(({ k, label, kw, a 
     box-shadow: 0 14px 34px -12px rgba(0, 0, 0, .7), 0 0 26px -6px var(--glow); transition: transform .35s var(--spring), opacity .2s; }
   .gd-btn:hover { transform: translateY(-3px); }
   .gd-btn .gd-logo { width: 40px; height: 40px; }
-  .gd-btn[aria-expanded="true"] { opacity: 0; pointer-events: none; transform: scale(.85); }
+  .gd-btn[aria-expanded="true"], .gd-btn.gd-away { opacity: 0; pointer-events: none; transform: scale(.85); }
+  .gd-kbd { font: 600 11px var(--f-mono); color: var(--muted); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px; margin-inline-start: -2px; }
+  @media (pointer: coarse) { .gd-kbd { display: none; } }
+  .gd-btn::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: var(--grad);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: .9; pointer-events: none; }
+  .gd-on { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--live); box-shadow: 0 0 8px var(--live); margin-inline-end: 6px; vertical-align: .08em; }
+  .gd-new > * { animation: gd-word .45s ease-out both; }
+  .gd-new > *:nth-child(2) { animation-delay: .08s; } .gd-new > *:nth-child(3) { animation-delay: .16s; } .gd-new > *:nth-child(n+4) { animation-delay: .24s; }
+  @keyframes gd-word { from { opacity: 0; filter: blur(3px); transform: translateY(4px); } }
 
   .gd { position: fixed; inset-inline-end: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 41;
     width: 400px; height: min(600px, calc(100vh - 36px)); display: flex; flex-direction: column; overflow: hidden;
@@ -199,12 +240,12 @@ const data = JSON.stringify({ lang, s: S, topics: TOPICS.map(({ k, label, kw, a 
   .gd-ib { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 9px; border: 1px solid transparent; background: none; color: var(--muted); cursor: pointer; }
   .gd-ib:hover { color: var(--accent); border-color: var(--line); }
   .gd-ib svg { width: 17px; height: 17px; }
-  .gd-log { flex: 1; overflow: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; overscroll-behavior: contain; }
+  .gd-log { flex: 1; overflow: auto; padding: 16px; scrollbar-width: thin; scrollbar-color: var(--line-2) transparent; display: flex; flex-direction: column; gap: 12px; overscroll-behavior: contain; }
   .gd-row { display: flex; animation: gd-msg .28s ease-out; }
   @keyframes gd-msg { from { opacity: 0; transform: translateY(6px); } }
   .gd-row.u { justify-content: flex-end; }
   .gd-row .m { max-width: 88%; padding: 10px 14px; border-radius: 16px; font-size: 14.5px; line-height: 1.55; overflow-wrap: anywhere; }
-  .gd-row.u .m { background: var(--accent); color: var(--accent-ink); font-weight: 600; border-end-end-radius: 5px; }
+  .gd-row.u .m { background: var(--accent); color: var(--accent-ink); font-weight: 600; border-end-end-radius: 5px; box-shadow: 0 6px 18px -10px var(--accent); }
   .gd-row.a .m { background: var(--panel); border: 1px solid var(--line); border-start-start-radius: 5px; }
   .gd-row .m p { margin: 0 0 7px; } .gd-row .m p:last-child { margin: 0; }
   .gd-row .m ul { margin: 2px 0 6px; padding-inline-start: 18px; } .gd-row .m li { margin: 3px 0; }
@@ -230,13 +271,14 @@ const data = JSON.stringify({ lang, s: S, topics: TOPICS.map(({ k, label, kw, a 
 
   @media (max-width: 620px) {
     .gd-btn { width: 56px; height: 56px; padding: 0; justify-content: center; inset-inline-end: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
-    .gd-btn .lbl { display: none; }
+    .gd-btn .lbl, .gd-btn .gd-kbd { display: none; }
     .gd { inset: 0; width: auto; height: 100dvh; border-radius: 0; border: 0; }
     .gd-h { padding-top: calc(12px + env(safe-area-inset-top, 0px)); }
     .gd-f input { font-size: 16px; }
   }
   @media (min-width: 621px) and (max-height: 560px) { .gd { height: calc(100vh - 24px); bottom: 12px; } }
-  @media (prefers-reduced-motion: reduce) { .gd-logo *, .gd, .gd-row { animation: none !important; } }
+  @media (prefers-reduced-motion: reduce) { .gd-logo *, .gd, .gd-row, .gd-new > * { animation: none !important; } }
+  :root[data-theme="light"] .gd-btn::before { display: none; }
   :root[data-theme="light"] .gd-btn, :root[data-theme="light"] .gd { border: 2px solid var(--ink); box-shadow: 5px 5px 0 var(--ink); }
   :root[data-theme="light"] .gd-row.a .m, :root[data-theme="light"] .gd-f, :root[data-theme="light"] .gd-chips button { border: 1.5px solid var(--ink); }
   @media print { .gd-btn, .gd { display: none !important; } }

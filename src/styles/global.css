@@ -1,27 +1,32 @@
 /* Signal: dark, technical, one gold accent (the "dominant bit"), cyan for the AI side. */
 :root {
   /* HUD (dark, default): deep blue-black glass, gold "dominant bit", cyan for the AI side */
-  --bg: #060a0f;
-  --bg-2: #0b1118;
-  --panel: #0f161d;
-  --panel-2: #141d26;
-  --line: #1f2c37;
-  --line-2: #2b3c4a;
-  --fg: #e8eff3;
-  --muted: #8d9ca8;
-  --accent: #f5b83f;
+  --bg: #05090e;
+  --bg-2: #0a1017;
+  --panel: #0d151d;
+  --panel-2: #131c26;
+  --line: #1d2b37;
+  --line-2: #2a3b4a;
+  --fg: #eaf1f5;
+  --muted: #97a6b2;
+  --accent: #f7bd4a;
+  --accent-2: #ff8a4c;
   --accent-ink: #0a0e12;
-  --ai: #4fd1ff;
-  --live: #45e08f;
-  --progress: #f5b83f;
-  --planned: #8d9ca8;
+  --ai: #5ad4ff;
+  --live: #4ae39a;
+  --progress: #f7bd4a;
+  --planned: #97a6b2;
+  /* signature gradient: gold "dominant bit" -> cyan AI side; used sparingly (headings, progress bar, focus) */
+  --grad: linear-gradient(100deg, var(--accent) 0%, var(--accent-2) 45%, var(--ai) 100%);
   --glow: color-mix(in srgb, var(--accent) 22%, transparent);
   --ink: var(--line-2);
   --card: color-mix(in srgb, var(--panel) 82%, transparent);
   --edge: color-mix(in srgb, var(--line-2) 82%, transparent);
   --shadow: 0 1px 0 rgba(255, 255, 255, .07) inset, 0 24px 54px -28px rgba(0, 0, 0, .92);
   --shadow-hi: 0 1px 0 rgba(255, 255, 255, .11) inset, 0 34px 68px -26px rgba(0, 0, 0, .96), 0 0 0 1px color-mix(in srgb, var(--accent) 26%, transparent), 0 0 36px -14px color-mix(in srgb, var(--ai) 22%, transparent);
-  --trace: #1d6f8f; --trace-hi: #f5b83f; --pulse: #4fd1ff; --fx-bg-a: .6;
+  --trace: #1d6f8f; --trace-hi: #f7bd4a; --pulse: #5ad4ff; --fx-bg-a: .6;
+  /* plain sRGB copies for JS/WebGL (three.js can't parse color(display-p3 …)) */
+  --hex-accent: #f7bd4a; --hex-ai: #5ad4ff; --hex-live: #4ae39a;
   --spring: cubic-bezier(.34, 1.56, .64, 1);
   /* Arial/Helvetica first among the fallbacks: same widths as Chakra Petch 700 and Plex Sans (measured 100%), so text
      doesn't re-wrap (layout shift) when the web fonts swap in */
@@ -37,28 +42,37 @@
 }
 /* Retro-Tech (light): warm paper, ink outlines, hard shadows like plastic keys */
 :root[data-theme="light"] {
-  --bg: #ebe2cc;
+  --bg: #ece3cd;
   --bg-2: #e2d6ba;
-  --panel: #f8f1e1;
-  --panel-2: #f0e6cf;
+  --panel: #faf4e6;
+  --panel-2: #f1e7d0;
   --line: #cdbd98;
   --line-2: #b4a07a;
-  --fg: #231a11;
-  --muted: #6a5842;
-  --accent: #d24f1b;
+  --fg: #211810;
+  --muted: #64523d;
+  /* darker than the old #d24f1b so text links reach WCAG AA (4.5:1) on paper */
+  --accent: #b0400d;
+  --accent-2: #d8631f;
   --accent-ink: #fff8ea;
-  --ai: #16766f;
-  --live: #3d7a1f;
-  --progress: #b55a10;
-  --planned: #7d6a50;
+  --ai: #13706a;
+  --live: #376f1c;
+  --progress: #9a4c0c;
+  --planned: #76634a;
+  --grad: linear-gradient(100deg, var(--accent) 0%, var(--accent-2) 50%, var(--ai) 100%);
   --glow: color-mix(in srgb, var(--accent) 18%, transparent);
   --ink: #2a2017;
   --card: var(--panel);
   --edge: var(--ink);
   --shadow: 4px 4px 0 var(--ink);
   --shadow-hi: 7px 7px 0 var(--ink);
-  --trace: #b8a37a; --trace-hi: #d24f1b; --pulse: #16766f; --fx-bg-a: .55;
+  --trace: #b8a37a; --trace-hi: #c4491a; --pulse: #13706a; --fx-bg-a: .55;
+  --hex-accent: #b0400d; --hex-ai: #13706a; --hex-live: #376f1c;
   color-scheme: light;
+}
+/* wide-gamut screens (most phones, Macs, newer laptops): the same hues, more saturated than sRGB can show */
+@media (color-gamut: p3) {
+  :root:not([data-theme="light"]) { --accent: color(display-p3 .98 .74 .3); --accent-2: color(display-p3 1 .55 .3); --ai: color(display-p3 .38 .83 1); --live: color(display-p3 .36 .9 .6); --progress: var(--accent); }
+  :root[data-theme="light"] { --accent: color(display-p3 .66 .26 .07); --accent-2: color(display-p3 .83 .39 .13); --ai: color(display-p3 .1 .44 .41); }
 }
 :root[lang="ar"] { --f-body: "IBM Plex Sans Arabic", "IBM Plex Sans", system-ui, sans-serif; --f-display: "IBM Plex Sans Arabic", "Chakra Petch", system-ui, sans-serif; }
 
@@ -102,6 +116,9 @@ p { margin: 0; }
 section.block { padding-block: clamp(64px, 10vw, 120px); border-top: 1px solid var(--line); }
 .sec-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 36px; flex-wrap: wrap; }
 .sec-head .idx { font-family: var(--f-mono); color: var(--accent); font-size: 14px; }
+@supports (background-clip: text) { .sec-head .idx { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 600; } }
+.sec-head h2 { position: relative; }
+.sec-head h2::after { content: ""; position: absolute; inset-inline-start: 0; bottom: -10px; width: 44px; height: 3px; border-radius: 3px; background: var(--grad); }
 .sec-head .sub { color: var(--muted); flex-basis: 100%; }
 
 /* buttons */

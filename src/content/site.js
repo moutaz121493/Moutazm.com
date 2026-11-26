@@ -32,7 +32,7 @@ export const ui = {
       cta: { cv: "View CV", projects: "Projects", contact: "Contact" },
       lab: "the workbench", local: "Local time",
     },
-    about: { h: "About" },
+    about: { h: "About", facts: { base: "Based in", langs: "Languages", since: "In automotive networks since", focus: "Focus" } },
     work: { h: "Experience", present: "today" },
     projects: {
       h: "Projects",
@@ -53,6 +53,11 @@ export const ui = {
     contact: {
       h: "Contact",
       email: "Email",
+      copy: "Copy", copied: "Copied",
+      write: "Write me an email", cvPdf: "CV as PDF", cvSub: "One page · English",
+      ask: "Ask about me", askSub: "AI answers from my CV, instantly",
+      liSub: "Profile & experience", ghSub: "Code & open-source repos",
+      where: "Based in", tz: "Time zone", langs: "Languages",
     },
     cv: {
       h: "Curriculum vitae",
@@ -70,6 +75,7 @@ export const ui = {
     footer: { privacy: "Privacy", imprint: "Imprint", built: "Static site · no cookies · no tracking" },
     theme: "Toggle light / dark theme",
     langSwitch: "Language",
+    menu: "Menu",
     skip: "Skip to content",
   },
   de: {
@@ -78,7 +84,7 @@ export const ui = {
       cta: { cv: "Lebenslauf", projects: "Projekte", contact: "Kontakt" },
       lab: "die Werkbank", local: "Ortszeit",
     },
-    about: { h: "Über mich" },
+    about: { h: "Über mich", facts: { base: "Standort", langs: "Sprachen", since: "In Fahrzeugnetzwerken seit", focus: "Schwerpunkt" } },
     work: { h: "Berufserfahrung", present: "heute" },
     projects: {
       h: "Projekte",
@@ -99,6 +105,11 @@ export const ui = {
     contact: {
       h: "Kontakt",
       email: "E-Mail",
+      copy: "Kopieren", copied: "Kopiert",
+      write: "E-Mail schreiben", cvPdf: "Lebenslauf als PDF", cvSub: "Eine Seite · Deutsch",
+      ask: "Frag mich", askSub: "KI-Antworten aus meinem Lebenslauf, sofort",
+      liSub: "Profil & Erfahrung", ghSub: "Code & Open-Source-Repos",
+      where: "Standort", tz: "Zeitzone", langs: "Sprachen",
     },
     cv: {
       h: "Lebenslauf",
@@ -116,6 +127,7 @@ export const ui = {
     footer: { privacy: "Datenschutz", imprint: "Impressum", built: "Statische Seite · keine Cookies · kein Tracking" },
     theme: "Helles / dunkles Design umschalten",
     langSwitch: "Sprache",
+    menu: "Menü",
     skip: "Zum Inhalt springen",
   },
   ar: {
@@ -124,7 +136,7 @@ export const ui = {
       cta: { cv: "السيرة الذاتية", projects: "المشاريع", contact: "تواصل" },
       lab: "طاولة العمل", local: "التوقيت المحلي",
     },
-    about: { h: "عنّي" },
+    about: { h: "عنّي", facts: { base: "مكان الإقامة", langs: "اللغات", since: "في شبكات السيارات منذ", focus: "التركيز" } },
     work: { h: "الخبرة المهنية", present: "حتى الآن" },
     projects: {
       h: "المشاريع",
@@ -145,6 +157,11 @@ export const ui = {
     contact: {
       h: "تواصل",
       email: "البريد",
+      copy: "نسخ", copied: "تم النسخ",
+      write: "راسلني بالبريد", cvPdf: "السيرة الذاتية PDF", cvSub: "صفحة واحدة · بالعربية",
+      ask: "اسألني", askSub: "إجابات فورية بالذكاء الاصطناعي من سيرتي",
+      liSub: "الملف المهني والخبرة", ghSub: "الكود والمستودعات المفتوحة",
+      where: "المكان", tz: "المنطقة الزمنية", langs: "اللغات",
     },
     cv: {
       h: "السيرة الذاتية",
@@ -162,6 +179,7 @@ export const ui = {
     footer: { privacy: "الخصوصية", imprint: "البيانات القانونية", built: "موقع ثابت · بلا كوكيز · بلا تتبّع" },
     theme: "تبديل الوضع الفاتح / الداكن",
     langSwitch: "اللغة",
+    menu: "القائمة",
     skip: "انتقل إلى المحتوى",
   },
 };

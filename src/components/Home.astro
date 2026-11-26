@@ -2,13 +2,26 @@
 import Hero from "./Hero.astro";
 import Flow from "./Flow.astro";
 import Illo from "./Illo.astro";
-import { ui, path, experience, education, skills, now, hobbies, LINKS } from "../content/site.js";
+import { ui, path, experience, education, skills, now, hobbies, languages, LINKS } from "../content/site.js";
 import { projects } from "../content/projects.js";
 import { todo } from "../lib/text.js";
 
 const { lang } = Astro.props;
 const t = ui[lang];
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const since = experience.map((e) => e.from).sort()[0];
+const langList = languages.map((x) => `${x.name[lang]} ${x.level[lang]}`);
+const ic = {
+  mail: '<path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/>',
+  in: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/>',
+  gh: '<path d="M9 19c-4 1.4-4-2-6-2.5M15 21v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/>',
+  cv: '<path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 13h6M9 17h6M12 9v.01"/>',
+  ask: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l.9-5.4A8 8 0 1 1 21 12z"/><path d="M12 8.5c.4 1.7 1.2 2.6 2.9 2.9-1.7.4-2.5 1.2-2.9 2.9-.4-1.7-1.2-2.5-2.9-2.9 1.7-.3 2.5-1.2 2.9-2.9z"/>',
+  copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/>',
+  ok: '<path d="m5 12 5 5L20 7"/>',
+  out: '<path d="M7 17 17 7M8 7h9v9"/>',
+};
+const svg = (k) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ic[k]}</svg>`;
 ---
 <Hero lang={lang} />
 
@@ -16,7 +29,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   <div class="wrap about">
     <div class="sec-head reveal"><span class="idx">01</span><h2>{t.about.h}</h2></div>
     <div class="bento about-grid">
-      <div class="tile lead-tile reveal"><span class="label"><span class="led gold" aria-hidden="true"></span>// whoami</span><p class="lead">{t.about.lead}</p></div>
+      <div class="tile lead-tile reveal">
+        <span class="label"><span class="led gold" aria-hidden="true"></span>// whoami</span>
+        <p class="lead">{t.about.lead}</p>
+        <dl class="facts">
+          <div><dt>{t.about.facts.base}</dt><dd>{t.hero.kicker}</dd></div>
+          <div><dt>{t.about.facts.since}</dt><dd class="mono">{since}</dd></div>
+          <div><dt>{t.about.facts.langs}</dt><dd>{langList.join(" · ")}</dd></div>
+          <div><dt>{t.about.facts.focus}</dt><dd>{t.hero.keys.join(" · ")}</dd></div>
+        </dl>
+      </div>
       <div class="tile body reveal">{t.about.body.map((p) => <p>{p}</p>)}</div>
     </div>
   </div>
@@ -118,13 +140,27 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 <section class="block" id="contact">
   <div class="wrap contact tile reveal" data-notilt>
-    <div class="sec-head"><span class="idx">07</span><h2>{t.contact.h}</h2></div>
-    <p class="lead">{t.contact.body}</p>
-    <div class="ctas">
-      <a class="btn primary" href={`mailto:${LINKS.email}`}>{LINKS.email}</a>
-      <a class="btn" href={LINKS.linkedin} rel="noopener" target="_blank">LinkedIn</a>
-      <a class="btn" href={LINKS.github} rel="noopener" target="_blank">GitHub</a>
+    <div class="c-main">
+      <div class="sec-head"><span class="idx">07</span><h2>{t.contact.h}</h2></div>
+      <p class="lead"><span class="led" aria-hidden="true"></span>{t.contact.body}</p>
+      <div class="mailbox">
+        <a class="btn primary mail" href={`mailto:${LINKS.email}`}><Fragment set:html={svg("mail")} /><span>{LINKS.email}</span></a>
+        <button class="btn copy" type="button" data-copy={LINKS.email} data-done={t.contact.copied} aria-label={`${t.contact.copy}: ${LINKS.email}`}>
+          <Fragment set:html={svg("copy")} /><span>{t.contact.copy}</span>
+        </button>
+      </div>
+      <dl class="c-facts">
+        <div><dt>{t.contact.where}</dt><dd>{t.hero.kicker}</dd></div>
+        <div><dt>{t.contact.tz}</dt><dd class="mono" data-tz>CET / CEST</dd></div>
+        <div><dt>{t.contact.langs}</dt><dd>{languages.map((x) => x.name[lang]).join(" · ")}</dd></div>
+      </dl>
     </div>
+    <ul class="c-links">
+      <li><a href={LINKS.linkedin} rel="noopener" target="_blank"><span class="ci"><Fragment set:html={svg("in")} /></span><span class="ct"><b>LinkedIn</b><small>{t.contact.liSub}</small></span><Fragment set:html={svg("out")} /></a></li>
+      <li><a href={LINKS.github} rel="noopener" target="_blank"><span class="ci"><Fragment set:html={svg("gh")} /></span><span class="ct"><b>GitHub</b><small>{t.contact.ghSub}</small></span><Fragment set:html={svg("out")} /></a></li>
+      <li><a href={`${base}/cv/moutaz-mohammad-cv-${lang}.pdf`} download><span class="ci"><Fragment set:html={svg("cv")} /></span><span class="ct"><b>{t.contact.cvPdf}</b><small>{t.contact.cvSub}</small></span><Fragment set:html={svg("out")} /></a></li>
+      <li><button type="button" data-ask><span class="ci ai"><Fragment set:html={svg("ask")} /></span><span class="ct"><b>{t.contact.ask}</b><small>{t.contact.askSub}</small></span><Fragment set:html={svg("out")} /></button></li>
+    </ul>
   </div>
 </section>
 
@@ -140,6 +176,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   .proj { display: flex; flex-direction: column; gap: 14px; text-decoration: none; position: relative; overflow: hidden; }
   .proj::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(420px circle at var(--mx, 50%) var(--my, -20%), var(--glow), transparent 70%); opacity: 0; transition: opacity .3s; pointer-events: none; }
   .proj:hover::after { opacity: 1; }
+  .proj::before { content: ""; position: absolute; inset: 0 0 auto; height: 2px; background: var(--grad); transform: scaleX(0); transform-origin: left; transition: transform .45s cubic-bezier(.2, .8, .2, 1); pointer-events: none; }
+  :root[dir="rtl"] .proj::before { transform-origin: right; }
+  .proj:hover::before, .proj:focus-visible::before { transform: scaleX(1); }
   :root[data-theme="light"] .proj:active { translate: 3px 3px; box-shadow: 1px 1px 0 var(--ink); }
   .proj.wide { grid-column: 1 / -1; }
   .proj-top { display: flex; justify-content: space-between; align-items: center; }
@@ -212,9 +251,64 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   @media (max-width: 980px) { .beyond { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 560px) { .beyond { grid-template-columns: 1fr; } }
 
-  .contact { padding: clamp(28px, 5vw, 56px); position: relative; overflow: hidden; }
+  .facts { margin: 6px 0 0; display: grid; gap: 0; border-top: 1px dashed var(--line); }
+  .facts div { display: grid; grid-template-columns: minmax(0, 11em) minmax(0, 1fr); gap: 12px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  .facts dt { font: 500 12px/1.5 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding-top: 2px; }
+  :root[lang="ar"] .facts dt { font: 500 13px/1.6 var(--f-body); letter-spacing: 0; }
+  .facts dd { margin: 0; font-size: 14.5px; }
+  @media (max-width: 420px) { .facts div { grid-template-columns: 1fr; gap: 2px; } }
+
+  .contact { padding: clamp(28px, 5vw, 56px); position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: center; }
   .contact::before { content: ""; position: absolute; inset: auto -10% -60% auto; width: 60%; height: 140%; background: radial-gradient(closest-side, var(--glow), transparent 70%); pointer-events: none; }
-  .contact .lead { max-width: 760px; margin-bottom: 28px; position: relative; }
-  .contact .ctas { position: relative; }
-  .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+  .contact::after { content: ""; position: absolute; inset: 0 0 auto; height: 2px; background: var(--grad); opacity: .8; pointer-events: none; }
+  .c-main, .c-links { position: relative; min-width: 0; }
+  .contact .sec-head { margin-bottom: 20px; }
+  .contact .lead { max-width: 640px; margin-bottom: 26px; }
+  .contact .lead .led { margin-inline-end: 12px; vertical-align: .3em; }
+  .mailbox { display: flex; flex-wrap: wrap; gap: 10px; }
+  .mailbox .btn :global(svg) { width: 18px; height: 18px; flex: none; }
+  .mailbox .mail span { overflow-wrap: anywhere; }
+  .copy { cursor: pointer; }
+  .copy.done { border-color: var(--live); color: var(--live); }
+  .c-facts { margin: 26px 0 0; display: flex; flex-wrap: wrap; gap: 14px 32px; }
+  .c-facts dt { font: 500 11.5px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  :root[lang="ar"] .c-facts dt { font: 500 13px var(--f-body); letter-spacing: 0; }
+  .c-facts dd { margin: 2px 0 0; font-size: 14.5px; }
+  .c-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .c-links a, .c-links button { width: 100%; display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; text-align: start;
+    border: 1px solid var(--line); background: color-mix(in srgb, var(--panel-2) 80%, transparent); color: var(--fg); text-decoration: none; font: inherit; cursor: pointer;
+    transition: border-color .2s ease, transform .3s var(--spring), background .2s ease; }
+  .c-links a:hover, .c-links button:hover { border-color: var(--accent); transform: translateX(4px); background: color-mix(in srgb, var(--accent) 8%, var(--panel-2)); }
+  :root[dir="rtl"] .c-links a:hover, :root[dir="rtl"] .c-links button:hover { transform: translateX(-4px); }
+  .c-links .ci { width: 42px; height: 42px; flex: none; display: grid; place-items: center; border-radius: 10px; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+  .c-links .ci.ai { color: var(--ai); background: color-mix(in srgb, var(--ai) 12%, transparent); border-color: color-mix(in srgb, var(--ai) 30%, transparent); }
+  .c-links .ci :global(svg) { width: 20px; height: 20px; }
+  .c-links .ct { flex: 1; min-width: 0; display: grid; }
+  .c-links b { font: 600 15.5px var(--f-display); }
+  .c-links small { color: var(--muted); font-size: 13px; }
+  .c-links a > :global(svg), .c-links button > :global(svg) { width: 18px; height: 18px; color: var(--muted); flex: none; transition: color .2s, transform .2s; }
+  .c-links a:hover > :global(svg), .c-links button:hover > :global(svg) { color: var(--accent); transform: translate(2px, -2px); }
+  :root[dir="rtl"] .c-links a > :global(svg), :root[dir="rtl"] .c-links button > :global(svg) { transform: scaleX(-1); }
+  :root[data-theme="light"] .c-links a, :root[data-theme="light"] .c-links button { border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); background: var(--panel); }
+  :root[data-theme="light"] .c-links a:hover, :root[data-theme="light"] .c-links button:hover { box-shadow: 5px 5px 0 var(--ink); }
+  @media (max-width: 900px) { .contact { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) { .mailbox .btn { width: 100%; justify-content: center; } .mailbox .mail { font-size: 14px; } }
 </style>
+
+<script>
+  // copy the address (the mailto: link stays the main path; many visitors use webmail and just want the text)
+  document.querySelectorAll("[data-copy]").forEach((b) => b.addEventListener("click", async () => {
+    const lbl = b.querySelector("span"), was = lbl.textContent;
+    try { await navigator.clipboard.writeText(b.dataset.copy); } catch (e) {
+      const r = document.createRange(); r.selectNodeContents(b.closest(".mailbox").querySelector(".mail span")); getSelection().removeAllRanges(); getSelection().addRange(r); return;
+    }
+    b.classList.add("done"); lbl.textContent = b.dataset.done;
+    setTimeout(() => { b.classList.remove("done"); lbl.textContent = was; }, 1800);
+  }));
+  // show whether Berlin is on winter or summer time right now
+  const tz = document.querySelector("[data-tz]");
+  try {
+    const n = new Intl.DateTimeFormat("en", { timeZone: "Europe/Berlin", timeZoneName: "short" }).formatToParts(new Date()).find((p) => p.type === "timeZoneName")?.value;
+    if (tz && n) tz.textContent = n.replace("GMT+1", "CET (UTC+1)").replace("GMT+2", "CEST (UTC+2)");
+  } catch (e) {}
+</script>

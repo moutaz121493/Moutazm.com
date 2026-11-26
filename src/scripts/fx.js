@@ -18,6 +18,7 @@ function setTheme(next, from) {
   const apply = () => {
     doc.dataset.theme = next;
     try { localStorage.setItem("theme", next); } catch (e) {}
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", next === "light" ? "#ece3cd" : "#05090e");
     BG?.colors();
   };
   if (!document.startViewTransition || reduce) return apply();

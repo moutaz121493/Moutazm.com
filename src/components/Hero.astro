@@ -170,9 +170,9 @@ const cta3dLabel = lang === "de" ? "3D-Architektur" : lang === "ar" ? "استك�
       const syncTheme = () => {
         const light = document.documentElement.dataset.theme === "light";
         const css = (n: string, f: string) => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || f;
-        const acc = new THREE.Color(css("--accent", "#f5b83f"));
-        const ai = new THREE.Color(css("--ai", "#4fd1ff"));
-        const live = new THREE.Color(css("--live", "#45e08f"));
+        const acc = new THREE.Color(css("--hex-accent", "#f7bd4a"));
+        const ai = new THREE.Color(css("--hex-ai", "#5ad4ff"));
+        const live = new THREE.Color(css("--hex-live", "#4ae39a"));
         coreMat.color.setHex(light ? 0xd9cdb4 : 0x13202e);
         r1Mat.color.copy(acc); r1Mat.emissive.copy(acc);
         pinMat.color.copy(acc); pinMat.emissive.copy(acc);
@@ -294,6 +294,7 @@ const cta3dLabel = lang === "de" ? "3D-Architektur" : lang === "ar" ? "استك�
     transition: border-color .2s, transform .2s;
   }
   .viz-open:hover { border-color: var(--accent); transform: translateY(-1px); }
+  @media (pointer: coarse) { .viz-open { min-height: 40px; display: inline-flex; align-items: center; } }
   .legend { position: absolute; inset-inline-start: 14px; bottom: 10px; z-index: 2; display: flex; gap: 14px; font-size: 10.5px; color: var(--muted); flex-wrap: wrap; direction: ltr; pointer-events: none; letter-spacing: .06em; }
   .legend i { display: inline-block; width: 10px; height: 2px; vertical-align: middle; margin-inline-end: 6px; background: var(--accent); }
   .legend i.n { background: var(--ai); }
